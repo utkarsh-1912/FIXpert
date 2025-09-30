@@ -7,8 +7,6 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  GithubAuthProvider,
-  OAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
@@ -25,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Github } from 'lucide-react';
 import { FixpertIcon } from '@/components/icons';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -34,13 +31,6 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
         <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.62 1.9-4.72 1.9-4.26 0-7.72-3.36-7.72-7.5s3.46-7.5 7.72-7.5c2.38 0 4.02 1.02 4.94 1.9l2.82-2.82C18.46 2.18 15.82 1 12.48 1 7.02 1 3 5.02 3 10.5s4.02 9.5 9.48 9.5c2.86 0 5.06-1 6.6-2.6 1.74-1.74 2.38-4.26 2.38-6.58 0-.6-.05-1.15-.15-1.68z"/>
     </svg>
 );
-  
-const MicrosoftIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M11.5 2h-9v9h9V2zm-1.5 7.5h-6v-6h6v6zm11-7.5h-9v9h9V2zm-1.5 7.5h-6v-6h6v6zm-9.5 2h-9v9h9v-9zm-1.5 7.5h-6v-6h6v6zm11-7.5h-9v9h9v-9zm-1.5 7.5h-6v-6h6v6z"/>
-    </svg>
-);
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -71,13 +61,11 @@ export default function LoginPage() {
     }
   };
 
-  const handleOAuth = async (provider: 'google' | 'github' | 'microsoft') => {
+  const handleOAuth = async (provider: 'google') => {
     setIsSubmitting(true);
     let authProvider;
     switch(provider) {
         case 'google': authProvider = new GoogleAuthProvider(); break;
-        case 'github': authProvider = new GithubAuthProvider(); break;
-        case 'microsoft': authProvider = new OAuthProvider('microsoft.com'); break;
     }
 
     try {
@@ -149,10 +137,8 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 w-full">
+            <div className="grid grid-cols-1 gap-2 w-full">
                 <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2 h-4 w-4"/> GitHub</Button>
-                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2 h-4 w-4"/> Microsoft</Button>
             </div>
           </CardFooter>
         </TabsContent>
@@ -194,10 +180,8 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 w-full">
+            <div className="grid grid-cols-1 gap-2 w-full">
                 <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2 h-4 w-4"/> GitHub</Button>
-                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2 h-4 w-4"/> Microsoft</Button>
             </div>
           </CardFooter>
         </TabsContent>
