@@ -15,7 +15,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { MarkdownContent } from '@/components/markdown-content';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { FixpertIcon } from '@/components/icons';
 
 
 const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
@@ -178,38 +177,40 @@ export default function ChatPage() {
     <div className="flex flex-col gap-6">
         <Card className="flex flex-col h-[calc(100vh-12rem)]">
             <CardHeader className="flex flex-col gap-4">
-              <div className="space-y-1">
-                <CardTitle>AI FIXpert Chat</CardTitle>
-                <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
-              </div>
-               <div className="flex gap-2">
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <ChevronsUpDown className="h-4 w-4 mr-2" />
-                        {activeSession?.title ?? 'Select Chat'}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-64">
-                      <DropdownMenuLabel>Recent Chats</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {sessions.map(session => (
-                        <DropdownMenuItem key={session.id} onSelect={() => setActiveSessionId(session.id)} className="flex justify-between items-center">
-                         <div className="flex items-center">
-                            {activeSessionId === session.id && <Check className="h-4 w-4 mr-2" />}
-                            <span className="truncate max-w-40">{session.title}</span>
-                          </div>
-                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteChat(session.id);}}>
-                            <Trash2 className="h-4 w-4 text-destructive"/>
-                          </Button>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <Button variant="outline" size="sm" onClick={handleNewChat}>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      New Chat
-                  </Button>
+              <div className="flex justify-between items-center">
+                <div className="space-y-1">
+                  <CardTitle>AI FIXpert Chat</CardTitle>
+                  <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
+                </div>
+                 <div className="flex gap-2">
+                   <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <ChevronsUpDown className="h-4 w-4 mr-2" />
+                          {activeSession?.title ?? 'Select Chat'}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-64">
+                        <DropdownMenuLabel>Recent Chats</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {sessions.map(session => (
+                          <DropdownMenuItem key={session.id} onSelect={() => setActiveSessionId(session.id)} className="flex justify-between items-center">
+                           <div className="flex items-center">
+                              {activeSessionId === session.id && <Check className="h-4 w-4 mr-2" />}
+                              <span className="truncate max-w-40">{session.title}</span>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteChat(session.id);}}>
+                              <Trash2 className="h-4 w-4 text-destructive"/>
+                            </Button>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button variant="outline" size="sm" onClick={handleNewChat}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        New Chat
+                    </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="flex-grow overflow-hidden">
@@ -219,7 +220,7 @@ export default function ChatPage() {
                         <div key={index} className={cn("flex items-start gap-3", msg.role === 'user' ? "justify-end" : "justify-start")}>
                             {msg.role === 'model' && (
                                 <Avatar className="h-8 w-8 border p-1 bg-primary text-primary-foreground">
-                                    <FixpertIcon className="w-full h-full" />
+                                    <Bot className="w-full h-full" />
                                 </Avatar>
                             )}
                             <div className={cn(
@@ -241,7 +242,7 @@ export default function ChatPage() {
                     {isLoading && (
                         <div className="flex items-start gap-3">
                              <Avatar className="h-8 w-8 border p-1 bg-primary text-primary-foreground">
-                                <FixpertIcon className="w-full h-full" />
+                                <Bot className="w-full h-full" />
                             </Avatar>
                             <div className="max-w-[75%] rounded-lg px-4 py-2 text-sm bg-muted flex items-center rounded-bl-none">
                                 <Loader2 className="h-5 w-5 animate-spin"/>
