@@ -19,7 +19,6 @@ type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 const chartConfig = {
   price: {
     label: 'Price',
-    color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig;
 
@@ -74,7 +73,9 @@ export default function SymbolDashboardPage() {
   const priceUp = (quote.regularMarketChange ?? 0) > 0;
   const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
   const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
+  const chartColor = priceUp ? 'hsl(142.1 76.2% 36.3%)' : priceNeutral ? 'hsl(var(--primary))' : 'hsl(355.7 75.8% 53.1%)';
 
+  
   const getDateFormat = (period: Period) => {
     switch (period) {
       case '1d':
@@ -144,8 +145,8 @@ export default function SymbolDashboardPage() {
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                       <defs>
                         <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.1}/>
+                          <stop offset="5%" stopColor={chartColor} stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor={chartColor} stopOpacity={0.1}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
@@ -159,7 +160,11 @@ export default function SymbolDashboardPage() {
                       <Tooltip 
                         content={
                             <ChartTooltipContent 
-                                indicator="line" 
+                                indicator="line"
+                                className="border-l-4"
+                                style={{
+                                    borderLeftColor: chartColor,
+                                }}
                                 formatter={(value, name, item) => (
                                     <div className="grid gap-1.5">
                                         <div className="flex justify-between items-center gap-4">
@@ -177,7 +182,7 @@ export default function SymbolDashboardPage() {
                             />
                         }
                       />
-                      <Area type="monotone" dataKey="price" stroke={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} strokeWidth={2} fill="url(#chart-gradient)" />
+                      <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={2} fill="url(#chart-gradient)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
@@ -254,3 +259,4 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
