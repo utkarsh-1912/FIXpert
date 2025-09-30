@@ -21,6 +21,7 @@ import { LogOut, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { NotificationBell } from './notification-bell';
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -56,8 +57,9 @@ export function AppHeader() {
           </TooltipProvider>
         )}
       </div>
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-2">
         <ThemeToggle />
+        <NotificationBell />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

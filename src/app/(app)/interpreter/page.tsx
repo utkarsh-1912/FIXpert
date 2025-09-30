@@ -10,12 +10,14 @@ import { Loader2, Wand2, MessageSquareText, ListCollapse } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useNotificationStore } from '@/stores/notification-store';
 
 export default function InterpreterPage() {
   const [rawMessages, setRawMessages] = useState('');
   const [interpretations, setInterpretations] = useState<InterpretFixMessageOutput[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { addNotification } = useNotificationStore();
 
   const handleInterpret = async () => {
     setIsLoading(true);
@@ -33,6 +35,11 @@ export default function InterpreterPage() {
         messages.map(rawFixMessage => interpretFixMessage({ rawFixMessage }))
       );
       setInterpretations(results);
+      addNotification({
+        icon: Wand2,
+        title: 'Interpretation Complete',
+        description: `Successfully interpreted ${results.length} FIX message(s).`,
+      });
     } catch (error) {
       console.error(error);
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';

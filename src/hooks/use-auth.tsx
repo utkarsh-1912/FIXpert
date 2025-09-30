@@ -4,6 +4,8 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirebaseApp } from '@/lib/firebase';
 import { useRouter, usePathname } from 'next/navigation';
+import { useNotificationStore } from '@/stores/notification-store';
+import { User as UserIcon } from 'lucide-react';
 
 interface AuthContextType {
   user: User | null;
@@ -20,15 +22,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { addNotification } = useNotificationStore();
 
   useEffect(() => {
     const auth = getAuth(getFirebaseApp());
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Check if it's a new user
+        const { creationTime, lastSignInTime } = user.metadata;
+        if (creationTime && lastSignInTime && (new Date(lastSignInTime).getTime() - new Date(creationTime).getTime() < 5000)) {
+           addNotification({
+            icon: UserIcon,
+            title: 'Welcome to FIXpert!',
+            description: 'We are glad to have you here. Explore the tools and start mastering FIX.',
+          });
+        }
+      }
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -5,11 +5,12 @@ import { useState, ChangeEvent, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload, Download, ArrowDownUp, CheckCircle, FileText } from 'lucide-react';
+import { Upload, Download, ArrowDownUp, CheckCircle, FileText, FileCog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useNotificationStore } from '@/stores/notification-store';
 
 type LogLine = {
   timestamp: string;
@@ -48,6 +49,7 @@ export default function LogProcessorPage() {
   const [processedLogs, setProcessedLogs] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [isProcessing, setIsProcessing] = useState(false);
+  const { addNotification } = useNotificationStore();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -81,7 +83,12 @@ export default function LogProcessorPage() {
 
     setProcessedLogs(allLines.map(line => line.content).join('\n'));
     setIsProcessing(false);
-  }, [files, sortOrder]);
+    addNotification({
+      icon: FileCog,
+      title: 'Logs Processed',
+      description: `Successfully processed and sorted ${files.length} log file(s).`,
+    });
+  }, [files, sortOrder, addNotification]);
   
   const downloadLogs = () => {
     const blob = new Blob([processedLogs], { type: 'text/plain' });
