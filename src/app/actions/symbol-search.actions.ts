@@ -74,3 +74,18 @@ export const getQuote = cache(async (symbol: string) => {
         summary,
     };
 });
+
+
+export const getTrendingNews = cache(async () => {
+    try {
+        // Search for a broad topic to get general financial news
+        const result = await yahooFinance.search('finance', {
+            newsCount: 10,
+            quotesCount: 0,
+        });
+        return result.news;
+    } catch (error) {
+        console.error('Yahoo Finance API getTrendingNews error:', error);
+        return [];
+    }
+});
