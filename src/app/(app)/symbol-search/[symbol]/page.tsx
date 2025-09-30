@@ -49,7 +49,7 @@ export default function SymbolDashboardPage() {
   }, [symbol, timeRange]);
 
   const chartData = (data?.history || [])
-    .map(h => ({ date: h.date, price: h.close }))
+    .map(h => ({ date: h.date, price: h.price }))
     .filter(h => h.date && h.price);
 
   if (loading && !data) { // Show full-page loader only on initial load
