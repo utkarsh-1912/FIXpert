@@ -20,7 +20,7 @@ import { getFirebaseApp } from '@/lib/firebase';
 import { LogOut, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function AppHeader() {
   const pathname = usePathname();

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { menuItems } from "@/config/nav";
 import Link from "next/link";
-import { ArrowRight, Newspaper, Landmark, BookCopy, ExternalLink } from "lucide-react";
+import { ArrowRight, Newspaper, Landmark, BookCopy, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { getTrendingNews } from "@/app/actions/symbol-search.actions";
@@ -64,8 +64,11 @@ export default async function DashboardPage() {
                 <div>
                 <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
                     <div className="space-y-1">
-                    <CardTitle className="text-lg font-semibold">{tool.label}</CardTitle>
-                    <CardDescription>{tool.description}</CardDescription>
+                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                            {tool.label}
+                            {tool.isAiPowered && <Sparkles className="h-4 w-4 text-primary" />}
+                        </CardTitle>
+                        <CardDescription>{tool.description}</CardDescription>
                     </div>
                     <div className="rounded-lg bg-primary/10 p-2 text-primary">
                     <tool.icon className="h-6 w-6" />

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FixpertIcon } from '@/components/icons';
 import { menuItems } from '@/config/nav';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 const testimonials = [
@@ -95,7 +95,10 @@ export default function LandingPage() {
                     <div className="rounded-lg bg-primary/10 p-3 text-primary">
                       <tool.icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-semibold">{tool.label}</h3>
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-xl font-semibold">{tool.label}</h3>
+                        {tool.isAiPowered && <Sparkles className="h-5 w-5 text-primary animate-sparkle" />}
+                    </div>
                   </div>
                   <p className="flex-1 text-muted-foreground">{tool.description}</p>
                 </Card>
