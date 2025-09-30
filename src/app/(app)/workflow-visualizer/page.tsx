@@ -33,7 +33,7 @@ type Connection = {
 };
 
 const shapeMap = {
-  rect: (id: string, label: string) => `${id}[${label}]`,
+  rect: (id: string, label: string) => `${id}["${label}"]`,
   'round-edge': (id: string, label: string) => `${id}(${label})`,
   stadium: (id: string, label: string) => `${id}([${label}])`,
   circle: (id: string, label: string) => `${id}((${label}))`,
@@ -287,7 +287,3 @@ export default function WorkflowVisualizerPage() {
     </div>
   );
 }
-
-    
-
-    

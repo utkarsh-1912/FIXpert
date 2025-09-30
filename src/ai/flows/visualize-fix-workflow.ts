@@ -73,7 +73,7 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
 
 const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> => {
     const uniqueId = uuidv4();
-    const isVercel = process.env.VERCEL;
+    const isVercel = !!process.env.VERCEL;
     
     // Define temporary file paths, accommodating Vercel's writable /tmp directory
     const tempDir = isVercel ? '/tmp' : '.';
