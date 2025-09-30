@@ -153,10 +153,10 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md margin-auto md:min-w-60">
+    <Card className="w-full max-w-md">
       <div id="recaptcha-container"></div>
       <CardHeader className="text-center">
-        <Link href="/" className="mx-auto mb-4 flex items-center gap-2">
+        <Link href="/" className="mx-auto mb-4 flex items-center justify-center gap-2">
             <FixpertIcon className="size-8 text-primary" />
             <CardTitle className="text-3xl">FIXpert</CardTitle>
         </Link>
@@ -165,7 +165,7 @@ export default function LoginPage() {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4 pt-6">
+      <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" placeholder="hello@fi-xpert.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
