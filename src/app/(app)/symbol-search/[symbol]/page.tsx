@@ -1,3 +1,4 @@
+
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
@@ -48,7 +49,7 @@ export default function SymbolDashboardPage() {
   }, [symbol, timeRange]);
 
   const chartData = (data?.history || [])
-    .map(h => ({ date: h.date, price: h.price }))
+    .map(h => ({ date: h.date, price: h.close}))
     .filter(h => h.date && h.price);
 
   if (loading && !data) { // Show full-page loader only on initial load
@@ -88,12 +89,18 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/symbol-search" passHref>
-        <Button variant="outline" className="hidden sm:inline-flex">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Search
-        </Button>
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/symbol-search" passHref>
+          <Button variant="outline" className="hidden sm:inline-flex">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Search
+          </Button>
+        </Link>
+         <div className="sm:hidden">
+            {/* Placeholder for mobile layout consistency */}
+        </div>
+      </div>
+
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -236,3 +243,5 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
