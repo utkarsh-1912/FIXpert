@@ -8,4 +8,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// Singleton pattern to initialize Firebase only once
+let app: FirebaseApp;
+export function getFirebaseApp() {
+  if (!app) {
+    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  }
+  return app;
+}
