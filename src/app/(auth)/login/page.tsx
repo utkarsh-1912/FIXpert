@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -28,6 +29,7 @@ import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { getFirebaseApp } from '@/lib/firebase';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 
 
 declare global {
@@ -153,61 +155,70 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <div id="recaptcha-container"></div>
-      <CardHeader className="text-center">
-        <Link href="/" className="mx-auto mb-4 flex items-center justify-center gap-2">
-            <FixpertIcon className="size-8 text-primary" />
-            <CardTitle className="text-3xl">FIXpert</CardTitle>
-        </Link>
-        <CardDescription>
-          {authMode === 'login' ? 'Sign in to your account' : 'Create an account to get started'}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="hello@fi-xpert.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-      </CardContent>
+    <div className="w-full max-w-md">
+        <div id="recaptcha-container"></div>
+        <Card className="w-full border-none shadow-none lg:shadow-lg lg:border">
+            <CardHeader className="text-center">
+                <Link href="/" className="lg:hidden mx-auto mb-4 flex items-center justify-center gap-2">
+                    <FixpertIcon className="size-8 text-primary" />
+                    <CardTitle className="text-3xl">FIXpert</CardTitle>
+                </Link>
+                <CardTitle className="text-2xl">{authMode === 'login' ? 'Welcome Back!' : 'Create an Account'}</CardTitle>
+                <CardDescription>
+                {authMode === 'login' ? 'Sign in to access your dashboard' : 'Fill in the details to get started'}
+                </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="hello@fi-xpert.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+            </CardContent>
 
-      <CardFooter className="flex flex-col gap-4">
-        {authMode === 'login' ? (
-          <>
-            <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
-              {isSubmitting ? 'Logging in...' : 'Login'}
-            </Button>
-            <div className="text-center text-sm">
-              Don't have an account?{' '}
-              <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('signup')}>
-                Sign up
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
-              {isSubmitting ? 'Signing up...' : 'Create Account'}
-            </Button>
-            <div className="text-center text-sm">
-              Already have an account?{' '}
-              <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('login')}>
-                Sign in
-              </Button>
-            </div>
-          </>
-        )}
-        <div className="relative w-full">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-          <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or continue with</span></div>
-        </div>
-        <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-      </CardFooter>
-    </Card>
+            <CardFooter className="flex flex-col gap-4">
+                {authMode === 'login' ? (
+                <>
+                    <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
+                    {isSubmitting ? 'Logging in...' : 'Login'}
+                    </Button>
+                    <div className="text-center text-sm">
+                    Don&apos;t have an account?{' '}
+                    <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('signup')}>
+                        Sign up
+                    </Button>
+                    </div>
+                </>
+                ) : (
+                <>
+                    <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
+                    {isSubmitting ? 'Signing up...' : 'Create Account'}
+                    </Button>
+                    <div className="text-center text-sm">
+                    Already have an account?{' '}
+                    <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('login')}>
+                        Sign in
+                    </Button>
+                    </div>
+                </>
+                )}
+                <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or continue with</span></div>
+                </div>
+                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
+                <Button variant="link" asChild className="mt-4 text-muted-foreground">
+                    <Link href="/">
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Back to Home
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
+    </div>
   );
 }

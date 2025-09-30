@@ -1,7 +1,6 @@
-// src/app/(auth)/layout.tsx
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
+
+import { FixpertIcon } from '@/components/icons';
+import Image from 'next/image';
 
 export default function AuthLayout({
   children,
@@ -9,16 +8,34 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="absolute left-4 top-4 md:left-8 md:top-8">
-        <Button variant="outline" asChild>
-          <Link href="/">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-        </Button>
+    <div className="flex min-h-screen w-full bg-background">
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-between bg-muted p-8 text-center relative">
+        <div className="absolute inset-0">
+            <Image
+                src="https://picsum.photos/seed/authpage/1200/1800"
+                alt="Authentication background"
+                fill
+                className="object-cover"
+                data-ai-hint="financial data abstract"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-primary/30" />
+        </div>
+        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+            <div className="flex items-center gap-4">
+                <FixpertIcon className="size-16 text-primary-foreground" />
+                <h1 className="text-5xl font-bold text-primary-foreground">FIXpert</h1>
+            </div>
+            <p className="mt-4 text-xl text-primary-foreground/80">
+                The Ultimate FIX Protocol Toolkit for Financial Engineers.
+            </p>
+        </div>
+         <div className="relative z-10 text-center text-sm text-primary-foreground/60">
+            <p>&copy; {new Date().getFullYear()} FIXpert. All rights reserved.</p>
+        </div>
       </div>
-      {children}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+        {children}
+      </div>
     </div>
   );
 }
