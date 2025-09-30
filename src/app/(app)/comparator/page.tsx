@@ -167,7 +167,7 @@ export default function ComparatorPage() {
         <Card>
           <CardHeader>
             <CardTitle>Comparison Result</CardTitle>
-            <CardDescription>Differences are highlighted. Red for removed/changed in A, Teal for added/changed in B.</CardDescription>
+            <CardDescription>Differences are highlighted. Red for removed/changed in A, Blue for added/changed in B.</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[60vh] w-full">

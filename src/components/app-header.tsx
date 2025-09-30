@@ -18,6 +18,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import { getFirebaseApp } from '@/lib/firebase';
 import { LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from './theme-toggle';
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -38,7 +39,8 @@ export function AppHeader() {
         <SidebarTrigger />
       </div>
       <h1 className="text-lg font-semibold sm:text-xl">{title}</h1>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-4">
+        <ThemeToggle />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
