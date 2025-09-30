@@ -49,7 +49,7 @@ export default function SymbolDashboardPage() {
   }, [symbol, timeRange]);
 
   const chartData = (data?.history || [])
-    .map(h => ({ date: h.date, price: h.close?.toFixed(2) }))
+    .map(h => ({ date: h.date, price: h.close }))
     .filter(h => h.date && h.price);
 
   if (loading && !data) { // Show full-page loader only on initial load
@@ -152,14 +152,14 @@ export default function SymbolDashboardPage() {
                         tickLine={false}
                         axisLine={false}
                       />
-                      <YAxis orientation="right" tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} />
+                      <YAxis orientation="right" tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} tickFormatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />
                       <Tooltip 
                         content={<ChartTooltipContent indicator="line" labelFormatter={(label, payload) => {
                             if (payload?.[0]?.payload?.date) {
                                 return format(new Date(payload[0].payload.date), 'MMM dd, yyyy HH:mm');
                             }
                             return label;
-                        }} />} 
+                        }} formatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />} 
                       />
                       <Area type="monotone" dataKey="price" stroke={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} strokeWidth={2} fill="url(#chart-gradient)" />
                     </AreaChart>
