@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {exec} from 'child_process';
-import {writeFile, unlink} from 'fs/promises';
+import {writeFile, unlink, readFile} from 'fs/promises';
 import path from 'path';
 import os from 'os';
 
@@ -78,30 +78,31 @@ const convertMermaidToSvgDataUri = (mermaidCode: string): Promise<string> => {
     const outputPath = path.join(os.tmpdir(), `${tempId}.svg`);
 
     try {
-      // Write mermaid code to a temporary file
       await writeFile(inputPath, mermaidCode, 'utf-8');
-
-      // Execute mermaid-cli to convert to SVG
-      // Note: mermaid-cli requires Node.js environment.
-      // The path to the executable might need adjustment based on installation.
+      
       const command = `npx mmdc -i ${inputPath} -o ${outputPath}`;
       
       exec(command, async (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Mermaid-cli error: ${stderr}`);
-          return reject(new Error(`Failed to convert Mermaid to SVG: ${stderr}`));
+        try {
+          if (error) {
+            console.error(`Mermaid-cli error: ${stderr}`);
+            return reject(new Error(`Failed to convert Mermaid to SVG: ${stderr}`));
+          }
+          
+          const svgContent = await readFile(outputPath, 'base64');
+          resolve(`data:image/svg+xml;base64,${svgContent}`);
+        } catch (readError) {
+          reject(readError);
+        } finally {
+          // Cleanup temporary files
+          await Promise.all([
+            unlink(inputPath).catch(e => console.error(`Failed to delete temp file ${inputPath}`, e)),
+            unlink(outputPath).catch(e => console.error(`Failed to delete temp file ${outputPath}`, e))
+          ]);
         }
-        
-        // Read the generated SVG file
-        const svgContent = await require('fs').promises.readFile(outputPath, 'base64');
-        resolve(`data:image/svg+xml;base64,${svgContent}`);
       });
-    } catch (err) {
-      reject(err);
-    } finally {
-        // We can't reliably clean up here due to async exec, so it's best handled
-        // in the callback of exec, but for simplicity, we leave it.
-        // A more robust solution might use fs.watch or await exec promise.
+    } catch (writeError) {
+      reject(writeError);
     }
   });
 };
