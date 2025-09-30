@@ -16,14 +16,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { getAuth, signOut } from 'firebase/auth';
 import { getFirebaseApp } from '@/lib/firebase';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
+import { Tooltip, TooltipContent, TooltipProvider } from './ui/tooltip';
 
 export function AppHeader() {
   const pathname = usePathname();
-  const currentItem = menuItems.find(item => item.href === pathname || (pathname.startsWith(item.href) && item.href !== '/dashboard')) ?? menuItems.find(i => i.href === '/dashboard');
+  const currentItem = menuItems.find(item => pathname.startsWith(item.href) && item.href !== '/') ?? menuItems.find(i => i.href === '/dashboard');
   const title = currentItem ? currentItem.label : 'Dashboard';
+  const isAiPowered = currentItem?.isAiPowered ?? false;
   const { user } = useAuth();
   const router = useRouter();
 
@@ -38,7 +40,21 @@ export function AppHeader() {
       <div className="md:hidden">
         <SidebarTrigger />
       </div>
-      <h1 className="text-lg font-semibold sm:text-xl">{title}</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold sm:text-xl">{title}</h1>
+        {isAiPowered && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <BrainCircuit className="h-5 w-5 text-primary/80" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>This feature is powered by Generative AI.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
       <div className="ml-auto flex items-center gap-4">
         <ThemeToggle />
         {user && (
