@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 
 const exchanges = [
-    { name: "NASDAQ", shortName: "NASDAQ", url: "https://www.nasdaq.com/" },
+    { name: "NASDAQ Stock Market", shortName: "NASDAQ", url: "https://www.nasdaq.com/" },
     { name: "New York Stock Exchange", shortName: "NYSE", url: "https://www.nyse.com/" },
     { name: "London Stock Exchange", shortName: "LSE", url: "https://www.londonstockexchange.com/" },
     { name: "Tokyo Stock Exchange", shortName: "TSE", url: "https://www.jpx.co.jp/english/" },
@@ -25,34 +25,22 @@ const fixResources = [
 ];
 
 const QuickLink = ({ name, url, shortName }: { name: string; url: string, shortName?: string }) => {
-    const linkContent = (
-        <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
-            <span className="text-sm font-medium">{name}</span>
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
-        </div>
-    );
-
-    if (shortName) {
-        return (
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                         <Link href={url} target="_blank" rel="noopener noreferrer">
-                            {linkContent}
-                        </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{shortName}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        )
-    }
-
     return (
-        <Link href={url} target="_blank" rel="noopener noreferrer">
-            {linkContent}
-        </Link>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                     <Link href={url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
+                        <span className="text-sm font-medium">{name}</span>
+                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                    </Link>
+                </TooltipTrigger>
+                {shortName && (
+                  <TooltipContent>
+                      <p>{shortName}</p>
+                  </TooltipContent>
+                )}
+            </Tooltip>
+        </TooltipProvider>
     );
 }
 
