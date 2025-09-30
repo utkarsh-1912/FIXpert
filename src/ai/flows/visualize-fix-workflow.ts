@@ -11,11 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import mermaid from 'mermaid';
-
-// A simple in-memory ID generator for Mermaid
-let mermaidIdCounter = 0;
-const generateMermaidId = () => `mermaid-svg-${Date.now()}-${mermaidIdCounter++}`;
+import puppeteer from 'puppeteer';
 
 const VisualizeFixWorkflowInputSchema = z.object({
   scenarioDescription: z
@@ -73,22 +69,52 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
 });
 
 const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> => {
+    let browser = null;
     try {
-        // Initialize Mermaid for server-side rendering
-        mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+        browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+        const page = await browser.newPage();
 
-        // Generate a unique ID for the rendering
-        const id = generateMermaidId();
+        const html = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Mermaid Renderer</title>
+                <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+            </head>
+            <body>
+                <div class="mermaid">${mermaidCode}</div>
+                <script>
+                    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+                </script>
+            </body>
+            </html>
+        `;
 
-        // Render the Mermaid code to SVG
-        const { svg } = await mermaid.render(id, mermaidCode);
+        await page.setContent(html);
 
-        // Convert SVG to a Base64 data URI
-        const svgBase64 = Buffer.from(svg).toString('base64');
+        const svgContent = await page.evaluate(() => {
+            const svgElement = document.querySelector('.mermaid svg');
+            return svgElement ? svgElement.outerHTML : null;
+        });
+
+        if (!svgContent) {
+            throw new Error("Mermaid failed to render SVG.");
+        }
+
+        const svgBase64 = Buffer.from(svgContent).toString('base64');
         return `data:image/svg+xml;base64,${svgBase64}`;
+
     } catch (error) {
         console.error(`Mermaid processing error: ${error}`);
         throw new Error(`Failed to process Mermaid diagram: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
     }
 };
 
