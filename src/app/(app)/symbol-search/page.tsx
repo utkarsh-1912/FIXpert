@@ -148,8 +148,8 @@ export default function SymbolSearchPage() {
                   </TableCell>
                 </TableRow>
               ) : filteredResults.length > 0 ? (
-                filteredResults.map((item) => (
-                  <TableRow key={item.symbol} onClick={() => handleRowClick(item.symbol)} className="cursor-pointer">
+                filteredResults.map((item, index) => (
+                  <TableRow key={`${item.symbol}-${index}`} onClick={() => handleRowClick(item.symbol)} className="cursor-pointer">
                     <TableCell className="font-medium">{item.symbol}</TableCell>
                     <TableCell>{shouldShowValue(item.name) ? item.name : ''}</TableCell>
                     <TableCell>
