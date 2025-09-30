@@ -75,7 +75,7 @@ export default function LandingPage() {
                 height={400}
                 alt="FIX Protocol Visualization"
                 className="rounded-xl shadow-2xl"
-                data-ai-hint="network connectivity"
+                data-ai-hint="trading finance"
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function LandingPage() {
                 height={400}
                 alt="Market Data Analysis"
                 className="rounded-xl shadow-2xl"
-                data-ai-hint="trading charts"
+                data-ai-hint="financial market"
               />
             </div>
             <div className="space-y-6">
