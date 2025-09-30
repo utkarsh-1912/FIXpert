@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useMemo, ChangeEvent, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { GitCompareArrows, Upload } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,51 +15,50 @@ type DiffPart = {
   type: 'same' | 'added' | 'removed' | 'changed';
 };
 
-type DiffResult = {
-  a: DiffPart[];
-  b: DiffPart[];
-};
-
 const extractFixFromLog = (log: string): string => {
   const fixMatch = log.match(/8=FIX\..*?(?:\r\n|\n|$)/);
-  return fixMatch ? fixMatch[0].trim() : log;
+  return fixMatch ? fixMatch[0].trim().replace(/\|/g, '\n') : log.replace(/\|/g, '\n');
 };
 
-const createDiff = (text1: string, text2: string, compareByTagOnly: boolean): DiffResult => {
-  const msg1 = extractFixFromLog(text1);
-  const msg2 = extractFixFromLog(text2);
-  
-  const fields1 = msg1.split('|').map(f => f.trim());
-  const map1 = new Map(fields1.map(f => { const [tag, ...val] = f.split('='); return [tag, val.join('=')]; }));
-  
-  const fields2 = msg2.split('|').map(f => f.trim());
-  const map2 = new Map(fields2.map(f => { const [tag, ...val] = f.split('='); return [tag, val.join('=')]; }));
+const parseFixToMap = (fix: string): Map<string, string> => {
+    const fields = fix.split('\n').map(f => f.trim()).filter(Boolean);
+    return new Map(fields.map(f => {
+        const parts = f.split('=');
+        const tag = parts[0];
+        const value = parts.slice(1).join('=');
+        return [tag, value];
+    }));
+}
 
-  const res: DiffResult = { a: [], b: [] };
+const createDiff = (text1: string, text2: string, compareByTagOnly: boolean): [DiffPart[], DiffPart[]] => {
+  const map1 = parseFixToMap(extractFixFromLog(text1));
+  const map2 = parseFixToMap(extractFixFromLog(text2));
+  
+  const diffA: DiffPart[] = [];
+  const diffB: DiffPart[] = [];
 
-  fields1.forEach(field => {
-    const [tag, val] = field.split('=');
-    if (!map2.has(tag)) {
-      res.a.push({ value: field, type: 'removed' });
-    } else if (!compareByTagOnly && map2.get(tag) !== val) {
-      res.a.push({ value: field, type: 'changed' });
-    } else {
-      res.a.push({ value: field, type: 'same' });
+  const allTags = new Set([...map1.keys(), ...map2.keys()]);
+
+  allTags.forEach(tag => {
+    const val1 = map1.get(tag);
+    const val2 = map2.get(tag);
+
+    if (val1 !== undefined && val2 === undefined) {
+      diffA.push({ value: `${tag}=${val1}`, type: 'removed' });
+    } else if (val1 === undefined && val2 !== undefined) {
+      diffB.push({ value: `${tag}=${val2}`, type: 'added' });
+    } else if (val1 !== undefined && val2 !== undefined) {
+      if (compareByTagOnly || val1 === val2) {
+        diffA.push({ value: `${tag}=${val1}`, type: 'same' });
+        diffB.push({ value: `${tag}=${val2}`, type: 'same' });
+      } else {
+        diffA.push({ value: `${tag}=${val1}`, type: 'changed' });
+        diffB.push({ value: `${tag}=${val2}`, type: 'changed' });
+      }
     }
   });
 
-  fields2.forEach(field => {
-    const [tag, val] = field.split('=');
-    if (!map1.has(tag)) {
-      res.b.push({ value: field, type: 'added' });
-    } else if (!compareByTagOnly && map1.get(tag) !== val) {
-      res.b.push({ value: field, type: 'changed' });
-    } else {
-      res.b.push({ value: field, type: 'same' });
-    }
-  });
-
-  return res;
+  return [diffA, diffB];
 };
 
 const DiffLine = ({ parts }: { parts: DiffPart[] }) => (
@@ -71,8 +70,8 @@ const DiffLine = ({ parts }: { parts: DiffPart[] }) => (
       if (part.type === 'changed') className = 'bg-yellow-500/20';
       
       return (
-        <span key={i}>
-          <span className={className}>{part.value}</span>
+        <span key={i} className={className}>
+          {part.value}
           {i < parts.length - 1 && <span className="text-muted-foreground"> | </span>}
         </span>
       );
@@ -102,17 +101,9 @@ const FileUploader = ({ onFileUpload }: { onFileUpload: (content: string) => voi
 export default function ComparatorPage() {
   const [msg1, setMsg1] = useState('8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|54=1|38=100|40=2');
   const [msg2, setMsg2] = useState('8=FIX.4.2|9=123|35=G|11=ORDER1|41=ORDER1-OLD|55=GOOG|54=1|38=150|40=2');
-  const [diffResult, setDiffResult] = useState<DiffResult | null>(null);
   const [compareByTagOnly, setCompareByTagOnly] = useState(false);
   
-  const handleCompare = () => {
-    setDiffResult(createDiff(msg1, msg2, compareByTagOnly));
-  };
-  
-  useEffect(() => {
-    handleCompare();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compareByTagOnly]);
+  const diffResult = useMemo(() => createDiff(msg1, msg2, compareByTagOnly), [msg1, msg2, compareByTagOnly]);
 
   return (
     <div className="space-y-6">
@@ -162,7 +153,7 @@ export default function ComparatorPage() {
                 <Switch id="compare-mode" checked={compareByTagOnly} onCheckedChange={setCompareByTagOnly} />
                 <Label htmlFor="compare-mode">Compare by Tags Only</Label>
             </div>
-            <Button onClick={handleCompare}><GitCompareArrows className="mr-2 h-4 w-4" />Compare Messages</Button>
+            <Button onClick={() => createDiff(msg1, msg2, compareByTagOnly)}><GitCompareArrows className="mr-2 h-4 w-4" />Compare Messages</Button>
         </CardContent>
       </Card>
       {diffResult && (
@@ -172,8 +163,8 @@ export default function ComparatorPage() {
             <CardDescription>Differences are highlighted. Red for removed, Teal for added, Yellow for changed.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 font-code text-sm">
-            <DiffLine parts={diffResult.a} />
-            <DiffLine parts={diffResult.b} />
+            <DiffLine parts={diffResult[0]} />
+            <DiffLine parts={diffResult[1]} />
           </CardContent>
         </Card>
       )}
