@@ -228,14 +228,13 @@ export default function ChatPage() {
                                 ? 'bg-primary text-primary-foreground' 
                                 : 'bg-muted'
                             )}>
-                                {msg.role === 'user' && <div className="absolute bottom-0 right-[-8px] w-0 h-0 border-b-[10px] border-b-primary border-l-[10px] border-l-transparent"></div>}
-                                {msg.role === 'model' && <div className="absolute bottom-0 left-[-8px] w-0 h-0 border-b-[10px] border-b-muted border-r-[10px] border-r-transparent"></div>}
+                                {msg.role === 'user' && <div className="absolute top-3 -right-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] border-l-primary"></div>}
+                                {msg.role === 'model' && <div className="absolute top-3 -left-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] border-r-muted"></div>}
                                 <MarkdownContent content={msg.content} />
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">
                                     <AvatarFallback>{user.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
-
                                 </Avatar>
                             )}
                         </div>
@@ -304,3 +303,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
