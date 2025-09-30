@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { visualizeFixWorkflow } from '@/ai/flows/visualize-fix-workflow';
-import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle } from 'lucide-react';
+import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml } from 'lucide-react';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -288,3 +288,5 @@ export default function WorkflowVisualizerPage() {
     </div>
   );
 }
+
+    
