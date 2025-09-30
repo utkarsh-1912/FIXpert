@@ -1,3 +1,4 @@
+
 'use server';
 
 import yahooFinance from 'yahoo-finance2';
