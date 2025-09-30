@@ -8,13 +8,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatWithFixExpert } from '@/ai/flows/chat-with-fix-expert';
 import type { ChatMessage } from '@/ai/flows/chat-types';
-import { Loader2, Send, BrainCircuit, Bot, RefreshCw, ChevronsUpDown, Trash2, Check } from 'lucide-react';
+import { Loader2, Send, Bot, RefreshCw, ChevronsUpDown, Trash2, Check } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { MarkdownContent } from '@/components/markdown-content';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { BrainCircuit } from 'lucide-react';
 
 
 const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
@@ -176,41 +177,39 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col gap-6">
         <Card className="flex flex-col h-[calc(100vh-8rem)]">
-            <CardHeader className="flex flex-col gap-4">
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <CardTitle>AI FIXpert Chat</CardTitle>
-                  <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
-                </div>
-                 <div className="flex gap-2">
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <ChevronsUpDown className="h-4 w-4 mr-2" />
-                          {activeSession?.title ?? 'Select Chat'}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-64">
-                        <DropdownMenuLabel>Recent Chats</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {sessions.map(session => (
-                          <DropdownMenuItem key={session.id} onSelect={() => setActiveSessionId(session.id)} className="flex justify-between items-center">
-                           <div className="flex items-center">
-                              {activeSessionId === session.id && <Check className="h-4 w-4 mr-2" />}
-                              <span className="truncate max-w-40">{session.title}</span>
-                            </div>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteChat(session.id);}}>
-                              <Trash2 className="h-4 w-4 text-destructive"/>
-                            </Button>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button variant="outline" size="sm" onClick={handleNewChat}>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        New Chat
+            <CardHeader className="flex flex-row items-center justify-between gap-4">
+              <div className="space-y-1">
+                <CardTitle>AI FIXpert Chat</CardTitle>
+                <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <ChevronsUpDown className="h-4 w-4 mr-2" />
+                      {activeSession?.title ?? 'Select Chat'}
                     </Button>
-                </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-64">
+                    <DropdownMenuLabel>Recent Chats</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {sessions.map(session => (
+                      <DropdownMenuItem key={session.id} onSelect={() => setActiveSessionId(session.id)} className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          {activeSessionId === session.id && <Check className="h-4 w-4 mr-2" />}
+                          <span className="truncate max-w-40">{session.title}</span>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteChat(session.id);}}>
+                          <Trash2 className="h-4 w-4 text-destructive"/>
+                        </Button>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="outline" size="sm" onClick={handleNewChat}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    New Chat
+                </Button>
               </div>
             </CardHeader>
             <CardContent className="flex-grow overflow-hidden">
