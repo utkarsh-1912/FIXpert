@@ -14,7 +14,7 @@ import {
 import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
 import { menuItems } from '@/config/nav';
-import { useRequireAuth } from '@/hooks/use-auth.tsx';
+import { useRequireAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
