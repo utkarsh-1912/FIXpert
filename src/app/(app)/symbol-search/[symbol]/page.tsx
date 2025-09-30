@@ -1,9 +1,8 @@
-
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ArrowUp, ArrowDown, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format, subDays } from 'date-fns';
@@ -86,6 +85,13 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
+      <Link href="/symbol-search" passHref>
+        <Button variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Search
+        </Button>
+      </Link>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
         <div>
@@ -204,5 +210,3 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
-
-    
