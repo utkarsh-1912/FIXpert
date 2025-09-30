@@ -97,22 +97,20 @@ export default function SymbolDashboardPage() {
           </Button>
         </Link>
         <div className="text-right">
+          <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
+          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+        </div>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div>
           <p className={`text-4xl font-bold ${priceColor}`}>
             {quote.regularMarketPrice?.toFixed(2)}
           </p>
-          <p className={`flex items-center justify-end gap-2 text-lg ${priceColor}`}>
+          <p className={`flex items-center gap-2 text-lg ${priceColor}`}>
             {priceUp ? <TrendingUp /> : <TrendingDown />}
             {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
           </p>
-        </div>
-      </div>
-
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
-          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
         </div>
       </div>
 
@@ -138,10 +136,11 @@ export default function SymbolDashboardPage() {
                         <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
                 )}
+              <div className="h-full w-full -ml-4">
               <ChartContainer config={chartConfig} className="h-full w-full">
                 {chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.8}/>
@@ -173,6 +172,7 @@ export default function SymbolDashboardPage() {
                   </div>
                 )}
               </ChartContainer>
+              </div>
             </CardContent>
           </Card>
 
