@@ -38,7 +38,7 @@ export default function SymbolDashboardPage() {
     if (!symbol) return;
     const fetchData = async () => {
       setLoading(true);
-      const result = await getQuote(symbol);
+      const result = await getQuote(symbol as string);
       setData(result);
       setLoading(false);
     };
