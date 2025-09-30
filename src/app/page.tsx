@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FixpertIcon } from '@/components/icons';
 import { menuItems } from '@/config/nav';
-import { ArrowRight, Star, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, Sparkles, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 
 const testimonials = [
@@ -89,7 +89,7 @@ export default function LandingPage() {
               <p className="mt-4 text-muted-foreground">From AI-powered interpretation to side-by-side comparisons, FIXpert has you covered.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {menuItems.filter(item => item.href !== '/dashboard').map((tool) => (
+              {menuItems.filter(item => item.href !== '/dashboard').slice(0, 5).map((tool) => (
                 <Card key={tool.href} className="flex flex-col p-6 transition-transform hover:-translate-y-1 hover:shadow-primary/20 hover:shadow-lg">
                   <div className="mb-4 flex items-center gap-4">
                     <div className="rounded-lg bg-primary/10 p-3 text-primary">
@@ -103,6 +103,13 @@ export default function LandingPage() {
                   <p className="flex-1 text-muted-foreground">{tool.description}</p>
                 </Card>
               ))}
+                <Card className="flex flex-col items-center justify-center p-6 text-center bg-muted/50 border-dashed">
+                    <div className="rounded-lg bg-primary/10 p-3 text-primary mb-4">
+                        <MoreHorizontal className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold">And many more tools...</h3>
+                    <p className="mt-2 text-muted-foreground">Sign up to get access to the full suite of FIX protocol utilities.</p>
+                </Card>
             </div>
           </div>
         </section>
@@ -141,8 +148,15 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full bg-muted/30 py-20 md:py-32">
-          <div className="mx-auto px-4 text-center sm:px-6 lg:px-8">
+        <section className="relative w-full bg-muted/30 py-20 md:py-32 overflow-hidden">
+             <div 
+                className="absolute inset-0 z-0 opacity-10"
+                style={{
+                    backgroundImage: 'radial-gradient(circle at center, hsl(var(--primary)) 1px, transparent 1px), radial-gradient(circle at center, hsl(var(--primary)) 1px, transparent 1px)',
+                    backgroundSize: '2rem 2rem',
+                }}
+            ></div>
+          <div className="relative z-10 mx-auto px-4 text-center sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Ready to Supercharge Your FIX Workflow?</h2>
               <p className="mt-4 text-muted-foreground">Sign up today and get instant access to the entire suite of FIXpert tools. No credit card required.</p>
