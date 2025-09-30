@@ -11,8 +11,11 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { v4 as uuidv4 } from 'uuid';
 import mermaid from 'mermaid';
+
+// A simple in-memory ID generator for Mermaid
+let mermaidIdCounter = 0;
+const generateMermaidId = () => `mermaid-svg-${Date.now()}-${mermaidIdCounter++}`;
 
 const VisualizeFixWorkflowInputSchema = z.object({
   scenarioDescription: z
@@ -71,8 +74,16 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
 
 const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> => {
     try {
+        // Initialize Mermaid for server-side rendering
         mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-        const { svg } = await mermaid.render(uuidv4(), mermaidCode);
+
+        // Generate a unique ID for the rendering
+        const id = generateMermaidId();
+
+        // Render the Mermaid code to SVG
+        const { svg } = await mermaid.render(id, mermaidCode);
+
+        // Convert SVG to a Base64 data URI
         const svgBase64 = Buffer.from(svg).toString('base64');
         return `data:image/svg+xml;base64,${svgBase64}`;
     } catch (error) {
