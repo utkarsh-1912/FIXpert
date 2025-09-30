@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getAuth, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { getFirebaseApp } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const auth = getAuth(app);
+  const getAuthInstance = () => getAuth(getFirebaseApp());
   const { toast } = useToast();
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
@@ -23,6 +23,7 @@ export default function SettingsPage() {
   const [isPasswordUpdating, setIsPasswordUpdating] = useState(false);
 
   const handleProfileUpdate = async () => {
+    const auth = getAuthInstance();
     if (!auth.currentUser) return;
     setIsProfileUpdating(true);
     try {
@@ -36,6 +37,7 @@ export default function SettingsPage() {
   };
   
   const handlePasswordUpdate = async () => {
+    const auth = getAuthInstance();
     if (!auth.currentUser || !auth.currentUser.email) return;
 
     setIsPasswordUpdating(true);

@@ -11,7 +11,7 @@ import {
   signInWithPhoneNumber,
   RecaptchaVerifier
 } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { getFirebaseApp } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -43,118 +43,8 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-const LoginForm = ({ onSwitch, handleAuth, handleOAuth, email, setEmail, password, setPassword, isSubmitting }: any) => (
-    <>
-      <CardContent className="space-y-4 pt-6">
-        <div className="space-y-2">
-          <Label htmlFor="login-email">Email</Label>
-          <Input id="login-email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="login-password">Password</Label>
-          <Input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
-        <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
-          {isSubmitting ? 'Logging in...' : 'Login'}
-        </Button>
-        <div className="text-center text-sm">
-            Don't have an account?{' '}
-            <Button variant="link" className="p-0 h-auto" onClick={() => onSwitch('signup')}>
-              Sign up
-            </Button>
-        </div>
-        <div className="relative w-full">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-          <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or continue with</span></div>
-        </div>
-        <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-      </CardFooter>
-    </>
-);
-
-const SignupForm = ({ onSwitch, handleAuth, handleOAuth, email, setEmail, password, setPassword, isSubmitting }: any) => (
-    <>
-      <CardContent className="space-y-4 pt-6">
-        <div className="space-y-2">
-          <Label htmlFor="signup-email">Email</Label>
-          <Input id="signup-email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="signup-password">Password</Label>
-          <Input id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
-        <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
-          {isSubmitting ? 'Signing up...' : 'Create Account'}
-        </Button>
-        <div className="text-center text-sm">
-            Already have an account?{' '}
-            <Button variant="link" className="p-0 h-auto" onClick={() => onSwitch('login')}>
-              Sign in
-            </Button>
-        </div>
-         <div className="relative w-full">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-            <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or continue with</span></div>
-        </div>
-        <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-      </CardFooter>
-    </>
-);
-
-const PhoneForm = ({ isSubmitting, phone, setPhone, otp, setOtp, otpSent, handlePhoneAuth, handleOtpVerify }: any) => (
-    <>
-    <CardContent className="space-y-4 pt-6">
-        {!otpSent ? (
-            <div className="space-y-2">
-            <Label htmlFor="phone-number">Phone Number</Label>
-            <PhoneInput
-                country={'us'}
-                value={phone}
-                onChange={setPhone}
-                inputProps={{
-                    name: 'phone-number',
-                    required: true,
-                    autoFocus: true,
-                    className: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                }}
-                containerClass="w-full"
-            />
-            </div>
-        ) : (
-            <div className="space-y-2">
-            <Label htmlFor="otp">Verification Code</Label>
-            <Input
-                id="otp"
-                type="text"
-                placeholder="Enter 6-digit code"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-            />
-            </div>
-        )}
-    </CardContent>
-    <CardFooter>
-        {!otpSent ? (
-            <Button className="w-full" onClick={handlePhoneAuth} disabled={isSubmitting || !phone}>
-            {isSubmitting ? 'Sending OTP...' : 'Send OTP'}
-            </Button>
-        ) : (
-            <Button className="w-full" onClick={handleOtpVerify} disabled={isSubmitting || !otp}>
-            {isSubmitting ? 'Verifying...' : 'Verify & Login'}
-            </Button>
-        )}
-    </CardFooter>
-    </>
-);
-
-
 export default function LoginPage() {
-  const [authMode, setAuthMode] = useState('login'); // 'login', 'signup', 'phone'
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
@@ -163,17 +53,13 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const auth = getAuth(app);
   
-  const handleSwitchMode = (mode: string) => {
-    setAuthMode(mode);
-    setEmail('');
-    setPassword('');
-  }
+  const getAuthInstance = () => getAuth(getFirebaseApp());
 
   const handleAuth = async (isLogin: boolean) => {
     setIsSubmitting(true);
     try {
+      const auth = getAuthInstance();
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
@@ -194,6 +80,7 @@ export default function LoginPage() {
 
   const handleOAuth = async (provider: 'google') => {
     setIsSubmitting(true);
+    const auth = getAuthInstance();
     let authProvider;
     switch(provider) {
         case 'google': authProvider = new GoogleAuthProvider(); break;
@@ -215,6 +102,7 @@ export default function LoginPage() {
   }
 
   const setupRecaptcha = () => {
+    const auth = getAuthInstance();
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
@@ -230,6 +118,7 @@ export default function LoginPage() {
       try {
         setupRecaptcha();
         const appVerifier = window.recaptchaVerifier;
+        const auth = getAuthInstance();
         const confirmationResult = await signInWithPhoneNumber(auth, `+${phone}`, appVerifier);
         window.confirmationResult = confirmationResult;
         setOtpSent(true);
@@ -262,28 +151,6 @@ export default function LoginPage() {
       }
   }
 
-  const commonProps = {
-      onSwitch: handleSwitchMode,
-      handleAuth,
-      handleOAuth,
-      email,
-      setEmail,
-      password,
-      setPassword,
-      isSubmitting,
-  };
-
-  const phoneProps = {
-      isSubmitting,
-      phone,
-      setPhone,
-      otp,
-      setOtp,
-      otpSent,
-      handlePhoneAuth,
-      handleOtpVerify
-  };
-
   return (
     <Card className="w-full max-w-md">
       <div id="recaptcha-container"></div>
@@ -293,15 +160,53 @@ export default function LoginPage() {
             <CardTitle className="text-3xl">FIXpert</CardTitle>
         </div>
         <CardDescription>
-          {authMode === 'login' && 'Sign in to your account'}
-          {authMode === 'signup' && 'Create a new account to get started'}
-          {authMode === 'phone' && 'Sign in using your phone number'}
+          {authMode === 'login' ? 'Sign in to your account' : 'Create a new account to get started'}
         </CardDescription>
       </CardHeader>
       
-      {authMode === 'login' && <LoginForm {...commonProps} />}
-      {authMode === 'signup' && <SignupForm {...commonProps} />}
-      {authMode === 'phone' && <PhoneForm {...phoneProps} />}
+      <CardContent className="space-y-4 pt-6">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex flex-col gap-4">
+        {authMode === 'login' ? (
+          <>
+            <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
+              {isSubmitting ? 'Logging in...' : 'Login'}
+            </Button>
+            <div className="text-center text-sm">
+              Don't have an account?{' '}
+              <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('signup')}>
+                Sign up
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
+              {isSubmitting ? 'Signing up...' : 'Create Account'}
+            </Button>
+            <div className="text-center text-sm">
+              Already have an account?{' '}
+              <Button variant="link" className="p-0 h-auto" onClick={() => setAuthMode('login')}>
+                Sign in
+              </Button>
+            </div>
+          </>
+        )}
+        <div className="relative w-full">
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or continue with</span></div>
+        </div>
+        <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
+      </CardFooter>
     </Card>
   );
 }
