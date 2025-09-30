@@ -44,7 +44,7 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
   Based on the provided trading scenario description, generate an interactive flowchart in SVG format that illustrates the FIX message flow.
   In addition to the flowchart, provide a textual description of what the flowchart represents.
 
-  Scenario Description: {{{scenarioDescription}}}
+  Scenario Description: {{scenarioDescription}}
 
   The flowchart should clearly show the sequence of FIX messages exchanged between the involved parties (e.g., trader, broker, exchange).
   Use clear and concise labels for the messages and steps in the flowchart. Use Mermaid syntax.
