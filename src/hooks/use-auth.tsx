@@ -13,7 +13,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
 const AUTH_PAGES = ['/login'];
-const PUBLIC_PAGES: string[] = ['/']; // The new landing page is public
+const PUBLIC_PAGES: string[] = ['/', '/terms', '/privacy', '/contact']; // The new landing page is public
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthPage = AUTH_PAGES.includes(pathname);
-    const isPublicPage = PUBLIC_PAGES.includes(pathname);
+    const isAuthPage = AUTH_PAGES.some(p => pathname.startsWith(p));
+    const isPublicPage = PUBLIC_PAGES.some(p => pathname.startsWith(p));
 
     // If the user is not logged in and not on a public/auth page, redirect to the landing page.
     if (!user && !isAuthPage && !isPublicPage) {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     
     // If the user is logged in and on an auth page (like /login) or the landing page, redirect to the dashboard.
-    if (user && (isAuthPage || isPublicPage)) {
+    if (user && (isAuthPage || pathname === '/')) {
       router.push('/dashboard');
     }
 
