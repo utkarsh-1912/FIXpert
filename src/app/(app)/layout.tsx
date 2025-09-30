@@ -39,13 +39,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <FixpertIcon className="size-6 shrink-0 text-primary" />
             <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">FIXpert</span>
           </div>
-           <SidebarTrigger asChild>
-                <Button variant="ghost" size="icon" className="group-data-[collapsible=offcanvas]:hidden">
-                    <PanelLeftClose className="hidden group-data-[state=expanded]:block" />
-                    <PanelRight className="hidden group-data-[state=collapsed]:block" />
-                    <span className="sr-only">Toggle Sidebar</span>
-                </Button>
-            </SidebarTrigger>
+           <SidebarTrigger variant="ghost" size="icon" className="group-data-[collapsible=offcanvas]:hidden">
+              <PanelLeftClose className="hidden group-data-[state=expanded]:block" />
+              <PanelRight className="hidden group-data-[state=collapsed]:block" />
+              <span className="sr-only">Toggle Sidebar</span>
+          </SidebarTrigger>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
