@@ -90,23 +90,23 @@ export default function SymbolDashboardPage() {
   return (
     <div className="space-y-6">
       <Link href="/symbol-search" passHref>
-        <Button variant="outline">
+        <Button variant="outline" className="hidden sm:inline-flex">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Search
         </Button>
       </Link>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
           <p className="text-muted-foreground">{quote.fullExchangeName}</p>
         </div>
-        <div className="text-right">
+        <div className="text-left sm:text-right w-full sm:w-auto">
           <p className={`text-4xl font-bold ${priceColor}`}>
             {quote.regularMarketPrice?.toFixed(2)}
           </p>
-          <p className={`flex items-center justify-end gap-2 text-lg ${priceColor}`}>
+          <p className={`flex items-center sm:justify-end gap-2 text-lg ${priceColor}`}>
             {priceUp ? <TrendingUp /> : <TrendingDown />}
             {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
           </p>
@@ -237,5 +237,7 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
 
     
