@@ -50,7 +50,7 @@ export default function SymbolDashboardPage() {
 
   const chartData = (data?.history || [])
     .map(h => ({ date: h.date, price: h.close}))
-    .filter(h => h.date && h.price);
+    .filter(h => h.date && h.price !== null && h.price !== undefined);
 
   if (loading && !data) { // Show full-page loader only on initial load
     return (
@@ -89,31 +89,29 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <Link href="/symbol-search" passHref>
-          <Button variant="outline" className="hidden sm:inline-flex">
+          <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Search
           </Button>
         </Link>
-        <div className="text-right">
-          <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
-          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-        </div>
-      </div>
-      
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-        <div>
-          <p className={`text-4xl font-bold ${priceColor}`}>
-            {quote.regularMarketPrice?.toFixed(2)}
-          </p>
-          <p className={`flex items-center gap-2 text-lg ${priceColor}`}>
-            {priceUp ? <TrendingUp /> : <TrendingDown />}
-            {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-          </p>
-        </div>
       </div>
 
+      <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
+          <div className="flex items-end gap-4">
+              <p className={`text-4xl font-bold ${priceColor}`}>
+                  {quote.regularMarketPrice?.toFixed(2)}
+              </p>
+              <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                  {priceUp ? <TrendingUp /> : <TrendingDown />}
+                  {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+              </p>
+          </div>
+          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+      </div>
+      
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
@@ -136,11 +134,11 @@ export default function SymbolDashboardPage() {
                         <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
                 )}
-              <div className="h-full w-full -ml-4">
+              <div className="h-full w-full">
               <ChartContainer config={chartConfig} className="h-full w-full">
                 {chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                       <defs>
                         <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.8}/>
@@ -156,12 +154,25 @@ export default function SymbolDashboardPage() {
                       />
                       <YAxis tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} tickFormatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />
                       <Tooltip 
-                        content={<ChartTooltipContent indicator="line" labelFormatter={(label, payload) => {
-                            if (payload?.[0]?.payload?.date) {
-                                return format(new Date(payload[0].payload.date), 'MMM dd, yyyy HH:mm');
-                            }
-                            return label;
-                        }} formatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />} 
+                        content={
+                            <ChartTooltipContent 
+                                indicator="line" 
+                                formatter={(value, name, item) => (
+                                    <div className="grid gap-1">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground mr-2">Price:</span>
+                                            <span className="font-bold">{typeof value === 'number' ? value.toFixed(2) : value}</span>
+                                        </div>
+                                        {item.payload.date && (
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-muted-foreground mr-2">Date/Time:</span>
+                                                <span className="font-bold">{format(new Date(item.payload.date), 'MMM dd, yyyy HH:mm')}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            />
+                        }
                       />
                       <Area type="monotone" dataKey="price" stroke={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} strokeWidth={2} fill="url(#chart-gradient)" />
                     </AreaChart>
