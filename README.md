@@ -64,3 +64,28 @@ You can get a Gemini API key from Google AI Studio.
     ```
 
 The application will be available at `http://localhost:9002`.
+
+## Deployment
+
+Deploying your FIXpert instance is straightforward. We recommend using Vercel for a seamless, one-click deployment experience tailored for Next.js applications.
+
+### Deploying with Vercel
+
+1.  **Push to GitHub**: Make sure your project code, including all your recent changes, is pushed to a GitHub repository.
+
+2.  **Sign Up for Vercel**: If you don't have a Vercel account, sign up for a free one at [vercel.com](https://vercel.com/signup) using your GitHub account.
+
+3.  **Create a New Project**:
+    *   From your Vercel dashboard, click "Add New..." and select "Project".
+    *   Vercel will ask to connect to your GitHub account. Authorize it and then import the GitHub repository you just created.
+
+4.  **Configure the Project**:
+    *   Vercel will automatically detect that it's a Next.js project and configure the build settings for you.
+    *   Expand the "Environment Variables" section.
+    *   Add the `GEMINI_API_KEY` you obtained earlier. The `name` should be `GEMINI_API_KEY` and the `value` should be your secret key.
+
+5.  **Deploy**:
+    *   Click the "Deploy" button.
+    *   Vercel will build and deploy your application. Once finished, you'll be provided with a public URL for your live FIXpert app.
+
+Each time you push a change to your GitHub repository's main branch, Vercel will automatically redeploy the application with the latest updates.
