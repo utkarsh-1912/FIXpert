@@ -1,4 +1,3 @@
-
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
