@@ -20,25 +20,17 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const DataPoint = ({ label, value, change, isPercentage }: { label: string; value: any; change?: number; isPercentage?: boolean }) => (
-    <div className="flex justify-between py-2 border-b border-border/50">
+const DataPoint = ({ label, value }: { label: string; value: any; }) => (
+    <div className="flex justify-between py-2 border-b border-border/50 text-sm">
         <span className="text-muted-foreground">{label}</span>
-        <div className="flex items-center gap-2">
-            <span>{value}</span>
-            {change !== undefined && (
-                <span className={`flex items-center text-xs ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {change >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
-                    {isPercentage ? `${change.toFixed(2)}%` : change.toFixed(2)}
-                </span>
-            )}
-        </div>
+        <span className="font-medium text-foreground">{value}</span>
     </div>
 );
 
 
 export default function SymbolDashboardPage() {
   const params = useParams();
-  const symbol = params.symbol as string;
+  const symbol = Array.isArray(params.symbol) ? params.symbol[0] : params.symbol;
   const [data, setData] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('1y');
@@ -58,6 +50,7 @@ export default function SymbolDashboardPage() {
     .map(h => ({ date: format(new Date(h.date), 'yyyy-MM-dd'), price: h.close?.toFixed(2) }))
     .filter(h => {
         if (!h.date || !h.price) return false;
+        if (timeRange === 'all') return true;
         const historyDate = new Date(h.date);
         let startDate;
         switch (timeRange) {
@@ -89,6 +82,7 @@ export default function SymbolDashboardPage() {
 
   const { quote, news, summary } = data;
   const priceUp = (quote.regularMarketChange ?? 0) >= 0;
+  const priceColor = priceUp ? 'text-green-500' : 'text-red-500';
 
   return (
     <div className="space-y-6">
@@ -99,10 +93,10 @@ export default function SymbolDashboardPage() {
           <p className="text-muted-foreground">{quote.fullExchangeName}</p>
         </div>
         <div className="text-right">
-          <p className={`text-4xl font-bold ${priceUp ? 'text-green-500' : 'text-red-500'}`}>
+          <p className={`text-4xl font-bold ${priceColor}`}>
             {quote.regularMarketPrice?.toFixed(2)}
           </p>
-          <p className={`flex items-center justify-end gap-2 text-lg ${priceUp ? 'text-green-500' : 'text-red-500'}`}>
+          <p className={`flex items-center justify-end gap-2 text-lg ${priceColor}`}>
             {priceUp ? <TrendingUp /> : <TrendingDown />}
             {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
           </p>
@@ -114,10 +108,10 @@ export default function SymbolDashboardPage() {
         <div className="lg:col-span-2 space-y-6">
            <Card>
             <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                     <CardTitle>Price Chart</CardTitle>
-                    <div className="flex items-center gap-1">
-                        {['1D', '5D', '1M', '6M', '1Y'].map(range => (
+                    <div className="flex items-center gap-1 mt-2 sm:mt-0">
+                        {['1D', '5D', '1M', '6M', '1Y', 'All'].map(range => (
                             <Button key={range} variant={timeRange.toUpperCase() === range ? "secondary" : "ghost"} size="sm" onClick={() => setTimeRange(range.toLowerCase())}>
                                 {range}
                             </Button>
@@ -125,18 +119,18 @@ export default function SymbolDashboardPage() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="h-[400px] w-full p-0">
+            <CardContent className="h-[400px] w-full p-2">
               <ChartContainer config={chartConfig} className="h-full w-full">
                 {chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={priceUp ? "var(--color-price)" : "hsl(var(--destructive))"} stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor={priceUp ? "var(--color-price)" : "hsl(var(--destructive))"} stopOpacity={0.1}/>
+                          <stop offset="5%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} stopOpacity={0.1}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
                       <XAxis
                         dataKey="date"
                         tickFormatter={(value) => format(new Date(value), 'MMM dd')}
@@ -145,12 +139,12 @@ export default function SymbolDashboardPage() {
                       />
                       <YAxis orientation="right" tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} />
                       <Tooltip content={<ChartTooltipContent indicator="line" />} />
-                      <Area type="monotone" dataKey="price" stroke={priceUp ? "var(--color-price)" : "hsl(var(--destructive))"} fill="url(#chart-gradient)" />
+                      <Area type="monotone" dataKey="price" stroke={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} strokeWidth={2} fill="url(#chart-gradient)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                    No chart data available.
+                    No chart data available for this time range.
                   </div>
                 )}
               </ChartContainer>
@@ -164,14 +158,12 @@ export default function SymbolDashboardPage() {
                         <CardTitle>Recent News</CardTitle>
                     </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-1">
                     {news.slice(0, 5).map((item, index) => (
-                        <div key={index} className="flex flex-col p-3 rounded-lg hover:bg-muted/50">
-                            <Link href={item.link} target="_blank" rel="noopener noreferrer">
-                                <p className="font-semibold text-base hover:underline">{item.title}</p>
-                                <p className="text-xs text-muted-foreground pt-1">{item.publisher} &bull; {format(new Date(item.providerPublishTime * 1000), 'MMM dd, yyyy')}</p>
-                            </Link>
-                        </div>
+                        <Link key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg hover:bg-muted/50">
+                            <p className="font-semibold text-base hover:underline">{item.title}</p>
+                            <p className="text-xs text-muted-foreground pt-1">{item.publisher} &bull; {format(new Date(item.providerPublishTime * 1000), 'MMM dd, yyyy')}</p>
+                        </Link>
                     ))}
                 </CardContent>
             </Card>
@@ -184,16 +176,16 @@ export default function SymbolDashboardPage() {
               <CardTitle>Key Data</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2)} />
-                <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2)} />
-                <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2)} />
-                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2)} />
-                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2)} />
-                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2)} />
-                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString()} />
-                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString()} />
-                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2)} />
-                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2)} />
+                <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N/A'} />
+                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N/A'} />
+                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'} />
             </CardContent>
           </Card>
           
@@ -203,7 +195,7 @@ export default function SymbolDashboardPage() {
                         <CardTitle>About {quote.shortName}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">{summary.longBusinessSummary}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-6">{summary.longBusinessSummary}</p>
                     </CardContent>
                 </Card>
             )}
@@ -211,3 +203,6 @@ export default function SymbolDashboardPage() {
       </div>
     </div>
   );
+}
+
+    
