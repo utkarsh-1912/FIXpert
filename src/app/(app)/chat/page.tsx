@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatWithFixExpert } from '@/ai/flows/chat-with-fix-expert';
 import type { ChatMessage } from '@/ai/flows/chat-types';
-import { Loader2, Send, BrainCircuit, User, Bot, RefreshCw, ChevronsUpDown, Trash2, Check } from 'lucide-react';
+import { Loader2, Send, BrainCircuit, Bot, RefreshCw, ChevronsUpDown, Trash2, Check } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
