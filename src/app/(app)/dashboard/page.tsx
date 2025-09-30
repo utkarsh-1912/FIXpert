@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                         <Link key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg border hover:bg-muted/50">
                             <p className="font-semibold text-base hover:underline">{item.title}</p>
                             <p className="text-xs text-muted-foreground pt-1">
-                                {item.publisher} &bull; {format(new Date(item.providerPublishTime * 1000), 'MMM dd, yyyy')}
+                                {item.publisher} &bull; {format(new Date(item.providerPublishTime * 1000), 'MMM d, yyyy')}
                             </p>
                         </Link>
                     ))}
