@@ -175,10 +175,10 @@ export default function ChatPage() {
   };
   
   return (
-    <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 flex flex-col h-[calc(100vh-10rem)]">
-            <CardHeader className="flex flex-row justify-between items-start">
-              <div>
+    <div className="flex flex-col gap-6">
+        <Card className="flex flex-col h-[calc(100vh-12rem)]">
+            <CardHeader className="flex flex-col gap-4">
+              <div className="space-y-1">
                 <CardTitle>AI FIXpert Chat</CardTitle>
                 <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
               </div>
@@ -224,7 +224,9 @@ export default function ChatPage() {
                             )}
                             <div className={cn(
                               "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
-                              msg.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted rounded-bl-none'
+                              msg.role === 'user' 
+                                ? 'bg-primary text-primary-foreground rounded-br-none before:absolute before:bottom-0 before:right-[-8px] before:h-2 before:w-2 before:bg-primary before:rounded-bl-full' 
+                                : 'bg-muted rounded-bl-none before:absolute before:bottom-0 before:left-[-8px] before:h-2 before:w-2 before:bg-muted before:rounded-br-full'
                             )}>
                                 <MarkdownContent content={msg.content} />
                             </div>
@@ -268,7 +270,7 @@ export default function ChatPage() {
             </div>
             </CardFooter>
         </Card>
-        <div className="space-y-6 md:col-span-1">
+        <div className="space-y-6">
             <Accordion type="single" collapsible>
                 <AccordionItem value="item-1">
                     <Card>
@@ -300,5 +302,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-    
