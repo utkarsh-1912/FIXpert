@@ -74,7 +74,6 @@ export default function SymbolDashboardPage() {
   const priceUp = (quote.regularMarketChange ?? 0) > 0;
   const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
   const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
-  const borderColor = priceUp ? 'border-l-green-500' : priceNeutral ? 'border-l-primary' : 'border-l-red-500';
 
   const getDateFormat = (period: Period) => {
     switch (period) {
@@ -92,7 +91,7 @@ export default function SymbolDashboardPage() {
 
 
   return (
-    <div className={cn("space-y-6 border-l-4 pl-6", borderColor)}>
+    <div className="space-y-6">
       <div className="flex items-center">
         <Link href="/symbol-search" passHref>
           <Button variant="outline">
@@ -132,7 +131,7 @@ export default function SymbolDashboardPage() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="h-[400px] w-full p-2 relative">
+            <CardContent className="h-[400px] w-full relative">
                 {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-card/50 z-10">
                         <Loader2 className="h-8 w-8 animate-spin" />
@@ -223,7 +222,7 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
-                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'NA'} />
                 <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N/A'} />
