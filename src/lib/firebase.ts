@@ -8,5 +8,14 @@ const firebaseConfig = {
   appId: "your-app-id",
 };
 
+let app: FirebaseApp;
+
 // Initialize Firebase
-export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export function getFirebaseApp(): FirebaseApp {
+    if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp();
+    }
+    return app;
+}
