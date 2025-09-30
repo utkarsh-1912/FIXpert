@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'next/navigation';
@@ -22,8 +22,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const DataPoint = ({ label, value }: { label: string; value: any; }) => (
-    <div className="flex justify-between py-2 border-b border-border/50 text-sm">
-        <span className="text-muted-foreground">{label}</span>
+    <div className="flex flex-col space-y-1">
+        <span className="text-xs text-muted-foreground">{label}</span>
         <span className="font-medium text-foreground">{value}</span>
     </div>
 );
@@ -35,6 +35,7 @@ export default function SymbolDashboardPage() {
   const [data, setData] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<Period>('1y');
+  const [showFullSummary, setShowFullSummary] = useState(false);
 
   useEffect(() => {
     if (!symbol) return;
@@ -82,6 +83,9 @@ export default function SymbolDashboardPage() {
         return 'MMM yyyy';
     }
   };
+  
+  const isSummaryLong = summary?.longBusinessSummary && summary.longBusinessSummary.length > 300;
+
 
   return (
     <div className="space-y-6">
@@ -197,7 +201,7 @@ export default function SymbolDashboardPage() {
             <CardHeader>
               <CardTitle>Key Data</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="grid grid-cols-2 gap-4">
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
@@ -217,7 +221,14 @@ export default function SymbolDashboardPage() {
                         <CardTitle>About {quote.shortName}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground line-clamp-6">{summary.longBusinessSummary}</p>
+                        <p className={`text-sm text-muted-foreground ${isSummaryLong && !showFullSummary ? 'line-clamp-6' : ''}`}>
+                            {summary.longBusinessSummary}
+                        </p>
+                        {isSummaryLong && (
+                            <Button variant="link" className="p-0 h-auto mt-2" onClick={() => setShowFullSummary(!showFullSummary)}>
+                                {showFullSummary ? 'Show less' : 'Show more'}
+                            </Button>
+                        )}
                     </CardContent>
                 </Card>
             )}
@@ -226,3 +237,5 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
