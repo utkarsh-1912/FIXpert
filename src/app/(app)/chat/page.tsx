@@ -177,17 +177,17 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col gap-6">
         <Card className="flex flex-col h-[calc(100vh-8rem)]">
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="space-y-1">
                 <CardTitle>AI FIXpert Chat</CardTitle>
                 <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 self-end sm:self-auto">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
                       <ChevronsUpDown className="h-4 w-4 mr-2" />
-                      {activeSession?.title ?? 'Select Chat'}
+                      <span className="truncate max-w-28 sm:max-w-none">{activeSession?.title ?? 'Select Chat'}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64">
@@ -222,19 +222,23 @@ export default function ChatPage() {
                                     <Bot className="w-full h-full" />
                                 </Avatar>
                             )}
-                            <div className={cn(
-                                "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
-                                msg.role === 'user' 
-                                    ? 'bg-primary text-primary-foreground' 
-                                    : 'bg-muted'
-                            )}>
+                            <div className="relative">
                                 <div className={cn(
-                                    "absolute w-0 h-0 border-[8px] border-transparent",
-                                    msg.role === 'user'
-                                        ? "top-3 -right-3 border-l-[10px] border-l-primary"
-                                        : "top-3 -left-3 border-r-[10px] border-r-muted"
-                                )}></div>
-                                <MarkdownContent content={msg.content} />
+                                    "max-w-[75vw] sm:max-w-md md:max-w-lg rounded-lg px-4 text-sm", 
+                                    msg.role === 'user' 
+                                        ? 'bg-primary text-primary-foreground' 
+                                        : 'bg-muted'
+                                )}>
+                                    <div className={cn(
+                                        "absolute w-0 h-0 border-[8px] border-transparent",
+                                        msg.role === 'user'
+                                            ? "top-3 -right-3 border-l-[10px] border-l-primary"
+                                            : "top-3 -left-3 border-r-[10px] border-r-muted"
+                                    )}></div>
+                                    <div className="pb-2 pt-2">
+                                        <MarkdownContent content={msg.content} />
+                                    </div>
+                                </div>
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">
@@ -307,3 +311,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
