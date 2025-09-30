@@ -15,7 +15,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { MarkdownContent } from '@/components/markdown-content';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BrainCircuit } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 
 const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
@@ -222,17 +222,19 @@ export default function ChatPage() {
                                     <Bot className="w-full h-full" />
                                 </Avatar>
                             )}
-                            <div className="relative">
-                                {msg.role === 'user' && <div className="absolute top-3 -right-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] border-l-primary"></div>}
-                                {msg.role === 'model' && <div className="absolute top-3 -left-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] border-r-muted"></div>}
+                            <div className={cn(
+                                "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
+                                msg.role === 'user' 
+                                    ? 'bg-primary text-primary-foreground' 
+                                    : 'bg-muted'
+                            )}>
                                 <div className={cn(
-                                    "max-w-[75%] rounded-lg px-4 py-2 text-sm", 
-                                    msg.role === 'user' 
-                                        ? 'bg-primary text-primary-foreground' 
-                                        : 'bg-muted'
-                                )}>
-                                    <MarkdownContent content={msg.content} />
-                                </div>
+                                    "absolute w-0 h-0 border-[8px] border-transparent",
+                                    msg.role === 'user'
+                                        ? "top-3 -right-2 border-l-primary"
+                                        : "top-3 -left-2 border-r-muted"
+                                )}></div>
+                                <MarkdownContent content={msg.content} />
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">
@@ -279,7 +281,7 @@ export default function ChatPage() {
                     <Card>
                         <AccordionTrigger className="p-6">
                             <div className="flex flex-row items-center gap-4">
-                                <BrainCircuit className="h-6 w-6 text-primary"/>
+                                <Sparkles className="h-6 w-6 text-primary"/>
                                 <CardTitle>AI Model Details</CardTitle>
                             </div>
                         </AccordionTrigger>
@@ -305,5 +307,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-    
