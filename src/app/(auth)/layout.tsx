@@ -16,7 +16,7 @@ export default function AuthLayout({
                 alt="Authentication background"
                 fill
                 className="object-cover"
-                data-ai-hint="financial data abstract"
+                data-ai-hint="binary data"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-primary/30 to-background/80" />
         </div>

@@ -75,7 +75,7 @@ export default function LandingPage() {
                 height={400}
                 alt="FIX Protocol Visualization"
                 className="rounded-xl shadow-2xl"
-                data-ai-hint="financial data abstract"
+                data-ai-hint="network connectivity"
               />
             </div>
           </div>
@@ -116,12 +116,12 @@ export default function LandingPage() {
           <div className="mx-auto grid grid-cols-1 items-center gap-12 px-4 md:grid-cols-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-center">
               <Image
-                src="https://picsum.photos/seed/marketseed1/600/400"
+                src="https://picsum.photos/seed/marketseed2/600/400"
                 width={600}
                 height={400}
                 alt="Market Data Analysis"
                 className="rounded-xl shadow-2xl"
-                data-ai-hint="stock market chart"
+                data-ai-hint="trading charts"
               />
             </div>
             <div className="space-y-6">
