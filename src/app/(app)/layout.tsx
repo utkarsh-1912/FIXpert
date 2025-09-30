@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Sidebar,
+  SidebarClose,
   SidebarContent,
   SidebarHeader,
   SidebarInset,
@@ -37,6 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <FixpertIcon className="size-6 text-primary" />
             <span className="text-lg font-semibold">FIXpert</span>
           </div>
+          <SidebarClose />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>

@@ -3,14 +3,14 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, X } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetClose as SheetPrimitiveClose } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -285,6 +285,43 @@ const SidebarTrigger = React.forwardRef<
 })
 SidebarTrigger.displayName = "SidebarTrigger"
 
+const SidebarClose = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentProps<typeof Button>
+>(({ className, ...props }, ref) => {
+  const { isMobile, toggleSidebar } = useSidebar();
+
+  if (isMobile) {
+    return (
+      <SheetPrimitiveClose
+        ref={ref as any}
+        className={cn(
+          "absolute right-3 top-3 rounded-sm p-1 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary",
+          className
+        )}
+      >
+        <X className="size-4" />
+        <span className="sr-only">Close</span>
+      </SheetPrimitiveClose>
+    );
+  }
+
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      size="icon"
+      className={cn("absolute right-3 top-3 h-7 w-7 group-data-[collapsible=icon]:hidden", className)}
+      onClick={toggleSidebar}
+      {...props}
+    >
+      <X className="size-4" />
+      <span className="sr-only">Close</span>
+    </Button>
+  );
+});
+SidebarClose.displayName = "SidebarClose"
+
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
@@ -358,7 +395,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("relative flex flex-col gap-2 p-2", className)}
       {...props}
     />
   )
@@ -759,5 +796,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarClose,
   useSidebar,
 }
