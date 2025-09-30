@@ -18,13 +18,13 @@ const testimonials = [
     name: 'Samantha K.',
     role: 'FIX Onboarding Specialist',
     quote: 'FIXpert\'s comparator and log processor have streamlined our client onboarding process. We can identify and resolve issues in minutes, not hours.',
-    avatar: '/avatars/samantha.jpg',
+    avatar: '/avatars/david.jpg',
   },
   {
     name: 'David L.',
     role: 'Senior Trading Systems Developer',
     quote: 'The workflow visualizer is pure genius. Being able to generate a clear diagram from a simple description is incredibly powerful for documentation and training.',
-    avatar: '/avatars/david.jpg',
+    avatar: '/avatars/samantha.jpg',
   },
 ];
 
@@ -54,10 +54,10 @@ export default function LandingPage() {
           <div className="mx-auto grid grid-cols-1 items-center gap-8 px-4 text-center md:grid-cols-2 sm:px-6 lg:px-8 md:text-left">
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl md:text-6xl">
-                Master the FIX Protocol with AI-Powered Precision
+                Accelerate Your FIX Engine Development with an AI-Powered Toolkit
               </h1>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                From decoding raw messages to visualizing complex workflows, FIXpert gives you the clarity and speed you need to excel.
+                Demystify complex message flows, optimize your trading infrastructure, and accelerate development cycles with our suite of institutional-grade tools.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
                 <Button size="lg" asChild>
@@ -85,8 +85,8 @@ export default function LandingPage() {
         <section id="features" className="w-full bg-muted/30 py-20 md:py-32">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">A Toolkit That Works as Hard as You Do</h2>
-              <p className="mt-4 text-muted-foreground">FIXpert is a comprehensive suite of powerful, intuitive tools built for maximum efficiency.</p>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">An Institutional-Grade Toolkit for FIX Professionals</h2>
+              <p className="mt-4 text-muted-foreground">FIXpert is designed to streamline the entire trade lifecycle management process, from development and testing to production support.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {menuItems.filter(item => item.href !== '/dashboard').slice(0, 6).map((tool) => (
@@ -129,10 +129,10 @@ export default function LandingPage() {
                 Market Insights
               </div>
               <h2 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl">
-                Real-Time Market Intelligence
+                Gain a Critical Edge with Real-Time Market Intelligence
               </h2>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Integrate market awareness into your workflow. Search for trading symbols, analyze real-time quotes, and access key financial data to make more informed decisions, all within a single platform.
+                Seamlessly integrate real-time market data feeds into your workflow. Analyze pre-trade analytics, track instrument liquidity, and validate trade orders against live market conditions.
               </p>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/symbol-search">
@@ -149,7 +149,7 @@ export default function LandingPage() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Trusted by Industry Professionals</h2>
-              <p className="mt-4 text-muted-foreground">See how financial engineers and developers are leveraging FIXpert to enhance their workflows.</p>
+              <p className="mt-4 text-muted-foreground">See how financial engineers, QA testers, and support analysts are leveraging FIXpert to enhance their workflows.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {testimonials.map((testimonial) => (
