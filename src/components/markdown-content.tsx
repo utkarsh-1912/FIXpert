@@ -15,7 +15,16 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        p: ({ node, ...props }) => <p className="whitespace-pre-wrap" {...props} />,
+        p: ({ node, ...props }) => {
+          // Check if the paragraph contains a code block
+          if (node.children[0]?.type === 'element' && node.children[0]?.tagName === 'code') {
+            // If it's a block code, it's already wrapped in a <pre> by the code component below.
+            // Just render the children without an extra <p> tag.
+            return <div {...props} />;
+          }
+          // Otherwise, it's a regular paragraph.
+          return <p className="whitespace-pre-wrap" {...props} />;
+        },
         table: ({ node, ...props }) => <Table className="my-4" {...props} />,
         thead: ({ node, ...props }) => <TableHeader {...props} />,
         tbody: ({ node, ...props }) => <TableBody {...props} />,
