@@ -23,12 +23,27 @@ const getTagValue = (msg: string, tag: string) => {
   return match ? match[1] : '';
 };
 
+const formatFixTimestamp = (ts: string) => {
+    // FIX timestamps are usually in YYYYMMDD-HH:MM:SS.sss format
+    if (!ts || ts.length < 17) return ts;
+    try {
+        const year = ts.substring(0, 4);
+        const month = ts.substring(4, 6);
+        const day = ts.substring(6, 8);
+        const time = ts.substring(9);
+        return `${year}-${month}-${day} ${time}`;
+    } catch {
+        return ts; // Return original if formatting fails
+    }
+}
+
 const parseLogs = (logs: string): FixMessage[] => {
   return logs.split('\n').filter(Boolean).map(line => {
-    const timestampMatch = line.match(/\[(.*?)\]/);
-    const raw = line.substring(timestampMatch ? timestampMatch[0].length : 0).trim();
+    // The raw message is the entire line now, we don't strip brackets
+    const raw = line.trim();
+    const sendingTime = getTagValue(raw, '52');
     return {
-      timestamp: timestampMatch ? timestampMatch[1] : 'N/A',
+      timestamp: sendingTime ? formatFixTimestamp(sendingTime) : 'N/A',
       msgType: getTagValue(raw, '35'),
       sender: getTagValue(raw, '49'),
       target: getTagValue(raw, '56'),
@@ -78,7 +93,7 @@ export default function LogAnalyzerPage() {
             onChange={(e) => setLogs(e.target.value)}
             rows={8}
             className="font-code"
-            placeholder={'[20240725-10:00:00.123] 8=FIX.4.2|9=154|35=D|...'}
+            placeholder={'8=FIX.4.2|9=154|35=D|49=SENDER|56=TARGET|52=20240725-10:00:00.123|...'}
           />
         </CardContent>
         <CardFooter>
@@ -101,7 +116,7 @@ export default function LogAnalyzerPage() {
             <Table>
               <TableHeader className="sticky top-0 bg-card">
                 <TableRow>
-                  <TableHead className="w-[180px]">Timestamp</TableHead>
+                  <TableHead className="w-[200px]">Timestamp (Tag 52)</TableHead>
                   <TableHead>Msg Type</TableHead>
                   <TableHead>Sender</TableHead>
                   <TableHead>Target</TableHead>
