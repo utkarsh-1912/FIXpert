@@ -6,7 +6,7 @@ import { ArrowRight, Newspaper, Landmark, BookCopy, ExternalLink, Sparkles } fro
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { getTrendingNews } from "@/app/actions/symbol-search.actions";
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                         <Link key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg border hover:bg-muted/50">
                             <p className="font-semibold text-base hover:underline">{item.title}</p>
                             <p className="text-xs text-muted-foreground pt-1">
-                                {item.publisher} &bull; {formatDistanceToNow(new Date(item.providerPublishTime * 1000), { addSuffix: true })}
+                                {item.publisher} &bull; {format(new Date(item.providerPublishTime * 1000), 'MMM dd, yyyy')}
                             </p>
                         </Link>
                     ))}
