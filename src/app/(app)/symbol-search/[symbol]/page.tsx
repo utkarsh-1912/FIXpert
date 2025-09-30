@@ -10,6 +10,8 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;
 type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
@@ -69,8 +71,10 @@ export default function SymbolDashboardPage() {
   }
 
   const { quote, news, summary } = data;
-  const priceUp = (quote.regularMarketChange ?? 0) >= 0;
-  const priceColor = priceUp ? 'text-green-500' : 'text-red-500';
+  const priceUp = (quote.regularMarketChange ?? 0) > 0;
+  const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
+  const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
+  const borderColor = priceUp ? 'border-l-green-500' : priceNeutral ? 'border-l-primary' : 'border-l-red-500';
 
   const getDateFormat = (period: Period) => {
     switch (period) {
@@ -88,7 +92,7 @@ export default function SymbolDashboardPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className={cn("space-y-6 border-l-4 pl-6", borderColor)}>
       <div className="flex items-center">
         <Link href="/symbol-search" passHref>
           <Button variant="outline">
@@ -98,7 +102,7 @@ export default function SymbolDashboardPage() {
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1">
+       <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
           <div className="flex items-end gap-4">
               <p className={`text-4xl font-bold ${priceColor}`}>
@@ -158,14 +162,14 @@ export default function SymbolDashboardPage() {
                             <ChartTooltipContent 
                                 indicator="line" 
                                 formatter={(value, name, item) => (
-                                    <div className="grid gap-1">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-muted-foreground mr-2">Price:</span>
+                                    <div className="grid gap-1.5">
+                                        <div className="flex justify-between items-center gap-4">
+                                            <span className="text-muted-foreground">Price:</span>
                                             <span className="font-bold">{typeof value === 'number' ? value.toFixed(2) : value}</span>
                                         </div>
                                         {item.payload.date && (
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-muted-foreground mr-2">Date/Time:</span>
+                                            <div className="flex justify-between items-center gap-4">
+                                                <span className="text-muted-foreground">Date:</span>
                                                 <span className="font-bold">{format(new Date(item.payload.date), 'MMM dd, yyyy HH:mm')}</span>
                                             </div>
                                         )}
