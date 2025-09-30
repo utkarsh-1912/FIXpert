@@ -8,11 +8,5 @@ const firebaseConfig = {
   appId: "your-app-id",
 };
 
-// Singleton pattern to initialize Firebase only once
-let app: FirebaseApp;
-export function getFirebaseApp() {
-  if (!app) {
-    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  }
-  return app;
-}
+// Initialize Firebase
+export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);

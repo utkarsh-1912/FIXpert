@@ -26,7 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { FixpertIcon } from '@/components/icons';
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
-import { getFirebaseApp } from '@/lib/firebase';
+import { app } from '@/lib/firebase';
 
 
 declare global {
@@ -54,7 +54,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   
-  const getAuthInstance = () => getAuth(getFirebaseApp());
+  const getAuthInstance = () => getAuth(app);
 
   const handleAuth = async (isLogin: boolean) => {
     setIsSubmitting(true);

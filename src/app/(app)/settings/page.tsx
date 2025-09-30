@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { getAuth, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import { getFirebaseApp } from '@/lib/firebase';
+import { app } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const getAuthInstance = () => getAuth(getFirebaseApp());
+  const getAuthInstance = () => getAuth(app);
   const { toast } = useToast();
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
