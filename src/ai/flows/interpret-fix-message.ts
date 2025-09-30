@@ -36,12 +36,12 @@ const interpretFixMessagePrompt = ai.definePrompt({
   name: 'interpretFixMessagePrompt',
   input: {schema: InterpretFixMessageInputSchema},
   output: {schema: InterpretFixMessageOutputSchema},
-  prompt: `You are a FIX (Financial Information Exchange) protocol expert. Your task is to interpret raw FIX messages and provide a human-readable explanation.
+  prompt: `You are a FIX (Financial Information eXchange) protocol expert. Your task is to interpret raw FIX messages and provide a human-readable explanation.
 
   Here is the raw FIX message:
-  ```
-  {{{rawFixMessage}}}
-  ```
+  \`\`\`
+  {{rawFixMessage}}
+  \`\`\`
 
   Provide a clear and concise interpretation of the message, including:
   - The message type and its purpose.
