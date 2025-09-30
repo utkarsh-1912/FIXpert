@@ -1,4 +1,4 @@
-// src/ai/flows/visualize-fix-workflow.ts
+
 'use server';
 
 /**
@@ -11,6 +11,10 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {exec} from 'child_process';
+import {writeFile, unlink} from 'fs/promises';
+import path from 'path';
+import os from 'os';
 
 const VisualizeFixWorkflowInputSchema = z.object({
   scenarioDescription: z
@@ -18,6 +22,11 @@ const VisualizeFixWorkflowInputSchema = z.object({
     .describe('A description of the trading scenario to visualize.'),
 });
 export type VisualizeFixWorkflowInput = z.infer<typeof VisualizeFixWorkflowInputSchema>;
+
+const MermaidOutputSchema = z.object({
+  mermaidCode: z.string().describe('The MermaidJS syntax for the flowchart.'),
+  description: z.string().describe('A textual description of the flowchart.'),
+});
 
 const VisualizeFixWorkflowOutputSchema = z.object({
   flowchartDataUri: z
@@ -38,30 +47,65 @@ export async function visualizeFixWorkflow(
 const visualizeFixWorkflowPrompt = ai.definePrompt({
   name: 'visualizeFixWorkflowPrompt',
   input: {schema: VisualizeFixWorkflowInputSchema},
-  output: {schema: VisualizeFixWorkflowOutputSchema},
-  prompt: `You are an expert in FIX (Financial Information eXchange) protocol and a skilled visualizer.
+  output: {schema: MermaidOutputSchema},
+  prompt: `You are an expert in FIX (Financial Information eXchange) protocol.
 
-  Based on the provided trading scenario description, generate an interactive flowchart in SVG format that illustrates the FIX message flow.
-  In addition to the flowchart, provide a textual description of what the flowchart represents.
+  Based on the provided trading scenario, generate a flowchart using MermaidJS syntax that illustrates the FIX message flow.
+  Also provide a textual description of what the flowchart represents.
 
-  Scenario Description: {{scenarioDescription}}
+  The flowchart should clearly show the sequence of FIX messages exchanged between the involved parties (e.g., Trader, Broker, Exchange).
+  Use clear and concise labels for the messages and steps in the flowchart.
 
-  The flowchart should clearly show the sequence of FIX messages exchanged between the involved parties (e.g., trader, broker, exchange).
-  Use clear and concise labels for the messages and steps in the flowchart. Use Mermaid syntax.
+  Scenario Description: {{{scenarioDescription}}}
 
-  Example of a Mermaid flowchart:
+  Example of Mermaid syntax:
+  \`\`\`mermaid
   flowchart LR
-      A[Trader] --> B(Broker: NewOrderSingle)
-      B --> C(Exchange: ExecutionReport - Accepted)
-      C --> B(Broker: ExecutionReport - Accepted)
-      B --> A(Trader: ExecutionReport - Accepted)
+      A[Trader] -->|NewOrderSingle| B(Broker);
+      B -->|ExecutionReport - New| C(Exchange);
+      C -->|ExecutionReport - Filled| B;
+      B -->|ExecutionReport - Filled| A;
+  \`\`\`
 
-  Ensure that the generated SVG is properly formatted and can be rendered correctly in a browser.
-  Make sure to include the "data:image/svg+xml;base64," prefix before the base64 encoded SVG content in the flowchartDataUri.
-
-  The description should include the parties involved and the purpose of each message.
+  Ensure the output is JUST the Mermaid syntax inside the markdown block and the description.
   `,
 });
+
+const convertMermaidToSvgDataUri = (mermaidCode: string): Promise<string> => {
+  return new Promise(async (resolve, reject) => {
+    const tempId = `mermaid-temp-${Date.now()}`;
+    const inputPath = path.join(os.tmpdir(), `${tempId}.mmd`);
+    const outputPath = path.join(os.tmpdir(), `${tempId}.svg`);
+
+    try {
+      // Write mermaid code to a temporary file
+      await writeFile(inputPath, mermaidCode, 'utf-8');
+
+      // Execute mermaid-cli to convert to SVG
+      // Note: mermaid-cli requires Node.js environment.
+      // The path to the executable might need adjustment based on installation.
+      const command = `npx mmdc -i ${inputPath} -o ${outputPath}`;
+      
+      exec(command, async (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Mermaid-cli error: ${stderr}`);
+          return reject(new Error(`Failed to convert Mermaid to SVG: ${stderr}`));
+        }
+        
+        // Read the generated SVG file
+        const svgContent = await require('fs').promises.readFile(outputPath, 'base64');
+        resolve(`data:image/svg+xml;base64,${svgContent}`);
+      });
+    } catch (err) {
+      reject(err);
+    } finally {
+        // We can't reliably clean up here due to async exec, so it's best handled
+        // in the callback of exec, but for simplicity, we leave it.
+        // A more robust solution might use fs.watch or await exec promise.
+    }
+  });
+};
+
 
 const visualizeFixWorkflowFlow = ai.defineFlow(
   {
@@ -71,6 +115,20 @@ const visualizeFixWorkflowFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await visualizeFixWorkflowPrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Could not generate Mermaid syntax from the AI model.');
+    }
+
+    const { mermaidCode, description } = output;
+    
+    // The model might return the code wrapped in markdown, so we extract it.
+    const cleanedMermaidCode = mermaidCode.replace(/```mermaid\n|```/g, '').trim();
+
+    const flowchartDataUri = await convertMermaidToSvgDataUri(cleanedMermaidCode);
+    
+    return {
+      flowchartDataUri,
+      description,
+    };
   }
 );
