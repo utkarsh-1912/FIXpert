@@ -182,7 +182,7 @@ export default function ChatPage() {
                 <CardTitle>AI FIXpert Chat</CardTitle>
                 <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
               </div>
-              <div className="flex gap-2 self-end sm:self-auto">
+              <div className="flex gap-2 sm:self-auto">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -224,7 +224,7 @@ export default function ChatPage() {
                             )}
                             <div className="relative">
                                 <div className={cn(
-                                    "max-w-[75vw] sm:max-w-md md:max-w-lg rounded-lg px-4 text-sm", 
+                                    "max-w-[75vw] sm:max-w-md md:max-w-lg rounded-lg px-4", 
                                     msg.role === 'user' 
                                         ? 'bg-primary text-primary-foreground' 
                                         : 'bg-muted'
@@ -311,5 +311,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-    
