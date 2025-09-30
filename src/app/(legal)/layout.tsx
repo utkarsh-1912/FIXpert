@@ -1,3 +1,4 @@
+
 import { FixpertIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -22,7 +23,7 @@ export default function LegalLayout({
       </header>
 
       <main className="flex-1">
-        <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
+        <div className="container mx-auto px-4 py-12 sm:px-6 md:py-20 lg:px-8">
             {children}
         </div>
       </main>
