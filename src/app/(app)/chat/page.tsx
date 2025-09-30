@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { MarkdownContent } from '@/components/markdown-content';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { FixpertIcon } from '@/components/icons';
 
 
 const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
@@ -174,8 +175,8 @@ export default function ChatPage() {
   };
   
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 flex flex-col h-[85vh]">
+    <div className="grid gap-6 md:grid-cols-3">
+        <Card className="md:col-span-2 flex flex-col h-[calc(100vh-10rem)]">
             <CardHeader className="flex flex-row justify-between items-start">
               <div>
                 <CardTitle>AI FIXpert Chat</CardTitle>
@@ -215,13 +216,16 @@ export default function ChatPage() {
                 <ScrollArea className="h-full" ref={scrollAreaRef}>
                     <div className="space-y-6 pr-4">
                     {activeHistory.map((msg, index) => (
-                        <div key={index} className={cn("flex items-start gap-4", msg.role === 'user' ? "justify-end" : "justify-start")}>
+                        <div key={index} className={cn("flex items-start gap-3", msg.role === 'user' ? "justify-end" : "justify-start")}>
                             {msg.role === 'model' && (
-                                <Avatar className="h-8 w-8 border">
-                                    <AvatarFallback><Bot className="h-5 w-5"/></AvatarFallback>
+                                <Avatar className="h-8 w-8 border p-1 bg-primary text-primary-foreground">
+                                    <FixpertIcon className="w-full h-full" />
                                 </Avatar>
                             )}
-                            <div className={cn("max-w-[75%] rounded-xl px-4 py-3 text-sm", msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                            <div className={cn(
+                              "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
+                              msg.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted rounded-bl-none'
+                            )}>
                                 <MarkdownContent content={msg.content} />
                             </div>
                              {msg.role === 'user' && user && (
@@ -233,11 +237,11 @@ export default function ChatPage() {
                         </div>
                     ))}
                     {isLoading && (
-                        <div className="flex items-start gap-4">
-                             <Avatar className="h-8 w-8 border">
-                                <AvatarFallback><Bot className="h-5 w-5"/></AvatarFallback>
+                        <div className="flex items-start gap-3">
+                             <Avatar className="h-8 w-8 border p-1 bg-primary text-primary-foreground">
+                                <FixpertIcon className="w-full h-full" />
                             </Avatar>
-                            <div className="max-w-[75%] rounded-xl px-4 py-3 text-sm bg-muted flex items-center">
+                            <div className="max-w-[75%] rounded-lg px-4 py-2 text-sm bg-muted flex items-center rounded-bl-none">
                                 <Loader2 className="h-5 w-5 animate-spin"/>
                             </div>
                         </div>
@@ -264,7 +268,7 @@ export default function ChatPage() {
             </div>
             </CardFooter>
         </Card>
-        <div className="space-y-6">
+        <div className="space-y-6 md:col-span-1">
             <Accordion type="single" collapsible>
                 <AccordionItem value="item-1">
                     <Card>
@@ -296,3 +300,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
