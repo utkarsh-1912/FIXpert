@@ -4,6 +4,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface MarkdownContentProps {
@@ -13,7 +14,7 @@ interface MarkdownContentProps {
 export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkBreaks]}
       components={{
         p: ({ node, ...props }) => {
           // Check if the paragraph contains a code block
@@ -23,7 +24,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
             return <>{props.children}</>;
           }
           // Otherwise, it's a regular paragraph.
-          return <p className="leading-7 [&:not(:first-child)]:mt-4" {...props} />;
+          return <p className="leading-7" {...props} />;
         },
         table: ({ node, ...props }) => <Table className="my-4" {...props} />,
         thead: ({ node, ...props }) => <TableHeader {...props} />,
