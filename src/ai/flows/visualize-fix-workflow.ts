@@ -11,10 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {exec} from 'child_process';
-import {writeFile, unlink, readFile} from 'fs/promises';
-import path from 'path';
-import os from 'os';
+import { mermaidSSR } from 'mermaid-ssr';
 
 const VisualizeFixWorkflowInputSchema = z.object({
   scenarioDescription: z
@@ -71,40 +68,15 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
   `,
 });
 
-const convertMermaidToSvgDataUri = (mermaidCode: string): Promise<string> => {
-  return new Promise(async (resolve, reject) => {
-    const tempId = `mermaid-temp-${Date.now()}`;
-    const inputPath = path.join(os.tmpdir(), `${tempId}.mmd`);
-    const outputPath = path.join(os.tmpdir(), `${tempId}.svg`);
-
+const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> => {
     try {
-      await writeFile(inputPath, mermaidCode, 'utf-8');
-      
-      const command = `npx mmdc -i ${inputPath} -o ${outputPath}`;
-      
-      exec(command, async (error, stdout, stderr) => {
-        try {
-          if (error) {
-            console.error(`Mermaid-cli error: ${stderr}`);
-            return reject(new Error(`Failed to convert Mermaid to SVG: ${stderr}`));
-          }
-          
-          const svgContent = await readFile(outputPath, 'base64');
-          resolve(`data:image/svg+xml;base64,${svgContent}`);
-        } catch (readError) {
-          reject(readError);
-        } finally {
-          // Cleanup temporary files
-          await Promise.all([
-            unlink(inputPath).catch(e => console.error(`Failed to delete temp file ${inputPath}`, e)),
-            unlink(outputPath).catch(e => console.error(`Failed to delete temp file ${outputPath}`, e))
-          ]);
-        }
-      });
-    } catch (writeError) {
-      reject(writeError);
+        const svg = await mermaidSSR(mermaidCode);
+        const svgBase64 = Buffer.from(svg).toString('base64');
+        return `data:image/svg+xml;base64,${svgBase64}`;
+    } catch (error) {
+        console.error(`Mermaid-SSR error: ${error}`);
+        throw new Error(`Failed to convert Mermaid to SVG: ${error instanceof Error ? error.message : String(error)}`);
     }
-  });
 };
 
 
