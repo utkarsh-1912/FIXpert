@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Quote } from 'yahoo-finance2/dist/esm/src/modules/quote';
 import { searchQuotes } from '@/app/actions/symbol-search.actions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
 
 type StockData = Partial<Quote> & {
   symbol: string;
@@ -25,6 +26,7 @@ export default function SymbolSearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [assetClassFilter, setAssetClassFilter] = useState<string>('all');
   const [exchangeFilter, setExchangeFilter] = useState<string>('all');
+  const router = useRouter();
 
   const handleSearch = useCallback(async (query: string) => {
     if (!query) {
@@ -86,6 +88,11 @@ export default function SymbolSearchPage() {
     const lowerCaseValue = value.toLowerCase();
     return lowerCaseValue !== 'n/a' && lowerCaseValue !== 'unknown';
   }
+  
+  const handleRowClick = (symbol: string) => {
+    router.push(`/symbol-search/${symbol}`);
+  };
+
 
   return (
     <Card>
@@ -142,7 +149,7 @@ export default function SymbolSearchPage() {
                 </TableRow>
               ) : filteredResults.length > 0 ? (
                 filteredResults.map((item) => (
-                  <TableRow key={item.symbol}>
+                  <TableRow key={item.symbol} onClick={() => handleRowClick(item.symbol)} className="cursor-pointer">
                     <TableCell className="font-medium">{item.symbol}</TableCell>
                     <TableCell>{shouldShowValue(item.name) ? item.name : ''}</TableCell>
                     <TableCell>
