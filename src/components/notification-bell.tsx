@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bell, CheckCheck } from 'lucide-react';
@@ -29,7 +30,7 @@ export function NotificationBell() {
         <Button variant="outline" size="icon" className="relative rounded-full">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+            <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
               {unreadCount}
             </span>
           )}
@@ -37,8 +38,8 @@ export function NotificationBell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 md:w-96" align="end">
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Notifications</span>
+        <DropdownMenuLabel className="flex items-center justify-between p-3">
+          <span className="font-semibold">Notifications</span>
           <div className="flex items-center gap-2">
              <TooltipProvider>
                 <Tooltip>
@@ -52,7 +53,7 @@ export function NotificationBell() {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-            <Button variant="destructive" size="sm" onClick={handleClearAll} disabled={notifications.length === 0}>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={handleClearAll} disabled={notifications.length === 0}>
               Clear all
             </Button>
           </div>
@@ -69,19 +70,22 @@ export function NotificationBell() {
               <DropdownMenuItem
                 key={notif.id}
                 onSelect={() => markAsRead(notif.id)}
-                className={cn('flex items-start gap-3 p-3 cursor-pointer', !notif.read && 'bg-accent/50')}
-                style={{whiteSpace: 'normal', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}
+                className="flex items-start gap-4 p-3 cursor-pointer focus:bg-accent/50"
+                style={{whiteSpace: 'normal', display: 'flex', alignItems: 'flex-start'}}
               >
-                <div className='flex items-start gap-3 w-full'>
-                    <notif.icon className="h-5 w-5 mt-1 shrink-0 text-primary" />
+                {!notif.read && (
+                    <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                )}
+                <div className={cn("flex items-start gap-3 w-full", notif.read ? 'pl-4' : '')}>
+                    <notif.icon className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
                     <div className="flex-1 space-y-1">
-                        <p className="font-semibold text-sm">{notif.title}</p>
+                        <p className="font-medium text-sm text-foreground">{notif.title}</p>
                         <p className="text-xs text-muted-foreground">{notif.description}</p>
+                         <p className="text-xs text-muted-foreground/80 pt-1">
+                            {formatDistanceToNow(notif.timestamp, { addSuffix: true })}
+                        </p>
                     </div>
                 </div>
-                <p className={cn("text-xs text-muted-foreground/80 mt-2 w-full text-right", !notif.read && "font-medium")}>
-                    {formatDistanceToNow(notif.timestamp, { addSuffix: true })}
-                </p>
               </DropdownMenuItem>
             ))
           )}
