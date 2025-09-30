@@ -29,7 +29,7 @@ export default function DashboardPage() {
               </CardHeader>
             </div>
             <CardContent>
-              <Link href={tool.href} className="w-full" passHref>
+              <Link href={tool.href}>
                 <Button variant="outline" className="w-full">
                   Open Tool <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
