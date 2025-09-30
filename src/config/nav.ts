@@ -1,6 +1,6 @@
 import {
   LayoutDashboard,
-  MessageSquare,
+  MessageSquareText,
   FileText,
   GitCompareArrows,
   CodeXml,
@@ -22,7 +22,7 @@ export interface NavItem {
 
 export const menuItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, description: 'An overview of all available tools.' },
-  { href: '/interpreter', label: 'Interpreter', icon: Sparkles, description: 'Parse and understand raw FIX messages.', isAiPowered: true },
+  { href: '/interpreter', label: 'Interpreter', icon: MessageSquareText, description: 'Parse and understand raw FIX messages.', isAiPowered: true },
   { href: '/chat', label: 'Chat', icon: MessageCircle, description: 'Chat with an AI FIX protocol expert.', isAiPowered: true },
   { href: '/log-analyzer', label: 'Log Analyzer', icon: FileText, description: 'Analyze and filter FIX protocol log files.' },
   { href: '/log-processor', label: 'Log Processor', icon: FileCog, description: 'Process and sort raw FIX log files.' },

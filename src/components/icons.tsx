@@ -2,24 +2,26 @@ export const FixpertIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg 
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 100 85" 
-        fill="currentColor"
+        fill="url(#icon-gradient)"
         {...props}
     >
+        <defs>
+            <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: '#F5D565', stopOpacity: 1 }} />
+            </linearGradient>
+        </defs>
         <path 
             d="M93.3,21.3c-3.4,0-6.2,2.8-6.2,6.2c0,3.4,2.8,6.2,6.2,6.2c3.4,0,6.2-2.8,6.2-6.2C99.5,24.1,96.7,21.3,93.3,21.3z" 
-            style={{ fill: '#F5D565' }}
         />
         <path 
             d="M97.2,0H3.3C1.5,0,0,1.5,0,3.3v13.3h99.5V3.3C100,1.5,98.5,0,97.2,0z" 
-            style={{ fill: '#3E63F4' }}
         />
         <path 
             d="M0,81.7c0,1.8,1.5,3.3,3.3,3.3h53.9c1.8,0,3.3-1.5,3.3-3.3V21.3H0V81.7z" 
-            style={{ fill: '#F5D565' }}
         />
         <path 
             d="M65.4,85h31.3c1.8,0,3.3-1.5,3.3-3.3V21.3H65.4V85z" 
-            style={{ fill: '#3E63F4' }}
         />
     </svg>
 );
