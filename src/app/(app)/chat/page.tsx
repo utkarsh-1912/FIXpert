@@ -226,8 +226,8 @@ export default function ChatPage() {
                             <div className={cn(
                               "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
                               msg.role === 'user' 
-                                ? 'bg-primary text-primary-foreground rounded-br-none' 
-                                : 'bg-muted rounded-bl-none'
+                                ? 'bg-primary text-primary-foreground' 
+                                : 'bg-muted'
                             )}>
                                 {msg.role === 'user' && <div className="absolute bottom-0 right-[-8px] w-0 h-0 border-b-[10px] border-b-primary border-l-[10px] border-l-transparent"></div>}
                                 {msg.role === 'model' && <div className="absolute bottom-0 left-[-8px] w-0 h-0 border-b-[10px] border-b-muted border-r-[10px] border-r-transparent"></div>}
@@ -246,7 +246,7 @@ export default function ChatPage() {
                              <Avatar className="h-8 w-8 border p-1 bg-primary text-primary-foreground">
                                 <Bot className="w-full h-full" />
                             </Avatar>
-                            <div className="max-w-[75%] rounded-lg px-4 py-2 text-sm bg-muted flex items-center rounded-bl-none">
+                            <div className="max-w-[75%] rounded-lg px-4 py-2 text-sm bg-muted flex items-center">
                                 <Loader2 className="h-5 w-5 animate-spin"/>
                             </div>
                         </div>
