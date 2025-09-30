@@ -11,6 +11,7 @@ import {
   OAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -47,7 +48,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const auth = getAuth();
+  const auth = getAuth(app);
 
   const handleAuth = async (isLogin: boolean) => {
     setIsSubmitting(true);

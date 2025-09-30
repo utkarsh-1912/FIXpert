@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getAuth, signOut } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 import { LogOut, Settings, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,7 +27,7 @@ export function AppHeader() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const auth = getAuth();
+    const auth = getAuth(app);
     await signOut(auth);
     router.push('/login');
   };
