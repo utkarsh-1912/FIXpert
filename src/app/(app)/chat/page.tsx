@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { MarkdownContent } from '@/components/markdown-content';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
@@ -264,30 +265,34 @@ export default function ChatPage() {
             </CardFooter>
         </Card>
         <div className="space-y-6">
-            <Card>
-                <CardHeader className="flex flex-row items-center gap-4">
-                    <BrainCircuit className="h-6 w-6 text-primary"/>
-                    <CardTitle>AI Model Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                   <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
-                        <p><span className="font-semibold text-foreground">Gemini 1.5 Flash</span> by Google</p>
-                        <p className="mt-1">A powerful, multimodal model suitable for a wide range of tasks. Up to 1M token context window.</p>
-                   </div>
-                   <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
-                        <p><span className="font-semibold text-foreground">Free-Tier Model</span> by Community</p>
-                        <p className="mt-1">A capable reasoning model, ideal for general queries. Free tier offers up to 15,000 tokens per month.</p>
-                   </div>
-                </CardContent>
-                 <CardFooter>
-                    <p className="text-xs text-muted-foreground">Model usage is subject to provider terms and availability.</p>
-                </CardFooter>
-            </Card>
+            <Accordion type="single" collapsible>
+                <AccordionItem value="item-1">
+                    <Card>
+                        <AccordionTrigger className="p-6">
+                            <div className="flex flex-row items-center gap-4">
+                                <BrainCircuit className="h-6 w-6 text-primary"/>
+                                <CardTitle>AI Model Details</CardTitle>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <CardContent className="space-y-4">
+                               <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
+                                    <p><span className="font-semibold text-foreground">Gemini 1.5 Flash</span> by Google</p>
+                                    <p className="mt-1">A powerful, multimodal model suitable for a wide range of tasks. Up to 1M token context window.</p>
+                               </div>
+                               <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
+                                    <p><span className="font-semibold text-foreground">Free-Tier Model</span> by Community</p>
+                                    <p className="mt-1">A capable reasoning model, ideal for general queries. Free tier offers up to 15,000 tokens per month.</p>
+                               </div>
+                            </CardContent>
+                             <CardFooter>
+                                <p className="text-xs text-muted-foreground">Model usage is subject to provider terms and availability.</p>
+                            </CardFooter>
+                        </AccordionContent>
+                    </Card>
+                </AccordionItem>
+            </Accordion>
         </div>
     </div>
   );
 }
-
-    
-
-    
