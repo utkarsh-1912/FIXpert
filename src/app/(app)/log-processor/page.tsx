@@ -158,7 +158,7 @@ export default function LogProcessorPage() {
                     className="font-code text-xs bg-muted/50"
                 />
             ) : (
-              <div className="flex h-full items-center justify-center rounded-md border border-dashed">
+              <div className="flex h-full items-center justify-center rounded-md border border-dashed p-8">
                 <div className="text-center text-muted-foreground">
                     <CheckCircle className="mx-auto h-12 w-12" />
                     <p className="mt-4">Processed logs will be shown here.</p>
