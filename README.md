@@ -67,25 +67,48 @@ The application will be available at `http://localhost:9002`.
 
 ## Deployment
 
-Deploying your FIXpert instance is straightforward. We recommend using Vercel for a seamless, one-click deployment experience tailored for Next.js applications.
+### Option 1: Deploying with Vercel (Recommended)
 
-### Deploying with Vercel
+Vercel is the creator of Next.js and provides a seamless, one-click deployment experience.
 
-1.  **Push to GitHub**: Make sure your project code, including all your recent changes, is pushed to a GitHub repository.
-
-2.  **Sign Up for Vercel**: If you don't have a Vercel account, sign up for a free one at [vercel.com](https://vercel.com/signup) using your GitHub account.
-
+1.  **Push to GitHub**: Make sure your project code is pushed to a GitHub repository.
+2.  **Sign Up for Vercel**: Sign up for a free account at [vercel.com](https://vercel.com/signup) using your GitHub account.
 3.  **Create a New Project**:
     *   From your Vercel dashboard, click "Add New..." and select "Project".
-    *   Vercel will ask to connect to your GitHub account. Authorize it and then import the GitHub repository you just created.
-
+    *   Import the GitHub repository for your FIXpert project.
 4.  **Configure the Project**:
-    *   Vercel will automatically detect that it's a Next.js project and configure the build settings for you.
-    *   Expand the "Environment Variables" section.
-    *   Add the `GEMINI_API_KEY` you obtained earlier. The `name` should be `GEMINI_API_KEY` and the `value` should be your secret key.
-
+    *   Vercel will automatically detect that it's a Next.js project.
+    *   Expand the "Environment Variables" section and add your `GEMINI_API_KEY`.
 5.  **Deploy**:
-    *   Click the "Deploy" button.
-    *   Vercel will build and deploy your application. Once finished, you'll be provided with a public URL for your live FIXpert app.
+    *   Click "Deploy". Vercel will build and deploy your application, providing you with a public URL.
 
-Each time you push a change to your GitHub repository's main branch, Vercel will automatically redeploy the application with the latest updates.
+### Option 2: Deploying with Jenkins
+
+For more control over your CI/CD process, you can use the included `Jenkinsfile`. This file defines a pipeline that tests and builds the application.
+
+#### Jenkins Prerequisites
+*   A running Jenkins instance.
+*   Node.js installed on the Jenkins server (or agent).
+*   The "Pipeline" plugin installed in Jenkins.
+*   The "Credentials" plugin to securely manage your API key.
+
+#### Jenkins Setup
+1.  **Create Credentials**:
+    *   In Jenkins, go to **Manage Jenkins > Credentials**.
+    *   Add a new "Secret text" credential.
+    *   Set the **ID** to `GEMINI_API_KEY` and the **Secret** to your actual Gemini API key. The `Jenkinsfile` is configured to use this ID.
+
+2.  **Create a Pipeline Job**:
+    *   Create a new "Pipeline" job in Jenkins.
+    *   In the "Pipeline" section, select "Pipeline script from SCM".
+    *   Choose "Git" as the SCM and enter your repository's URL.
+    *   The "Script Path" should be `Jenkinsfile` (this is the default).
+
+3.  **Run the Pipeline**:
+    *   Save the job and click "Build Now".
+    *   Jenkins will execute the stages defined in the `Jenkinsfile`: installing dependencies, linting, testing, and building the Next.js application.
+
+#### Customizing the Deploy Stage
+The provided `Jenkinsfile` includes a placeholder **Deploy** stage. You will need to customize this stage based on your hosting environment. Common deployment strategies include:
+*   **Copying files to a server**: Use `scp` or `rsync` to transfer the `.next` directory, `public` directory, and `package.json` to your server, then run `npm start` using a process manager like `pm2`.
+*   **Building a Docker container**: Create a `Dockerfile`, use the Jenkins pipeline to build and push the Docker image to a registry (like Docker Hub or GCR), and then deploy the container to your host.

@@ -1,85 +1,78 @@
 
 pipeline {
-    agent {
-        // Specify a Node.js agent. You may need to configure this in your Jenkins "Global Tool Configuration".
-        // Example: agent { nodejs 'NodeJS-18' }
-        any
-    }
+    agent any
 
     environment {
-        // Ensure you have a .env file or configure environment variables in Jenkins
-        // for things like GEMINI_API_KEY if your build/tests require it.
-        // For example:
-        // GEMINI_API_KEY = credentials('your-gemini-api-key-credential-id')
+        // This injects the secret text credential with the ID 'GEMINI_API_KEY'
+        // into an environment variable of the same name.
+        GEMINI_API_KEY = credentials('GEMINI_API_KEY')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // This will check out the code from the repository Jenkins is configured to use.
-                checkout scm
+                // Get some code from a GitHub repository
+                git 'https://github.com/your-username/your-repo.git'
+                sh 'git --version'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Use 'ci' for faster, more reliable builds in a CI environment
-                sh 'npm ci'
+                // Install npm packages
+                sh 'npm install'
             }
         }
-
-        stage('Lint Code') {
+        
+        stage('Lint') {
             steps {
+                // Run ESLint
                 sh 'npm run lint'
             }
         }
         
         stage('Type Check') {
             steps {
+                // Run TypeScript compiler to check for type errors
                 sh 'npm run typecheck'
             }
         }
 
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                // This will run the tests defined in your vitest config
+                // Run tests
                 sh 'npm run test'
             }
         }
 
-        stage('Build Application') {
+        stage('Build') {
             steps {
-                // Create a production-ready build
+                // Build the Next.js application
                 sh 'npm run build'
             }
         }
-
-        // --- DEPLOYMENT STAGE (EXAMPLE) ---
-        // stage('Deploy') {
-        //     when {
-        //         branch 'main' // Only deploy when the main branch is built
-        //     }
-        //     steps {
-        //         echo 'Deploying to production...'
-        //         // Add your deployment commands here.
-        //         // This could be copying files, running a script, or using a Jenkins plugin.
-        //         // e.g., sh 'firebase deploy --only hosting'
-        //     }
-        // }
+        
+        stage('Deploy') {
+            steps {
+                // This is a placeholder for your deployment logic.
+                // You will need to customize this stage based on your hosting environment.
+                // Examples:
+                // 1. Copy files to a web server:
+                //    sh 'scp -r .next public package.json user@your-server:/path/to/app'
+                //    sh 'ssh user@your-server "cd /path/to/app && npm install --production && pm2 restart app-name"'
+                //
+                // 2. Build and push a Docker image:
+                //    sh 'docker build -t your-image-name:latest .'
+                //    sh 'docker push your-image-name:latest'
+                echo 'Deployment stage is a placeholder. Add your deployment script here.'
+            }
+        }
     }
 
     post {
         always {
-            // Clean up the workspace after the build
+            // Clean up the workspace
             cleanWs()
-        }
-        success {
-            echo 'Pipeline succeeded!'
-            // You could add success notifications here (e.g., Slack, Email)
-        }
-        failure {
-            echo 'Pipeline failed.'
-            // You could add failure notifications here
         }
     }
 }
