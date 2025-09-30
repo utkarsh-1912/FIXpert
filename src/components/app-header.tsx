@@ -19,7 +19,7 @@ import { getFirebaseApp } from '@/lib/firebase';
 import { LogOut, Settings, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
-import { Tooltip, TooltipContent, TooltipProvider } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -78,11 +78,11 @@ export function AppHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                  <Link href="/settings"><Settings className="mr-2"/>Settings</Link>
+                  <Link href="/settings"><Settings className="mr-2 h-4 w-4"/>Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2" />
+                <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
