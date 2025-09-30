@@ -13,6 +13,14 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 
+const ModelInfo = ({ modelName, provider, details }: { modelName: string, provider: string, details: string }) => (
+    <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
+        <p><span className="font-semibold text-foreground">{modelName}</span> by {provider}</p>
+        <p className="mt-1">{details}</p>
+    </div>
+);
+
+
 export default function ChatPage() {
   const { user } = useAuth();
   const [history, setHistory] = useState<ChatMessage[]>([
@@ -75,13 +83,6 @@ export default function ChatPage() {
     }
   };
   
-  const ModelInfo = ({ modelName, provider, details }: { modelName: string, provider: string, details: string }) => (
-    <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
-        <p><span className="font-semibold text-foreground">{modelName}</span> by {provider}</p>
-        <p className="mt-1">{details}</p>
-    </div>
-  );
-
   return (
     <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 flex flex-col h-[85vh]">
@@ -167,5 +168,4 @@ export default function ChatPage() {
         </div>
     </div>
   );
-
-    
+}
