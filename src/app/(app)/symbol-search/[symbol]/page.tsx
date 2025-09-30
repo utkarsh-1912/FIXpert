@@ -96,8 +96,14 @@ export default function SymbolDashboardPage() {
             Back to Search
           </Button>
         </Link>
-         <div className="sm:hidden">
-            {/* Placeholder for mobile layout consistency */}
+        <div className="text-right">
+          <p className={`text-4xl font-bold ${priceColor}`}>
+            {quote.regularMarketPrice?.toFixed(2)}
+          </p>
+          <p className={`flex items-center justify-end gap-2 text-lg ${priceColor}`}>
+            {priceUp ? <TrendingUp /> : <TrendingDown />}
+            {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+          </p>
         </div>
       </div>
 
@@ -107,15 +113,6 @@ export default function SymbolDashboardPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
           <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-        </div>
-        <div className="text-left sm:text-right w-full sm:w-auto">
-          <p className={`text-4xl font-bold ${priceColor}`}>
-            {quote.regularMarketPrice?.toFixed(2)}
-          </p>
-          <p className={`flex items-center sm:justify-end gap-2 text-lg ${priceColor}`}>
-            {priceUp ? <TrendingUp /> : <TrendingDown />}
-            {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-          </p>
         </div>
       </div>
 
