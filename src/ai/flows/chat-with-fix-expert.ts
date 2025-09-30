@@ -40,6 +40,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   - Best practices for FIX implementation and testing.
 
   When responding, be concise and clear. Use examples when it helps with understanding. If a user provides a raw FIX message, break it down and explain it.
+  Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
 
   Here is the conversation history:
   {{#each this}}

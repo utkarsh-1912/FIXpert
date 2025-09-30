@@ -12,6 +12,8 @@ import { Loader2, Send, BrainCircuit, User, Bot } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
+import { MarkdownContent } from '@/components/markdown-content';
+
 
 const ModelInfo = ({ modelName, provider, details }: { modelName: string, provider: string, details: string }) => (
     <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
@@ -101,7 +103,7 @@ export default function ChatPage() {
                                 </Avatar>
                             )}
                             <div className={cn("max-w-[75%] rounded-xl px-4 py-3 text-sm", msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
-                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                                <MarkdownContent content={msg.content} />
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">

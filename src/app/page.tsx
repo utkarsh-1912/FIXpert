@@ -31,8 +31,8 @@ const testimonials = [
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <FixpertIcon className="size-8 text-primary" />
             <span className="text-xl font-bold text-foreground">FIXpert</span>
@@ -51,7 +51,7 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40">
-          <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 text-center md:grid-cols-2 sm:px-6 lg:px-8 md:text-left">
+          <div className="mx-auto grid grid-cols-1 items-center gap-8 px-4 text-center md:grid-cols-2 sm:px-6 lg:px-8 md:text-left">
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl md:text-6xl">
                 The Ultimate FIX Protocol Toolkit
@@ -83,7 +83,7 @@ export default function LandingPage() {
 
         {/* Features Section */}
         <section id="features" className="w-full bg-muted/30 py-20 md:py-32">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything You Need for FIX Development</h2>
               <p className="mt-4 text-muted-foreground">From AI-powered interpretation to side-by-side comparisons, FIXpert has you covered.</p>
@@ -106,7 +106,7 @@ export default function LandingPage() {
 
         {/* Testimonials Section */}
         <section className="w-full py-20 md:py-32">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Financial Engineers Worldwide</h2>
               <p className="mt-4 text-muted-foreground">Don't just take our word for it. Here's what professionals are saying about FIXpert.</p>
@@ -139,7 +139,7 @@ export default function LandingPage() {
 
         {/* CTA Section */}
         <section className="w-full bg-muted/30 py-20 md:py-32">
-          <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 text-center sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Ready to Supercharge Your FIX Workflow?</h2>
               <p className="mt-4 text-muted-foreground">Sign up today and get instant access to the entire suite of FIXpert tools. No credit card required.</p>
@@ -153,8 +153,8 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 text-center md:flex-row sm:px-6 lg:px-8">
+      <footer className="w-full border-t">
+        <div className="mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 text-center md:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             <FixpertIcon className="size-6 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} FIXpert. All rights reserved.</p>
