@@ -18,14 +18,14 @@ export default function AuthLayout({
                 className="object-cover"
                 data-ai-hint="financial data abstract"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-primary/30" />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/30 to-background/80" />
         </div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-primary-foreground">
             <div className="flex items-center gap-4">
                 <FixpertIcon className="size-16 text-primary-foreground" />
-                <h1 className="text-5xl font-bold text-primary-foreground">FIXpert</h1>
+                <h1 className="text-5xl font-bold">FIXpert</h1>
             </div>
-            <p className="mt-4 text-xl text-primary-foreground/80">
+            <p className="mt-4 text-xl opacity-80">
                 The Ultimate FIX Protocol Toolkit for Financial Engineers.
             </p>
         </div>
