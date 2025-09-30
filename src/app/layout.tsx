@@ -6,7 +6,7 @@ import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: 'FIXpert',
-  description: 'FIX Protocol Tools for Engineers',
+  description: 'The Ultimate FIX Protocol Toolkit for Financial Engineers',
 };
 
 export default function RootLayout({

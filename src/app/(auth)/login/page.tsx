@@ -27,6 +27,7 @@ import { FixpertIcon } from '@/components/icons';
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { getFirebaseApp } from '@/lib/firebase';
+import Link from 'next/link';
 
 
 declare global {
@@ -66,7 +67,7 @@ export default function LoginPage() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
       toast({ title: isLogin ? 'Login Successful' : 'Signup Successful' });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -89,7 +90,7 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, authProvider);
       toast({ title: 'Login Successful' });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -139,7 +140,7 @@ export default function LoginPage() {
       try {
           await window.confirmationResult.confirm(otp);
           toast({ title: 'Login Successful' });
-          router.push('/');
+          router.push('/dashboard');
       } catch (error: any) {
           toast({
             title: 'OTP Verification Failed',
@@ -155,12 +156,12 @@ export default function LoginPage() {
     <Card className="w-full max-w-md">
       <div id="recaptcha-container"></div>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex items-center gap-2">
+        <Link href="/" className="mx-auto mb-4 flex items-center gap-2">
             <FixpertIcon className="size-8 text-primary" />
             <CardTitle className="text-3xl">FIXpert</CardTitle>
-        </div>
+        </Link>
         <CardDescription>
-          {authMode === 'login' ? 'Sign in to your account' : 'Create a new account to get started'}
+          {authMode === 'login' ? 'Sign in to your account' : 'Create an account to get started'}
         </CardDescription>
       </CardHeader>
       

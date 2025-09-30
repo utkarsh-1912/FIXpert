@@ -21,7 +21,7 @@ import Link from 'next/link';
 
 export function AppHeader() {
   const pathname = usePathname();
-  const currentItem = menuItems.find(item => item.href === pathname || (pathname.startsWith(item.href) && item.href !== '/')) ?? menuItems.find(i => i.href === '/');
+  const currentItem = menuItems.find(item => item.href === pathname || (pathname.startsWith(item.href) && item.href !== '/dashboard')) ?? menuItems.find(i => i.href === '/dashboard');
   const title = currentItem ? currentItem.label : 'Dashboard';
   const { user } = useAuth();
   const router = useRouter();
@@ -29,7 +29,7 @@ export function AppHeader() {
   const handleLogout = async () => {
     const auth = getAuth(getFirebaseApp());
     await signOut(auth);
-    router.push('/login');
+    router.push('/');
   };
 
   return (

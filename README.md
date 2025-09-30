@@ -1,23 +1,25 @@
-# FIXpert - FIX Protocol Toolkit
+# FIXpert - The Ultimate FIX Protocol Toolkit for Financial Engineers
 
-FIXpert is a comprehensive Next.js application designed to provide a suite of tools for financial engineers and developers working with the Financial Information eXchange (FIX) protocol.
+FIXpert is a comprehensive, AI-powered Next.js application designed to be an indispensable toolkit for financial engineers, developers, and QA testers working with the Financial Information eXchange (FIX) protocol. From decoding complex messages to visualizing entire workflows, FIXpert streamlines your development process and enhances your understanding of FIX.
 
-## Features
+## Key Features
 
-- **Interpreter**: Decode and understand raw, pipe-separated FIX messages.
-- **Log Analyzer**: Parse, filter, and analyze FIX log files.
-- **Log Processor**: Merge and sort multiple log files by timestamp.
-- **Comparator**: Perform a side-by-side comparison of two FIX messages.
-- **Formatter**: Convert raw FIX messages into a readable XML format.
-- **Workflow Visualizer**: Generate flowcharts from FIX scenario descriptions using AI.
-- **Symbol Search**: Look up real-time trading symbols.
+FIXpert offers a suite of powerful, intuitive tools to handle all aspects of FIX message processing:
+
+-   **AI-Powered Interpreter**: Decode raw, pipe-separated FIX messages instantly. The AI provides a human-readable breakdown of each tag, including its name, value, and meaning, along with a summary of the message's purpose.
+-   **Log Analyzer**: Parse, filter, and analyze large FIX log files. Quickly identify message types, senders, and targets, and use the powerful filter to zero in on the exact messages you need.
+-   **Log Processor**: Merge and sort multiple log files chronologically. Upload several files, and the processor will intelligently combine them into a single, time-sorted log, ready for analysis or download.
+-   **Message Comparator**: Perform a side-by-side, field-level comparison of two FIX messages or entire message sets. Differences are highlighted, making it easy to spot discrepancies.
+-   **FIX-to-XML Formatter**: Convert raw, pipe-separated FIX messages into a clean, well-structured XML format, perfect for documentation, sharing, or further processing.
+-   **AI-Powered Workflow Visualizer**: Generate clear, interactive flowcharts from plain English descriptions of trading scenarios. You can also build diagrams manually or by writing MermaidJS syntax.
+-   **Symbol Search**: Look up real-time trading symbols from Yahoo Finance. Find stocks, currencies, and other assets by ticker or name.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v18 or later)
-- npm or yarn
+-   Node.js (v18 or later)
+-   npm or yarn
 
 ### 1. Configure Firebase
 

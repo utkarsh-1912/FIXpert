@@ -17,7 +17,7 @@ import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
 import { menuItems } from '@/config/nav';
 import { useRequireAuth } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PanelRight, PanelLeftClose } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -36,10 +36,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <FixpertIcon className="size-6 text-primary" />
+            <FixpertIcon className="size-6 shrink-0 text-primary" />
             <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">FIXpert</span>
           </div>
-          <SidebarTrigger className="hidden md:flex" />
+           <SidebarTrigger asChild>
+                <Button variant="ghost" size="icon" className="group-data-[collapsible=offcanvas]:hidden">
+                    <PanelLeftClose className="hidden group-data-[state=expanded]:block" />
+                    <PanelRight className="hidden group-data-[state=collapsed]:block" />
+                    <span className="sr-only">Toggle Sidebar</span>
+                </Button>
+            </SidebarTrigger>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
