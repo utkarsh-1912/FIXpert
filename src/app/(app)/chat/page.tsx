@@ -222,15 +222,17 @@ export default function ChatPage() {
                                     <Bot className="w-full h-full" />
                                 </Avatar>
                             )}
-                            <div className={cn(
-                              "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
-                              msg.role === 'user' 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-muted'
-                            )}>
+                            <div className="relative">
                                 {msg.role === 'user' && <div className="absolute top-3 -right-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] border-l-primary"></div>}
                                 {msg.role === 'model' && <div className="absolute top-3 -left-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] border-r-muted"></div>}
-                                <MarkdownContent content={msg.content} />
+                                <div className={cn(
+                                    "max-w-[75%] rounded-lg px-4 py-2 text-sm", 
+                                    msg.role === 'user' 
+                                        ? 'bg-primary text-primary-foreground' 
+                                        : 'bg-muted'
+                                )}>
+                                    <MarkdownContent content={msg.content} />
+                                </div>
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">
