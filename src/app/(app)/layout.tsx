@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Sidebar,
-  SidebarClose,
   SidebarContent,
   SidebarHeader,
   SidebarInset,
@@ -13,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
 import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
 import { menuItems } from '@/config/nav';
