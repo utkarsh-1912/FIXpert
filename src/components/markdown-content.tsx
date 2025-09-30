@@ -22,7 +22,6 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
         td: ({ node, ...props }) => <TableCell {...props} />,
         ul: ({ node, ...props }) => <ul className="my-4 ml-6 list-disc [&>li]:mt-2" {...props} />,
         ol: ({ node, ...props }) => <ol className="my-4 ml-6 list-decimal [&>li]:mt-2" {...props} />,
-        p: ({ node, ...props }) => <p className="leading-7" {...props} />,
         code: ({ node, inline, className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
           return !inline ? (
