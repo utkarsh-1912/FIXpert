@@ -1,4 +1,3 @@
-// src/hooks/use-auth.tsx
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
@@ -38,11 +37,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const isAuthPage = AUTH_PAGES.includes(pathname);
     const isPublicPage = PUBLIC_PAGES.includes(pathname);
 
+    // If the user is not logged in and not on a public/auth page, redirect to login.
     if (!user && !isAuthPage && !isPublicPage) {
       router.push('/login');
-    } else if (user && isAuthPage) {
+    }
+    
+    // If the user is logged in and on an auth page (like /login), redirect to the dashboard.
+    if (user && isAuthPage) {
       router.push('/dashboard');
     }
+
   }, [user, loading, pathname, router]);
 
 
