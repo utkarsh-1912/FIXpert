@@ -9,19 +9,12 @@
  *
  * @exports {
  *   chatWithFixExpert: (history: ChatMessage[]) => Promise<ChatMessage>;
- *   ChatMessage: z.infer<typeof ChatMessageSchema>;
  * }
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-
-// Define the schema for a single chat message
-export const ChatMessageSchema = z.object({
-  role: z.enum(['user', 'model']),
-  content: z.string(),
-});
-export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+import { ChatMessageSchema } from './chat-types';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
