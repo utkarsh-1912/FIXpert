@@ -12,7 +12,6 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
 import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
 import { menuItems } from '@/config/nav';
@@ -35,9 +34,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <>
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
-          <div className="flex items-center gap-2 p-2">
+          <div className="flex items-center gap-2 p-2 group-data-[collapsible=icon]:hidden">
             <FixpertIcon className="size-6 shrink-0 text-primary" />
-            <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">FIXpert</span>
+            <span className="text-lg font-semibold">FIXpert</span>
           </div>
            <SidebarTrigger variant="ghost" size="icon" className="group-data-[collapsible=offcanvas]:hidden">
               <PanelLeftClose className="hidden group-data-[state=expanded]:block" />
