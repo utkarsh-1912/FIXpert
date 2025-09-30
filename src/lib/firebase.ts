@@ -8,12 +8,4 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// This function ensures that we initialize the app only once.
-function getFirebaseApp(): FirebaseApp {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  }
-  return getApp();
-}
-
-export { getFirebaseApp };
+export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
