@@ -1,10 +1,8 @@
-
 'use client';
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface MarkdownContentProps {
@@ -14,7 +12,7 @@ interface MarkdownContentProps {
 export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkBreaks]}
+      remarkPlugins={[remarkGfm]}
       components={{
         table: ({ node, ...props }) => <Table className="my-4" {...props} />,
         thead: ({ node, ...props }) => <TableHeader {...props} />,
