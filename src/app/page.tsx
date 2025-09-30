@@ -89,7 +89,7 @@ export default function LandingPage() {
               <p className="mt-4 text-muted-foreground">From AI-powered interpretation to side-by-side comparisons, FIXpert has you covered.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {menuItems.filter(item => item.href !== '/dashboard').slice(0, 5).map((tool) => (
+              {menuItems.filter(item => item.href !== '/dashboard').slice(0, 6).map((tool) => (
                 <Card key={tool.href} className="flex flex-col p-6 transition-transform hover:-translate-y-1 hover:shadow-primary/20 hover:shadow-lg">
                   <div className="mb-4 flex items-center gap-4">
                     <div className="rounded-lg bg-primary/10 p-3 text-primary">
@@ -103,13 +103,10 @@ export default function LandingPage() {
                   <p className="flex-1 text-muted-foreground">{tool.description}</p>
                 </Card>
               ))}
-                <Card className="flex flex-col items-center justify-center p-6 text-center bg-muted/50 border-dashed">
-                    <div className="rounded-lg bg-primary/10 p-3 text-primary mb-4">
-                        <MoreHorizontal className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-xl font-semibold">And many more tools...</h3>
-                    <p className="mt-2 text-muted-foreground">Sign up to get access to the full suite of FIX protocol utilities.</p>
-                </Card>
+                <div className="lg:col-span-3 flex items-center justify-center gap-4 py-4 text-center">
+                    <MoreHorizontal className="h-6 w-6 text-muted-foreground" />
+                    <p className="text-muted-foreground">And many more tools...</p>
+                </div>
             </div>
           </div>
         </section>
