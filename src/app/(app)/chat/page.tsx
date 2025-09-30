@@ -183,7 +183,7 @@ export default function ChatPage() {
                <div className="flex gap-2">
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
+                      <Button variant="outline" size="sm">
                         <ChevronsUpDown className="h-4 w-4 mr-2" />
                         {activeSession?.title ?? 'Select Chat'}
                       </Button>
@@ -287,5 +287,7 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
 
     
