@@ -3,14 +3,12 @@
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, ArrowUp, ArrowDown, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format, subDays } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams } from 'next/navigation';
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;

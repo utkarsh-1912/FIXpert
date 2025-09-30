@@ -232,8 +232,11 @@ export default function WorkflowVisualizerPage() {
                 onChange={(e) => setMermaidCode(e.target.value)}
                 rows={10}
                 className="font-code"
-                placeholder="flowchart LR
-    A --> B"
+                placeholder={`flowchart LR
+    A["Client"] -->|"NewOrderSingle"| B(Broker);
+    B -->|"ExecutionReport - New"| C{Exchange};
+    C -->|"ExecutionReport - Filled"| B;
+    B -->|"ExecutionReport - Filled"| A;`}
               />
             </CardContent>
             <CardFooter>
