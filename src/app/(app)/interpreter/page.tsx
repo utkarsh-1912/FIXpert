@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function InterpreterPage() {
-  const [rawMessages, setRawMessages] = useState('8=FIX.4.2|9=123|35=D|49=SENDER|56=TARGET|34=1|52=20240101-12:00:00|11=ORDER1|55=GOOG|54=1|38=100|40=2|10=168\n8=FIX.4.2|9=178|35=8|34=2|49=TARGET|56=SENDER|52=20240101-12:00:01|11=ORDER1|37=E1|150=2|39=2|55=GOOG|54=1|38=100|10=145');
+  const [rawMessages, setRawMessages] = useState('');
   const [interpretations, setInterpretations] = useState<InterpretFixMessageOutput[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

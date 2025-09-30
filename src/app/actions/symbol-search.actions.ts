@@ -1,9 +1,10 @@
 
 'use server';
 
+import { cache } from 'react';
 import yahooFinance from 'yahoo-finance2';
 
-export async function searchQuotes(query: string) {
+export const searchQuotes = cache(async (query: string) => {
     try {
         const result = await yahooFinance.search(query, {
             quotesCount: 20,
@@ -14,10 +15,10 @@ export async function searchQuotes(query: string) {
         console.error('Yahoo Finance API search error:', error);
         return [];
     }
-}
+});
 
 
-export async function getQuote(symbol: string) {
+export const getQuote = cache(async (symbol: string) => {
     try {
         const result = await yahooFinance.quote(symbol, {
             fields: [
@@ -71,4 +72,4 @@ export async function getQuote(symbol: string) {
         // Return null or an error object to be handled by the frontend
         return null;
     }
-}
+});

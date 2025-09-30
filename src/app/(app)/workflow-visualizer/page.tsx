@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useId } from 'react';
+import { useState, useId, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,13 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const defaultMermaid = `flowchart LR
-    A[Client] -->|NewOrderSingle| B(Broker);
-    B -->|ExecutionReport - New| C(Exchange);
-    C -->|ExecutionReport - Filled| B;
-    B -->|ExecutionReport - Filled| A;
-`;
 
 type Node = {
   id: string;
@@ -40,8 +33,8 @@ const shapeMap = {
 };
 
 export default function WorkflowVisualizerPage() {
-  const [scenario, setScenario] = useState('A simple new order that gets fully filled.');
-  const [mermaidCode, setMermaidCode] = useState(defaultMermaid);
+  const [scenario, setScenario] = useState('');
+  const [mermaidCode, setMermaidCode] = useState('');
   const [visualization, setVisualization] = useState<{ dataUri: string; description: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,11 +43,9 @@ export default function WorkflowVisualizerPage() {
   const [nodes, setNodes] = useState<Node[]>([
     { id: 'A', label: 'Client', shape: 'rect' },
     { id: 'B', label: 'Broker', shape: 'round-edge' },
-    { id: 'C', label: 'Exchange', shape: 'rect' },
   ]);
   const [connections, setConnections] = useState<Connection[]>([
       {id: 'c1', from: 'A', to: 'B', label: 'NewOrderSingle'},
-      {id: 'c2', from: 'B', to: 'C', label: 'ExecutionReport - New'},
   ]);
 
   const generateMermaidFromState = () => {
@@ -71,6 +62,10 @@ export default function WorkflowVisualizerPage() {
     return code;
   };
   
+  useEffect(() => {
+    generateMermaidFromState();
+  }, [nodes, connections]);
+
   const addNode = () => {
     const newNodeId = String.fromCharCode(65 + nodes.length);
     setNodes([...nodes, { id: newNodeId, label: `Node ${newNodeId}`, shape: 'rect' }]);
@@ -219,7 +214,7 @@ export default function WorkflowVisualizerPage() {
                 </div>
             </CardContent>
             <CardFooter>
-                 <Button onClick={() => handleCustomDesign(generateMermaidFromState())} disabled={isLoading}>
+                 <Button onClick={() => handleCustomDesign(mermaidCode)} disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
                     Design Flow
                 </Button>

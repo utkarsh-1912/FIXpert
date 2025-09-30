@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -8,11 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-const mockLogs = `[20240725-10:00:00.123] 8=FIX.4.2|9=154|35=D|34=1|49=CLIENT|56=BROKER|52=20240725-10:00:00.123|11=ORDER1|21=1|55=AAPL|54=1|38=100|40=2|59=0|10=229
-[20240725-10:00:00.245] 8=FIX.4.2|9=178|35=8|34=1|49=BROKER|56=CLIENT|52=20240725-10:00:00.245|11=ORDER1|17=EXEC1|20=0|37=ORD1|39=0|150=0|151=100|55=AAPL|54=1|6=0|14=0|10=181
-[20240725-10:01:00.456] 8=FIX.4.2|9=154|35=D|34=2|49=CLIENT|56=BROKER|52=20240725-10:01:00.456|11=ORDER2|21=1|55=GOOG|54=2|38=50|40=1|59=0|10=231
-[20240725-10:01:00.589] 8=FIX.4.2|9=178|35=8|34=2|49=BROKER|56=CLIENT|52=20240725-10:01:00.589|11=ORDER2|17=EXEC2|20=0|37=ORD2|39=8|150=8|151=50|55=GOOG|54=2|58=Invalid Price|10=195`;
 
 type FixMessage = {
   timestamp: string;
@@ -51,7 +46,7 @@ const msgTypeMap: { [key: string]: { label: string; variant: 'default' | 'second
 };
 
 export default function LogAnalyzerPage() {
-  const [logs, setLogs] = useState(mockLogs);
+  const [logs, setLogs] = useState('');
   const [parsedLogs, setParsedLogs] = useState<FixMessage[]>([]);
   const [filter, setFilter] = useState('');
 
@@ -66,9 +61,9 @@ export default function LogAnalyzerPage() {
     );
   }, [parsedLogs, filter]);
   
-  useState(() => {
+  useEffect(() => {
     handleParse();
-  });
+  }, [logs]);
 
   return (
     <div className="space-y-6">
@@ -83,6 +78,7 @@ export default function LogAnalyzerPage() {
             onChange={(e) => setLogs(e.target.value)}
             rows={8}
             className="font-code"
+            placeholder={'[20240725-10:00:00.123] 8=FIX.4.2|9=154|35=D|...'}
           />
         </CardContent>
         <CardFooter>

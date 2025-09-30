@@ -65,8 +65,8 @@ const DiffLine = ({ parts }: { parts: DiffPart[] }) => (
   <div className="font-code text-xs">
     {parts.map((part, i) => {
       let className = "px-1 py-0.5 rounded";
-      if (part.type === 'added') className += ' bg-accent/20';
-      if (part.type === 'removed') className += ' bg-destructive/20';
+      if (part.type === 'added') className += ' bg-accent/20 text-accent-foreground';
+      if (part.type === 'removed') className += ' bg-destructive/20 text-destructive-foreground';
       return <span key={i} className={className}>{part.value}</span>;
     }).reduce((prev, curr, i) => [prev, <span key={`sep-${i}`} className="text-muted-foreground"> | </span>, curr] as any)}
   </div>
@@ -92,8 +92,8 @@ const FileUploader = ({ onFileUpload }: { onFileUpload: (content: string) => voi
 
 
 export default function ComparatorPage() {
-  const [msg1, setMsg1] = useState('8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|54=1|38=100|40=2\n8=FIX.4.2|9=124|35=D|11=ORDER2|55=MSFT|54=1|38=200|40=2');
-  const [msg2, setMsg2] = useState('8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|54=1|38=150|40=2\n8=FIX.4.2|9=125|35=G|11=ORDER2|41=ORDER2OLD|55=MSFT|54=1|38=200|40=2');
+  const [msg1, setMsg1] = useState('');
+  const [msg2, setMsg2] = useState('');
   const [compareByTagOnly, setCompareByTagOnly] = useState(false);
   const [comparison, setComparison] = useState<ComparisonResult[]>([]);
   
@@ -126,7 +126,7 @@ export default function ComparatorPage() {
                     <TabsTrigger value="file"><FileText className="mr-2 h-4 w-4"/>File Upload</TabsTrigger>
                 </TabsList>
                 <TabsContent value="text" className="mt-4">
-                    <Textarea value={msg1} onChange={e => setMsg1(e.target.value)} rows={10} className="font-code" />
+                    <Textarea value={msg1} onChange={e => setMsg1(e.target.value)} rows={10} className="font-code" placeholder="8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|54=1|38=100|40=2..."/>
                 </TabsContent>
                 <TabsContent value="file" className="mt-4">
                     <FileUploader onFileUpload={setMsg1} />
@@ -145,7 +145,7 @@ export default function ComparatorPage() {
                     <TabsTrigger value="file"><FileText className="mr-2 h-4 w-4"/>File Upload</TabsTrigger>
                 </TabsList>
                 <TabsContent value="text" className="mt-4">
-                    <Textarea value={msg2} onChange={e => setMsg2(e.target.value)} rows={10} className="font-code" />
+                    <Textarea value={msg2} onChange={e => setMsg2(e.target.value)} rows={10} className="font-code" placeholder="8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|54=1|38=150|40=2..."/>
                 </TabsContent>
                 <TabsContent value="file" className="mt-4">
                     <FileUploader onFileUpload={setMsg2} />
@@ -167,7 +167,7 @@ export default function ComparatorPage() {
         <Card>
           <CardHeader>
             <CardTitle>Comparison Result</CardTitle>
-            <CardDescription>Differences are highlighted. Red for removed/changed in A, Blue for added/changed in B.</CardDescription>
+            <CardDescription>Differences are highlighted. Red for removed/changed in A, Navy Blue for added/changed in B.</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[60vh] w-full">

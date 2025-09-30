@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,9 +36,9 @@ const formatXml = (xml: string): string => {
 };
 
 export default function FormatterPage() {
-  const [rawMessage, setRawMessage] = useState('8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|38=100');
+  const [rawMessage, setRawMessage] = useState('');
   const [xmlMessage, setXmlMessage] = useState('');
-  const [rawXml, setRawXml] = useState('<SerisableHashTable><isTuned>true</isTuned><price></price><compare><symbol>aapl</symbol></compare></SerisableHashTable>');
+  const [rawXml, setRawXml] = useState('');
   const [formattedXml, setFormattedXml] = useState('');
 
   const handleFormatFix = () => {
@@ -49,10 +49,13 @@ export default function FormatterPage() {
     setFormattedXml(formatXml(rawXml));
   }
 
-  useState(() => {
+  useEffect(() => {
     handleFormatFix();
+  }, [rawMessage]);
+
+  useEffect(() => {
     handleFormatXml();
-  });
+  }, [rawXml]);
 
   return (
     <Tabs defaultValue="fix-to-xml">
@@ -73,6 +76,7 @@ export default function FormatterPage() {
                     onChange={(e) => setRawMessage(e.target.value)}
                     rows={15}
                     className="font-code"
+                    placeholder="8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|38=100"
                 />
                 </CardContent>
                 <CardFooter>
@@ -105,6 +109,7 @@ export default function FormatterPage() {
                     onChange={(e) => setRawXml(e.target.value)}
                     rows={15}
                     className="font-code"
+                    placeholder='<SerisableHashTable><isTuned>true</isTuned><price></price><compare><symbol>aapl</symbol></compare></SerisableHashTable>'
                 />
                 </CardContent>
                 <CardFooter>

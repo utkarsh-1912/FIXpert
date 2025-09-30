@@ -21,7 +21,7 @@ type StockData = Partial<Quote> & {
 };
 
 export default function SymbolSearchPage() {
-  const [searchTerm, setSearchTerm] = useState('AAPL');
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<StockData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [assetClassFilter, setAssetClassFilter] = useState<string>('all');
@@ -105,7 +105,7 @@ export default function SymbolSearchPage() {
           <div className="relative sm:col-span-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search for symbols..."
+              placeholder="Search for symbols... e.g. AAPL"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -161,7 +161,7 @@ export default function SymbolSearchPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
-                    No symbols found {searchTerm ? `for "${searchTerm}"` : ""}.
+                    No symbols found {searchTerm ? `for "${searchTerm}"` : "for your search"}.
                   </TableCell>
                 </TableRow>
               )}
