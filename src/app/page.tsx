@@ -70,7 +70,7 @@ export default function LandingPage() {
             </div>
             <div className="relative flex items-center justify-center">
                <Image 
-                src="https://picsum.photos/seed/heroseed1/600/400"
+                src="https://picsum.photos/seed/trading/600/400"
                 width={600}
                 height={400}
                 alt="FIX Protocol Visualization"
@@ -116,7 +116,7 @@ export default function LandingPage() {
           <div className="mx-auto grid grid-cols-1 items-center gap-12 px-4 md:grid-cols-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-center">
               <Image
-                src="https://picsum.photos/seed/marketseed2/600/400"
+                src="https://picsum.photos/seed/market/600/400"
                 width={600}
                 height={400}
                 alt="Market Data Analysis"

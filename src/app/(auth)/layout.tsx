@@ -12,7 +12,7 @@ export default function AuthLayout({
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-between bg-muted p-8 text-center relative text-white">
         <div className="absolute inset-0">
             <Image
-                src="https://picsum.photos/seed/authpage/1200/1800"
+                src="https://picsum.photos/seed/finance/1200/1800"
                 alt="Authentication background"
                 fill
                 className="object-cover"
