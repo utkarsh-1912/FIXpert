@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
@@ -36,9 +37,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
             <FixpertIcon className="size-6 text-primary" />
-            <span className="text-lg font-semibold">FIXpert</span>
+            <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">FIXpert</span>
           </div>
-          <SidebarClose />
+          <SidebarTrigger className="hidden md:flex" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
