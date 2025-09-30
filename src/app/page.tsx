@@ -160,9 +160,9 @@ export default function LandingPage() {
             <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} FIXpert. All rights reserved.</p>
           </div>
           <nav className="flex gap-4 text-sm text-muted-foreground">
-            <Link href="#" className="hover:text-foreground">Terms</Link>
-            <Link href="#" className="hover:text-foreground">Privacy</Link>
-            <Link href="#" className="hover:text-foreground">Contact</Link>
+            <Link href="/terms" className="hover:text-foreground">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+            <Link href="/contact" className="hover:text-foreground">Contact</Link>
           </nav>
         </div>
       </footer>
