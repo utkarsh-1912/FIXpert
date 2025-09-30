@@ -15,6 +15,7 @@ const exchanges = [
     { name: "New York Stock Exchange", shortName: "NYSE", url: "https://www.nyse.com/" },
     { name: "London Stock Exchange", shortName: "LSE", url: "https://www.londonstockexchange.com/" },
     { name: "Tokyo Stock Exchange", shortName: "TSE", url: "https://www.jpx.co.jp/english/" },
+    { name: "National Stock Exchange of India", shortName: "NSE", url: "https://www.nseindia.com/" },
 ];
 
 const fixResources = [
