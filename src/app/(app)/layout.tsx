@@ -14,9 +14,20 @@ import {
 import { FixpertIcon } from '@/components/icons';
 import { AppHeader } from '@/components/app-header';
 import { menuItems } from '@/config/nav';
+import { useRequireAuth } from '@/hooks/use-auth.tsx';
+import { Loader2 } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useRequireAuth();
+
+  if (loading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
