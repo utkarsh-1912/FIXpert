@@ -32,9 +32,9 @@ export default function SymbolSearchPage() {
       const results = await searchQuotes(query);
       const mappedResults: StockData[] = results.map(r => ({
           symbol: r.symbol,
-          name: r.longname || r.shortname || 'N/A',
-          assetClass: r.quoteType || 'N/A',
-          exchange: r.excha || r.exchDisp || 'N/A',
+          name: r.longname || r.shortname || 'Unknown',
+          assetClass: r.quoteType || 'Unknown',
+          exchange: r.excha || r.exchDisp || 'Unknown',
       }));
       setSearchResults(mappedResults);
     } catch (error) {
