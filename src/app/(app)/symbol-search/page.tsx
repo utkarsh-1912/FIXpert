@@ -1,49 +1,63 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import type { Quote } from 'yahoo-finance2/dist/esm/src/modules/quote';
+import { searchQuotes } from '@/app/actions/symbol-search.actions';
 
-const mockSymbols = [
-  { symbol: 'AAPL', name: 'Apple Inc.', assetClass: 'Stock', exchange: 'NASDAQ' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', assetClass: 'Stock', exchange: 'NASDAQ' },
-  { symbol: 'MSFT', name: 'Microsoft Corporation', assetClass: 'Stock', exchange: 'NASDAQ' },
-  { symbol: 'AMZN', name: 'Amazon.com, Inc.', assetClass: 'Stock', exchange: 'NASDAQ' },
-  { symbol: 'TSLA', name: 'Tesla, Inc.', assetClass: 'Stock', exchange: 'NASDAQ' },
-  { symbol: 'EUR/USD', name: 'Euro to US Dollar', assetClass: 'Forex', exchange: 'FX' },
-  { symbol: 'GBP/USD', name: 'Pound Sterling to US Dollar', assetClass: 'Forex', exchange: 'FX' },
-  { symbol: 'USD/JPY', name: 'US Dollar to Japanese Yen', assetClass: 'Forex', exchange: 'FX' },
-  { symbol: 'BTC/USD', name: 'Bitcoin to US Dollar', assetClass: 'Crypto', exchange: 'CRYPTO' },
-  { symbol: 'ETH/USD', name: 'Ethereum to US Dollar', assetClass: 'Crypto', exchange: 'CRYPTO' },
-  { symbol: 'ESU24', name: 'E-mini S&P 500 Futures', assetClass: 'Futures', exchange: 'CME' },
-  { symbol: 'NQU24', name: 'E-mini NASDAQ 100 Futures', assetClass: 'Futures', exchange: 'CME' },
-  { symbol: 'CLV24', name: 'Crude Oil WTI Futures', assetClass: 'Commodity', exchange: 'NYMEX' },
-  { symbol: 'GCZ24', name: 'Gold Futures', assetClass: 'Commodity', exchange: 'COMEX' },
-];
+type StockData = Partial<Quote> & {
+  symbol: string;
+  name: string;
+  assetClass: string;
+  exchange: string;
+};
 
 export default function SymbolSearchPage() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('AAPL');
+  const [searchResults, setSearchResults] = useState<StockData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const searchResults = useMemo(() => {
-    if (!searchTerm) return mockSymbols;
-    const lowercasedFilter = searchTerm.toLowerCase();
-    return mockSymbols.filter(
-      ({ symbol, name, assetClass }) =>
-        symbol.toLowerCase().includes(lowercasedFilter) ||
-        name.toLowerCase().includes(lowercasedFilter) ||
-        assetClass.toLowerCase().includes(lowercasedFilter)
-    );
-  }, [searchTerm]);
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const results = await searchQuotes(query);
+      const mappedResults: StockData[] = results.map(r => ({
+          symbol: r.symbol,
+          name: r.longname || r.shortname || 'N/A',
+          assetClass: r.quoteType || 'N/A',
+          exchange: r.excha || r.exchDisp || 'N/A',
+      }));
+      setSearchResults(mappedResults);
+    } catch (error) {
+      console.error("Failed to fetch stock data", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      handleSearch(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTerm, handleSearch]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Symbol Search</CardTitle>
-        <CardDescription>Find trading symbols by name, ticker, or asset class.</CardDescription>
+        <CardDescription>Find real-time trading symbols by name or ticker using Yahoo Finance.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative">
@@ -66,7 +80,13 @@ export default function SymbolSearchPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {searchResults.length > 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin" />
+                  </TableCell>
+                </TableRow>
+              ) : searchResults.length > 0 ? (
                 searchResults.map((item) => (
                   <TableRow key={item.symbol}>
                     <TableCell className="font-medium">{item.symbol}</TableCell>
