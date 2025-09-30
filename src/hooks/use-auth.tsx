@@ -15,6 +15,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
+const AUTH_PAGES = ['/login'];
+const PUBLIC_PAGES = ['/'];
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,9 +36,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthPage = pathname.startsWith('/login');
+    const isAuthPage = AUTH_PAGES.includes(pathname);
+    const isPublicPage = PUBLIC_PAGES.includes(pathname);
 
-    if (!user && !isAuthPage) {
+    if (!user && !isAuthPage && !isPublicPage) {
       router.push('/login');
     } else if (user && isAuthPage) {
       router.push('/dashboard');

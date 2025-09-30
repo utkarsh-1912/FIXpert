@@ -24,15 +24,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Chrome, Github, MessageSquare, Mic, User } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { FixpertIcon } from '@/components/icons';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15.5 10.2c.3-.2.6-.4.8-.7.2-.3.4-.6.5-1h-6.8v3.4h3.9c-.2.6-.5 1.1-.9 1.6-.4.5-.9.9-1.5 1.1v2.8h3.6c2-1.9 3.2-4.7 3.2-7.8z"/><path d="M9 18c2.4 0 4.5-.8 6-2.2l-3.6-2.8c-.8.5-1.8.9-2.9.9-2.2 0-4-1.5-4.7-3.5H2.2v2.8C3.7 15.9 6.2 18 9 18z"/><path d="M2.2 10.7v2.8c1.5-4 4.8-6.7 9.1-6.7 2.6 0 4.9 1 6.4 2.6l2.1-2.1C15.8 1.4 12.6 0 9 0 5.4 0 2.2 2.2 1 5.5L2.2 10.7z"/></svg>
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <title>Google</title>
+        <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.62 1.9-4.72 1.9-4.26 0-7.72-3.36-7.72-7.5s3.46-7.5 7.72-7.5c2.38 0 4.02 1.02 4.94 1.9l2.82-2.82C18.46 2.18 15.82 1 12.48 1 7.02 1 3 5.02 3 10.5s4.02 9.5 9.48 9.5c2.86 0 5.06-1 6.6-2.6 1.74-1.74 2.38-4.26 2.38-6.58 0-.6-.05-1.15-.15-1.68z"/>
+    </svg>
 );
   
 const MicrosoftIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2v10h10V2zM2 12h10v10H2zm10 0h10v10H12zM2 2h10v10H2z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M11.5 2h-9v9h9V2zm-1.5 7.5h-6v-6h6v6zm11-7.5h-9v9h9V2zm-1.5 7.5h-6v-6h6v6zm-9.5 2h-9v9h9v-9zm-1.5 7.5h-6v-6h6v6zm11-7.5h-9v9h9v-9zm-1.5 7.5h-6v-6h6v6z"/>
+    </svg>
 );
 
 
@@ -97,7 +102,7 @@ export default function LoginPage() {
             <CardTitle className="text-3xl">FIXpert</CardTitle>
         </div>
         <CardDescription>
-          Your all-in-one toolkit for the FIX Protocol.
+          Sign in or create an account to access the tools.
         </CardDescription>
       </CardHeader>
       <Tabs defaultValue="login" className="w-full">
@@ -106,7 +111,7 @@ export default function LoginPage() {
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
             <div className="space-y-2">
               <Label htmlFor="login-email">Email</Label>
               <Input
@@ -133,16 +138,25 @@ export default function LoginPage() {
             <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
-            <p className="text-xs text-muted-foreground">Or continue with</p>
+            <div className="relative w-full">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
             <div className="grid grid-cols-3 gap-2 w-full">
-                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2"/> Google</Button>
-                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2"/> GitHub</Button>
-                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2"/> Microsoft</Button>
+                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
+                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2 h-4 w-4"/> GitHub</Button>
+                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2 h-4 w-4"/> Microsoft</Button>
             </div>
           </CardFooter>
         </TabsContent>
         <TabsContent value="signup">
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
             <div className="space-y-2">
               <Label htmlFor="signup-email">Email</Label>
               <Input
@@ -169,11 +183,20 @@ export default function LoginPage() {
             <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
               {isSubmitting ? 'Signing up...' : 'Create Account'}
             </Button>
-             <p className="text-xs text-muted-foreground">Or continue with</p>
+            <div className="relative w-full">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
             <div className="grid grid-cols-3 gap-2 w-full">
-                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2"/> Google</Button>
-                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2"/> GitHub</Button>
-                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2"/> Microsoft</Button>
+                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
+                <Button variant="outline" onClick={() => handleOAuth('github')} disabled={isSubmitting}><Github className="mr-2 h-4 w-4"/> GitHub</Button>
+                <Button variant="outline" onClick={() => handleOAuth('microsoft')} disabled={isSubmitting}><MicrosoftIcon className="mr-2 h-4 w-4"/> Microsoft</Button>
             </div>
           </CardFooter>
         </TabsContent>
