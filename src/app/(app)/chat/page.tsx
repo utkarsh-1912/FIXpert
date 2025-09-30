@@ -226,9 +226,11 @@ export default function ChatPage() {
                             <div className={cn(
                               "relative max-w-[75%] rounded-lg px-4 py-2 text-sm", 
                               msg.role === 'user' 
-                                ? 'bg-primary text-primary-foreground rounded-tr-none before:absolute before:top-0 before:right-[-8px] before:h-2 before:w-2 before:bg-primary before:rounded-bl-full' 
-                                : 'bg-muted rounded-tl-none before:absolute before:top-0 before:left-[-8px] before:h-2 before:w-2 before:bg-muted before:rounded-br-full'
+                                ? 'bg-primary text-primary-foreground rounded-tr-none' 
+                                : 'bg-muted rounded-tl-none'
                             )}>
+                                {msg.role === 'user' && <div className="absolute top-0 right-[-8px] w-0 h-0 border-t-[10px] border-t-primary border-l-[10px] border-l-transparent"></div>}
+                                {msg.role === 'model' && <div className="absolute top-0 left-[-8px] w-0 h-0 border-t-[10px] border-t-muted border-r-[10px] border-r-transparent"></div>}
                                 <MarkdownContent content={msg.content} />
                             </div>
                              {msg.role === 'user' && user && (
@@ -302,5 +304,4 @@ export default function ChatPage() {
         </div>
     </div>
   );
-
-    
+}
