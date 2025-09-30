@@ -72,10 +72,10 @@ export default function SymbolDashboardPage() {
   const { quote, news, summary } = data;
   const priceUp = (quote.regularMarketChange ?? 0) > 0;
   const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
-  const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
-  const chartColor = priceUp ? 'hsl(142.1 76.2% 36.3%)' : priceNeutral ? 'hsl(var(--primary))' : 'hsl(355.7 75.8% 53.1%)';
-
   
+  const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
+  const chartColor = priceUp ? 'hsl(142.1 76.2% 36.3%)' : priceNeutral ? 'hsl(var(--primary))' : 'hsl(0 84.2% 60.2%)';
+
   const getDateFormat = (period: Period) => {
     switch (period) {
       case '1d':
@@ -93,28 +93,30 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center">
-        <Link href="/symbol-search" passHref>
-          <Button variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Search
-          </Button>
-        </Link>
-      </div>
+        <div className="flex items-center">
+            <Link href="/symbol-search" passHref>
+            <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Search
+            </Button>
+            </Link>
+        </div>
 
-       <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
-          <div className="flex items-end gap-4">
-              <p className={`text-4xl font-bold ${priceColor}`}>
-                  {quote.regularMarketPrice?.toFixed(2)}
-              </p>
-              <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                  {priceUp ? <TrendingUp /> : <TrendingDown />}
-                  {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-              </p>
-          </div>
-          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-      </div>
+        <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
+            <div className="flex items-end gap-4">
+                <p className={`text-4xl font-bold ${priceColor}`}>
+                    {quote.regularMarketPrice?.toFixed(2)}
+                    {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+                </p>
+                <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                    {priceUp ? <TrendingUp /> : <TrendingDown />}
+                    {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+                </p>
+            </div>
+            <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+        </div>
+
       
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column */}
@@ -259,4 +261,3 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
-

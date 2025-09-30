@@ -31,7 +31,7 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
                 'regularMarketDayLow', 'regularMarketPreviousClose', 'marketCap', 'regularMarketVolume',
                 'fiftyTwoWeekHigh', 'fiftyTwoWeekLow', 'averageDailyVolume3Month', 'trailingPE',
                 'forwardPE', 'epsTrailingTwelveMonths', 'earningsTimestamp', 'quoteType',
-                'marketState', 'exchange', 'fullExchangeName',
+                'marketState', 'exchange', 'fullExchangeName', 'currency'
             ]
         });
     } catch (error) {
