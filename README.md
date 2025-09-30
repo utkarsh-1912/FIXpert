@@ -19,24 +19,36 @@ FIXpert is a comprehensive Next.js application designed to provide a suite of to
 - Node.js (v18 or later)
 - npm or yarn
 
-### Environment Variables
+### 1. Configure Firebase
 
-Before running the application, you need to set up your environment variables. Create a file named `.env` in the root of the project and add the following variables. You can use the `.env.example` file as a template.
+Before running the application, you need to configure your Firebase credentials.
+
+Open the file `src/lib/firebase.ts` and replace the placeholder values with your actual Firebase project configuration. You can get these values from your Firebase project settings.
+
+```typescript
+// src/lib/firebase.ts
+
+const firebaseConfig = {
+  apiKey: "your-api-key", // Replace with your API Key
+  authDomain: "your-auth-domain", // Replace with your Auth Domain
+  projectId: "your-project-id", // Replace with your Project ID
+  appId: "your-app-id", // Replace with your App ID
+};
+```
+
+### 2. Set Up Environment Variables
+
+Some features, like the AI-powered Interpreter and Visualizer, require an API key for Google's Gemini models. Create a file named `.env` in the root of the project and add the following variable:
 
 ```bash
-# Firebase Configuration
-# You can get these values from your Firebase project settings.
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
-NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
-NEXT_PUBLIC_FIREBASE_API_KEY="your-api-key"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-auth-domain"
-
-# Google AI for Genkit
+# .env
 # Required for AI-powered features like the Interpreter and Visualizer.
 GEMINI_API_KEY="your-gemini-api-key"
 ```
 
-### Installation and Running the App
+You can get a Gemini API key from Google AI Studio.
+
+### 3. Installation and Running the App
 
 1.  **Install dependencies:**
     ```bash
