@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { getAuth, signOut } from 'firebase/auth';
 import { getFirebaseApp } from '@/lib/firebase';
-import { LogOut, Settings, BrainCircuit } from 'lucide-react';
+import { LogOut, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -46,7 +47,7 @@ export function AppHeader() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <BrainCircuit className="h-5 w-5 text-primary/80" />
+                <Sparkles className="h-5 w-5 text-primary/80" />
               </TooltipTrigger>
               <TooltipContent>
                 <p>This feature is powered by Generative AI.</p>
