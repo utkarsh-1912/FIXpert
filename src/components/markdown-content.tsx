@@ -20,10 +20,10 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
           if (node.children[0]?.type === 'element' && node.children[0]?.tagName === 'code') {
             // If it's a block code, it's already wrapped in a <pre> by the code component below.
             // Just render the children without an extra <p> tag.
-            return <div {...props} />;
+            return <>{props.children}</>;
           }
           // Otherwise, it's a regular paragraph.
-          return <p className="whitespace-pre-wrap" {...props} />;
+          return <p className="leading-7 [&:not(:first-child)]:mt-4" {...props} />;
         },
         table: ({ node, ...props }) => <Table className="my-4" {...props} />,
         thead: ({ node, ...props }) => <TableHeader {...props} />,
@@ -31,19 +31,19 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
         tr: ({ node, ...props }) => <TableRow {...props} />,
         th: ({ node, ...props }) => <TableHead className="font-semibold" {...props} />,
         td: ({ node, ...props }) => <TableCell {...props} />,
-        ul: ({ node, ...props }) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
-        ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
+        ul: ({ node, ...props }) => <ul className="my-4 ml-6 list-disc [&>li]:mt-2" {...props} />,
+        ol: ({ node, ...props }) => <ol className="my-4 ml-6 list-decimal [&>li]:mt-2" {...props} />,
         li: ({ node, ...props }) => <li {...props} />,
         code: ({ node, inline, className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
           return !inline ? (
-            <pre className="bg-muted/80 p-3 rounded-md my-2 overflow-x-auto">
+            <pre className="my-4 overflow-x-auto rounded-md bg-muted/80 p-3 font-mono">
               <code className={className} {...props}>
                 {children}
               </code>
             </pre>
           ) : (
-            <code className="bg-muted/80 px-1.5 py-1 rounded-md font-mono text-sm" {...props}>
+            <code className="rounded-md bg-muted/80 px-1.5 py-1 font-mono text-sm" {...props}>
               {children}
             </code>
           );
