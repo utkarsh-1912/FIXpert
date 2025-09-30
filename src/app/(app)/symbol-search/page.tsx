@@ -90,7 +90,7 @@ export default function SymbolSearchPage() {
   }
   
   const handleRowClick = (symbol: string) => {
-    router.push(`/symbol-search/${symbol}`);
+    router.push(`/symbol-search/${encodeURIComponent(symbol)}`);
   };
 
 
