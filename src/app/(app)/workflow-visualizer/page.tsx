@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { visualizeFixWorkflow } from '@/ai/flows/visualize-fix-workflow';
-import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml } from 'lucide-react';
+import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml, ChevronsUpDown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type Node = {
   id: string;
@@ -32,7 +33,14 @@ const shapeMap = {
   circle: (id: string, label: string) => `${id}((${label}))`,
 };
 
+const TABS = [
+  { value: 'scenario', label: 'From Scenario', icon: BrainCircuit },
+  { value: 'manual', label: 'Manual Designer', icon: PencilRuler },
+  { value: 'mermaid', label: 'Mermaid Code', icon: CodeXml },
+];
+
 export default function WorkflowVisualizerPage() {
+  const [activeTab, setActiveTab] = useState(TABS[0].value);
   const [scenario, setScenario] = useState('');
   const [mermaidCode, setMermaidCode] = useState('');
   const [visualization, setVisualization] = useState<{ dataUri: string; description: string } | null>(null);
@@ -135,15 +143,46 @@ export default function WorkflowVisualizerPage() {
     }
   };
 
+  const ActiveTabLabel = TABS.find(tab => tab.value === activeTab)?.label;
+  const ActiveTabIcon = TABS.find(tab => tab.value === activeTab)?.icon;
+
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
-        <Tabs defaultValue="scenario" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="scenario"><BrainCircuit className="mr-2 h-4 w-4" />From Scenario</TabsTrigger>
-            <TabsTrigger value="manual"><PencilRuler className="mr-2 h-4 w-4" />Manual Designer</TabsTrigger>
-            <TabsTrigger value="mermaid"><CodeXml className="mr-2 h-4 w-4" />Mermaid Code</TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            {/* Desktop Tabs */}
+            <div className="hidden sm:block">
+              <TabsList className="grid w-full grid-cols-3">
+                {TABS.map(tab => (
+                  <TabsTrigger key={tab.value} value={tab.value}>
+                    <tab.icon className="mr-2 h-4 w-4" />
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+
+            {/* Mobile Dropdown */}
+            <div className="sm:hidden mb-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    {ActiveTabIcon && <ActiveTabIcon className="mr-2 h-4 w-4" />}
+                    {ActiveTabLabel}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                  {TABS.map(tab => (
+                    <DropdownMenuItem key={tab.value} onSelect={() => setActiveTab(tab.value)}>
+                      <tab.icon className="mr-2 h-4 w-4" />
+                      {tab.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           
           <TabsContent value="scenario">
             <CardHeader>

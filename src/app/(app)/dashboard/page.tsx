@@ -25,18 +25,24 @@ const fixResources = [
 ];
 
 const QuickLink = ({ name, url, shortName }: { name: string; url: string, shortName?: string }) => {
+    const linkContent = (
+        <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
+            <span className="text-sm font-medium">{name}</span>
+            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        </div>
+    );
+
     if (shortName) {
         return (
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                         <Link href={url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
-                            <span className="text-sm font-medium">{shortName}</span>
-                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                         <Link href={url} target="_blank" rel="noopener noreferrer">
+                            {linkContent}
                         </Link>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>{name}</p>
+                        <p>{shortName}</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -44,9 +50,8 @@ const QuickLink = ({ name, url, shortName }: { name: string; url: string, shortN
     }
 
     return (
-        <Link href={url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
-            <span className="text-sm font-medium">{name}</span>
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        <Link href={url} target="_blank" rel="noopener noreferrer">
+            {linkContent}
         </Link>
     );
 }

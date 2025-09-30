@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -128,7 +129,7 @@ export default function InterpreterPage() {
                     ))}
                 </Accordion>
             ) : (
-              <div className="flex h-full items-center justify-center rounded-md border border-dashed">
+              <div className="flex h-full items-center justify-center rounded-md border border-dashed p-8">
                 <div className="text-center text-muted-foreground">
                     <Wand2 className="mx-auto h-12 w-12" />
                     <p className="mt-4">AI interpretation will appear here.</p>

@@ -1,13 +1,25 @@
 export const FixpertIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 100 68"
-    fill="currentColor"
-    {...props}
-  >
-    <path d="M4.23 0H14.1L14.03 14.54H25.02V23.41H14.03V42.06H32.6V50.93H14.03V68H4.16V0.07L4.23 0Z" />
-    <path d="M37.94 14.54H47.88V68H37.94V14.54Z" />
-    <path d="M13.96 14.54H4.23V23.41H13.96V14.54Z" />
-    <path d="M60.67 14.54L74.21 34.35L87.75 14.54H100L80.12 41.2L100 68H87.82L74.21 48.01L60.6 68H48.42L68.3 41.2L48.42 14.54H60.67Z" />
-  </svg>
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 100 85" 
+        fill="currentColor"
+        {...props}
+    >
+        <path 
+            d="M93.3,21.3c-3.4,0-6.2,2.8-6.2,6.2c0,3.4,2.8,6.2,6.2,6.2c3.4,0,6.2-2.8,6.2-6.2C99.5,24.1,96.7,21.3,93.3,21.3z" 
+            style={{ fill: '#F5D565' }}
+        />
+        <path 
+            d="M97.2,0H3.3C1.5,0,0,1.5,0,3.3v13.3h99.5V3.3C100,1.5,98.5,0,97.2,0z" 
+            style={{ fill: '#3E63F4' }}
+        />
+        <path 
+            d="M0,81.7c0,1.8,1.5,3.3,3.3,3.3h53.9c1.8,0,3.3-1.5,3.3-3.3V21.3H0V81.7z" 
+            style={{ fill: '#F5D565' }}
+        />
+        <path 
+            d="M65.4,85h31.3c1.8,0,3.3-1.5,3.3-3.3V21.3H65.4V85z" 
+            style={{ fill: '#3E63F4' }}
+        />
+    </svg>
 );
