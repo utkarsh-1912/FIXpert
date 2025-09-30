@@ -11,6 +11,7 @@ import { format, subDays } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useParams } from 'next/navigation';
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;
 
@@ -37,20 +38,23 @@ const DataPoint = ({ label, value, change, isPercentage }: { label: string; valu
 );
 
 
-export default function SymbolDashboardPage({ params }: { params: { symbol: string } }) {
+export default function SymbolDashboardPage() {
+  const params = useParams();
+  const symbol = params.symbol as string;
   const [data, setData] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('1y');
 
   useEffect(() => {
+    if (!symbol) return;
     const fetchData = async () => {
       setLoading(true);
-      const result = await getQuote(params.symbol);
+      const result = await getQuote(symbol);
       setData(result);
       setLoading(false);
     };
     fetchData();
-  }, [params.symbol]);
+  }, [symbol]);
 
   const chartData = (data?.history || [])
     .map(h => ({ date: format(new Date(h.date), 'yyyy-MM-dd'), price: h.close?.toFixed(2) }))
@@ -80,7 +84,7 @@ export default function SymbolDashboardPage({ params }: { params: { symbol: stri
   if (!data || !data.quote) {
     return (
       <div className="text-center text-destructive">
-        Failed to load data for symbol {params.symbol}. Please try again.
+        Failed to load data for symbol {symbol}. Please try again.
       </div>
     );
   }
