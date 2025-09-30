@@ -231,8 +231,8 @@ export default function ChatPage() {
                                 <div className={cn(
                                     "absolute w-0 h-0 border-[8px] border-transparent",
                                     msg.role === 'user'
-                                        ? "top-3 -right-2 border-l-primary"
-                                        : "top-3 -left-2 border-r-muted"
+                                        ? "top-3 -right-3 border-l-[10px] border-l-primary"
+                                        : "top-3 -left-3 border-r-[10px] border-r-muted"
                                 )}></div>
                                 <MarkdownContent content={msg.content} />
                             </div>
