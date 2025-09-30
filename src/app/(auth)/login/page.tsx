@@ -64,7 +64,7 @@ export default function LoginPage() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
       toast({ title: isLogin ? 'Login Successful' : 'Signup Successful' });
-      router.push('/dashboard');
+      router.push('/');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -86,7 +86,7 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, authProvider);
       toast({ title: 'Login Successful' });
-      router.push('/dashboard');
+      router.push('/');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -134,7 +134,7 @@ export default function LoginPage() {
       try {
           await window.confirmationResult.confirm(otp);
           toast({ title: 'Login Successful' });
-          router.push('/dashboard');
+          router.push('/');
       } catch (error: any) {
           toast({
             title: 'OTP Verification Failed',
