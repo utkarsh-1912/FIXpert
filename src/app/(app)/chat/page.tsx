@@ -175,7 +175,7 @@ export default function ChatPage() {
   
   return (
     <div className="flex flex-col gap-6">
-        <Card className="flex flex-col h-[calc(100vh-12rem)]">
+        <Card className="flex flex-col h-[calc(100vh-8rem)]">
             <CardHeader className="flex flex-col gap-4">
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
