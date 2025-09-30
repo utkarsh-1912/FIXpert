@@ -19,57 +19,58 @@ export const searchQuotes = cache(async (query: string) => {
 
 
 export const getQuote = cache(async (symbol: string) => {
+    let quote, news, history, summary;
+
     try {
-        const result = await yahooFinance.quote(symbol, {
+        quote = await yahooFinance.quote(symbol, {
             fields: [
-                'symbol',
-                'longName',
-                'shortName',
-                'regularMarketPrice',
-                'regularMarketChange',
-                'regularMarketChangePercent',
-                'regularMarketOpen',
-                'regularMarketDayHigh',
-                'regularMarketDayLow',
-                'regularMarketPreviousClose',
-                'marketCap',
-                'regularMarketVolume',
-                'fiftyTwoWeekHigh',
-                'fiftyTwoWeekLow',
-                'averageDailyVolume3Month',
-                'trailingPE',
-                'forwardPE',
-                'epsTrailingTwelveMonths',
-                'earningsTimestamp',
-                'quoteType',
-                'marketState',
-                'exchange',
-                'fullExchangeName',
+                'symbol', 'longName', 'shortName', 'regularMarketPrice', 'regularMarketChange',
+                'regularMarketChangePercent', 'regularMarketOpen', 'regularMarketDayHigh',
+                'regularMarketDayLow', 'regularMarketPreviousClose', 'marketCap', 'regularMarketVolume',
+                'fiftyTwoWeekHigh', 'fiftyTwoWeekLow', 'averageDailyVolume3Month', 'trailingPE',
+                'forwardPE', 'epsTrailingTwelveMonths', 'earningsTimestamp', 'quoteType',
+                'marketState', 'exchange', 'fullExchangeName',
             ]
         });
-        
-        const news = await yahooFinance.search(symbol, { newsCount: 10 });
-        
-        const history = await yahooFinance.chart(symbol, {
+    } catch (error) {
+        console.error(`Yahoo Finance API quote() error for ${symbol}:`, error);
+        // If the main quote fails, we can't proceed.
+        return null;
+    }
+
+    try {
+        const newsResult = await yahooFinance.search(symbol, { newsCount: 10 });
+        news = newsResult.news;
+    } catch (error) {
+        console.error(`Yahoo Finance API search() for news error for ${symbol}:`, error);
+        news = [];
+    }
+
+    try {
+        const historyResult = await yahooFinance.chart(symbol, {
             period1: '1y',
             interval: '1d'
         });
-
-        // This is a separate call that gets the company profile/summary
-        const summary = await yahooFinance._quoteSummary(symbol, {
+        history = historyResult.quotes;
+    } catch (error) {
+        console.error(`Yahoo Finance API chart() error for ${symbol}:`, error);
+        history = [];
+    }
+    
+    try {
+        const summaryResult = await yahooFinance._quoteSummary(symbol, {
            modules: ["assetProfile"]
         });
-
-        return {
-            quote: result,
-            news: news.news,
-            history: history.quotes,
-            summary: summary.assetProfile,
-        };
-
+        summary = summaryResult.assetProfile;
     } catch (error) {
-        console.error(`Yahoo Finance API quote error for ${symbol}:`, error);
-        // Return null or an error object to be handled by the frontend
-        return null;
+        console.error(`Yahoo Finance API _quoteSummary() error for ${symbol}:`, error);
+        summary = null;
     }
+
+    return {
+        quote,
+        news,
+        history,
+        summary,
+    };
 });
