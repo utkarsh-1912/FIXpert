@@ -153,7 +153,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md margin-auto md:min-w-60">
       <div id="recaptcha-container"></div>
       <CardHeader className="text-center">
         <Link href="/" className="mx-auto mb-4 flex items-center gap-2">
@@ -168,7 +168,7 @@ export default function LoginPage() {
       <CardContent className="space-y-4 pt-6">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input id="email" type="email" placeholder="hello@fi-xpert.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
