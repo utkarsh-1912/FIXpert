@@ -17,10 +17,18 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
       remarkPlugins={[remarkGfm, remarkBreaks]}
       components={{
         p: ({ node, ...props }) => {
-          // Check if the paragraph contains a code block
-          if (node.children[0]?.type === 'element' && node.children[0]?.tagName === 'code') {
-            // If it's a block code, it's already wrapped in a <pre> by the code component below.
-            // Just render the children without an extra <p> tag.
+          // Check if the paragraph contains a code block that should be treated as a block element
+          const firstChild = node.children[0];
+          if (
+            firstChild &&
+            firstChild.type === 'element' &&
+            firstChild.tagName === 'code' &&
+            firstChild.children[0] &&
+            firstChild.children[0].type === 'text' &&
+            firstChild.children[0].value.includes('\n')
+          ) {
+            // This is likely a block-level code snippet. Render its children directly
+            // to avoid nesting a <pre> (from the `code` component) inside a <p>.
             return <>{props.children}</>;
           }
           // Otherwise, it's a regular paragraph.
@@ -34,7 +42,6 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
         td: ({ node, ...props }) => <TableCell {...props} />,
         ul: ({ node, ...props }) => <ul className="my-4 ml-6 list-disc [&>li]:mt-2" {...props} />,
         ol: ({ node, ...props }) => <ol className="my-4 ml-6 list-decimal [&>li]:mt-2" {...props} />,
-        li: ({ node, ...props }) => <li {...props} />,
         code: ({ node, inline, className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
           return !inline ? (
