@@ -13,7 +13,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
 const AUTH_PAGES = ['/login'];
-const PUBLIC_PAGES = ['/'];
+const PUBLIC_PAGES: string[] = [];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const isAuthPage = AUTH_PAGES.includes(pathname);
     const isPublicPage = PUBLIC_PAGES.includes(pathname);
+
 
     // If the user is not logged in and not on a public/auth page, redirect to login.
     if (!user && !isAuthPage && !isPublicPage) {

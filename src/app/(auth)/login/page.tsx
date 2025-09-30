@@ -8,6 +8,8 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithPhoneNumber,
+  RecaptchaVerifier
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,16 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { FixpertIcon } from '@/components/icons';
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
+
+declare global {
+    interface Window {
+        recaptchaVerifier: RecaptchaVerifier;
+        confirmationResult: any;
+    }
+}
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -35,6 +47,9 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -83,8 +98,57 @@ export default function LoginPage() {
     }
   }
 
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        }
+      });
+    }
+  }
+
+  const handlePhoneAuth = async () => {
+      setIsSubmitting(true);
+      try {
+        setupRecaptcha();
+        const appVerifier = window.recaptchaVerifier;
+        const confirmationResult = await signInWithPhoneNumber(auth, `+${phone}`, appVerifier);
+        window.confirmationResult = confirmationResult;
+        setOtpSent(true);
+        toast({ title: 'OTP Sent', description: 'Enter the code sent to your phone.' });
+      } catch (error: any) {
+         toast({
+            title: 'Phone Authentication Failed',
+            description: error.message,
+            variant: 'destructive',
+      });
+      } finally {
+          setIsSubmitting(false);
+      }
+  }
+
+  const handleOtpVerify = async () => {
+      setIsSubmitting(true);
+      try {
+          await window.confirmationResult.confirm(otp);
+          toast({ title: 'Login Successful' });
+          router.push('/dashboard');
+      } catch (error: any) {
+          toast({
+            title: 'OTP Verification Failed',
+            description: error.message,
+            variant: 'destructive',
+          });
+      } finally {
+          setIsSubmitting(false);
+      }
+  }
+
   return (
     <Card className="w-full max-w-md">
+      <div id="recaptcha-container"></div>
       <CardHeader className="text-center">
         <div className="mx-auto mb-4 flex items-center gap-2">
             <FixpertIcon className="size-8 text-primary" />
@@ -95,8 +159,9 @@ export default function LoginPage() {
         </CardDescription>
       </CardHeader>
       <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Login</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="login">Email</TabsTrigger>
+          <TabsTrigger value="phone">Phone</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
@@ -127,7 +192,7 @@ export default function LoginPage() {
             <Button className="w-full" onClick={() => handleAuth(true)} disabled={isSubmitting}>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
-            <div className="relative w-full">
+             <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -137,9 +202,51 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-2 w-full">
-                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-            </div>
+            <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
+          </CardFooter>
+        </TabsContent>
+         <TabsContent value="phone">
+          <CardContent className="space-y-4 pt-6">
+            {!otpSent ? (
+              <div className="space-y-2">
+                <Label htmlFor="phone-number">Phone Number</Label>
+                <PhoneInput
+                    country={'us'}
+                    value={phone}
+                    onChange={setPhone}
+                    inputProps={{
+                        name: 'phone-number',
+                        required: true,
+                        autoFocus: true,
+                        className: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    }}
+                    containerClass="w-full"
+                />
+              </div>
+            ) : (
+               <div className="space-y-2">
+                <Label htmlFor="otp">Verification Code</Label>
+                <Input
+                    id="otp"
+                    type="text"
+                    placeholder="Enter 6-digit code"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                />
+               </div>
+            )}
+          </CardContent>
+          <CardFooter>
+            {!otpSent ? (
+              <Button className="w-full" onClick={handlePhoneAuth} disabled={isSubmitting || !phone}>
+                {isSubmitting ? 'Sending OTP...' : 'Send OTP'}
+              </Button>
+            ) : (
+              <Button className="w-full" onClick={handleOtpVerify} disabled={isSubmitting || !otp}>
+                {isSubmitting ? 'Verifying...' : 'Verify & Login'}
+              </Button>
+            )}
           </CardFooter>
         </TabsContent>
         <TabsContent value="signup">
@@ -170,7 +277,7 @@ export default function LoginPage() {
             <Button className="w-full" onClick={() => handleAuth(false)} disabled={isSubmitting}>
               {isSubmitting ? 'Signing up...' : 'Create Account'}
             </Button>
-            <div className="relative w-full">
+             <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -180,9 +287,7 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-2 w-full">
-                <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting}><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
-            </div>
+            <Button variant="outline" onClick={() => handleOAuth('google')} disabled={isSubmitting} className="w-full"><GoogleIcon className="mr-2 h-4 w-4"/> Google</Button>
           </CardFooter>
         </TabsContent>
       </Tabs>

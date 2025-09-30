@@ -21,8 +21,8 @@ import Link from 'next/link';
 
 export function AppHeader() {
   const pathname = usePathname();
-  const currentItem = menuItems.find(item => pathname.startsWith(item.href));
-  const title = currentItem ? currentItem.label : 'FIXpert';
+  const currentItem = menuItems.find(item => item.href === pathname || (pathname.startsWith(item.href) && item.href !== '/')) ?? menuItems.find(i => i.href === '/');
+  const title = currentItem ? currentItem.label : 'Dashboard';
   const { user } = useAuth();
   const router = useRouter();
 
