@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -12,9 +13,9 @@ import { searchQuotes } from '@/app/actions/symbol-search.actions';
 
 type StockData = Partial<Quote> & {
   symbol: string;
-  name: string;
-  assetClass: string;
-  exchange: string;
+  name?: string;
+  assetClass?: string;
+  exchange?: string;
 };
 
 export default function SymbolSearchPage() {
@@ -32,9 +33,9 @@ export default function SymbolSearchPage() {
       const results = await searchQuotes(query);
       const mappedResults: StockData[] = results.map(r => ({
           symbol: r.symbol,
-          name: r.longname || r.shortname || 'Unknown',
-          assetClass: r.quoteType || 'Unknown',
-          exchange: r.excha || r.exchDisp || 'Unknown',
+          name: r.longname || r.shortname,
+          assetClass: r.quoteType,
+          exchange: r.exchDisp || r.exchange,
       }));
       setSearchResults(mappedResults);
     } catch (error) {
@@ -52,6 +53,12 @@ export default function SymbolSearchPage() {
 
     return () => clearTimeout(debounceTimeout);
   }, [searchTerm, handleSearch]);
+
+  const shouldShowValue = (value?: string) => {
+    if (!value) return false;
+    const lowerCaseValue = value.toLowerCase();
+    return lowerCaseValue !== 'n/a' && lowerCaseValue !== 'unknown';
+  }
 
   return (
     <Card>
@@ -90,11 +97,11 @@ export default function SymbolSearchPage() {
                 searchResults.map((item) => (
                   <TableRow key={item.symbol}>
                     <TableCell className="font-medium">{item.symbol}</TableCell>
-                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{shouldShowValue(item.name) ? item.name : ''}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{item.assetClass}</Badge>
+                      {shouldShowValue(item.assetClass) && <Badge variant="outline">{item.assetClass}</Badge>}
                     </TableCell>
-                    <TableCell>{item.exchange}</TableCell>
+                    <TableCell>{shouldShowValue(item.exchange) ? item.exchange : ''}</TableCell>
                   </TableRow>
                 ))
               ) : (
