@@ -6,8 +6,8 @@ import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'FIXpert',
-  description: 'The Ultimate FIX Protocol Toolkit for Financial Engineers',
+  title: 'FIXpert | AI-Powered FIX Protocol Toolkit & Market Analysis',
+  description: 'FIXpert is the ultimate toolkit for financial engineers, offering AI-powered FIX message interpretation, log analysis, workflow visualization, and real-time symbol search. Decode, compare, and analyze FIX protocol data effortlessly.',
 };
 
 export default function RootLayout({

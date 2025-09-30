@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FixpertIcon } from '@/components/icons';
 import { menuItems } from '@/config/nav';
-import { ArrowRight, Star, Sparkles, MoreHorizontal } from 'lucide-react';
+import { ArrowRight, Star, Sparkles, MoreHorizontal, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 
 const testimonials = [
@@ -111,8 +111,41 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Market Data Section */}
         <section className="w-full py-20 md:py-32">
+          <div className="mx-auto grid grid-cols-1 items-center gap-12 px-4 md:grid-cols-2 sm:px-6 lg:px-8">
+            <div className="relative flex items-center justify-center">
+              <Image
+                src="https://picsum.photos/seed/marketdata/600/400"
+                width={600}
+                height={400}
+                alt="Market Data Analysis"
+                className="rounded-xl shadow-2xl"
+                data-ai-hint="stock market chart"
+              />
+            </div>
+            <div className="space-y-6">
+              <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                Market Insights
+              </div>
+              <h2 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl">
+                Stay Ahead of the Market
+              </h2>
+              <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                Seamlessly search for real-time trading symbols from global markets. Get instant access to quotes, news, and key financial data to inform your trading strategies, all without leaving the FIXpert ecosystem.
+              </p>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/symbol-search">
+                  Explore Market Data <TrendingUp className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+
+        {/* Testimonials Section */}
+        <section className="w-full bg-muted/30 py-20 md:py-32">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Financial Engineers Worldwide</h2>
@@ -145,7 +178,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="relative w-full bg-muted/30 py-20 md:py-32 overflow-hidden">
+        <section className="relative w-full py-20 md:py-32 overflow-hidden">
              <div 
                 className="absolute inset-0 z-0 opacity-10"
                 style={{
