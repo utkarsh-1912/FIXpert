@@ -7,6 +7,7 @@ import {
   Workflow,
   Search,
   FileCog,
+  MessageCircle,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export interface NavItem {
 export const menuItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, description: 'An overview of all available tools.' },
   { href: '/interpreter', label: 'Interpreter', icon: MessageSquare, description: 'Parse and understand raw FIX messages.' },
+  { href: '/chat', label: 'Chat', icon: MessageCircle, description: 'Chat with an AI FIX protocol expert.' },
   { href: '/log-analyzer', label: 'Log Analyzer', icon: FileText, description: 'Analyze and filter FIX protocol log files.' },
   { href: '/log-processor', label: 'Log Processor', icon: FileCog, description: 'Process and sort raw FIX log files.' },
   { href: '/comparator', label: 'Comparator', icon: GitCompareArrows, description: 'Compare two FIX messages side-by-side.' },
