@@ -22,9 +22,10 @@ type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 
 export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     let quote, news, history, summary;
+    const encodedSymbol = encodeURIComponent(symbol);
 
     try {
-        quote = await yahooFinance.quote(symbol, {
+        quote = await yahooFinance.quote(encodedSymbol, {
             fields: [
                 'symbol', 'longName', 'shortName', 'regularMarketPrice', 'regularMarketChange',
                 'regularMarketChangePercent', 'regularMarketOpen', 'regularMarketDayHigh',
@@ -41,7 +42,7 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     }
 
     try {
-        const newsResult = await yahooFinance.search(symbol, { newsCount: 10 });
+        const newsResult = await yahooFinance.search(encodedSymbol, { newsCount: 10 });
         news = newsResult.news;
     } catch (error) {
         console.error(`Yahoo Finance API search() for news error for ${symbol}:`, error);
@@ -80,7 +81,7 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
                 break;
         }
 
-        const historyResult = await yahooFinance.chart(symbol, {
+        const historyResult = await yahooFinance.chart(encodedSymbol, {
             period1: period === 'all' ? 'max' : format(period1 as Date, 'yyyy-MM-dd'),
             interval: interval
         });
@@ -91,7 +92,7 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     }
     
     try {
-        const summaryResult = await yahooFinance._quoteSummary(symbol, {
+        const summaryResult = await yahooFinance._quoteSummary(encodedSymbol, {
            modules: ["assetProfile"]
         });
         summary = summaryResult.assetProfile;
