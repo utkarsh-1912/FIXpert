@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useId } from 'react';
@@ -6,7 +7,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from '@/components/ui/textarea';
 import { visualizeFixWorkflow } from '@/ai/flows/visualize-fix-workflow';
 import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml } from 'lucide-react';
-import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -267,11 +267,10 @@ export default function WorkflowVisualizerPage() {
             <div className="space-y-4 w-full">
               {visualization.dataUri ? (
                 <div className="rounded-lg border bg-card-foreground/5 p-4 flex justify-center">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={visualization.dataUri}
                     alt="FIX Workflow Visualization"
-                    width={500}
-                    height={300}
                     className="h-auto max-w-full"
                   />
                 </div>
@@ -288,5 +287,7 @@ export default function WorkflowVisualizerPage() {
     </div>
   );
 }
+
+    
 
     
