@@ -81,7 +81,7 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
         }
 
         const historyResult = await yahooFinance.chart(symbol, {
-            period1: period === 'all' ? 'max' : format(period1, 'yyyy-MM-dd'),
+            period1: period === 'all' ? 'max' : format(period1 as Date, 'yyyy-MM-dd'),
             interval: interval
         });
         history = historyResult.quotes;
@@ -119,7 +119,7 @@ export const getTrendingNews = cache(async () => {
         return result.news.map(item => ({
             ...item,
             // Ensure timestamp is in milliseconds for date formatting
-            providerPublishTime: item.providerPublishTime * 1000,
+            providerPublishTime: item.providerPublishTime,
         }));
     } catch (error) {
         console.error('Yahoo Finance API getTrendingNews error:', error);
