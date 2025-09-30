@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useParams } from 'next/navigation';
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;
+type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 
 const chartConfig = {
   price: {
@@ -33,38 +34,24 @@ export default function SymbolDashboardPage() {
   const symbol = Array.isArray(params.symbol) ? params.symbol[0] : params.symbol;
   const [data, setData] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('1y');
+  const [timeRange, setTimeRange] = useState<Period>('1y');
 
   useEffect(() => {
     if (!symbol) return;
-    const fetchData = async () => {
+    const fetchData = async (period: Period) => {
       setLoading(true);
-      const result = await getQuote(symbol as string);
+      const result = await getQuote(symbol as string, period);
       setData(result);
       setLoading(false);
     };
-    fetchData();
-  }, [symbol]);
+    fetchData(timeRange);
+  }, [symbol, timeRange]);
 
   const chartData = (data?.history || [])
-    .map(h => ({ date: format(new Date(h.date), 'yyyy-MM-dd'), price: h.close?.toFixed(2) }))
-    .filter(h => {
-        if (!h.date || !h.price) return false;
-        if (timeRange === 'all') return true;
-        const historyDate = new Date(h.date);
-        let startDate;
-        switch (timeRange) {
-            case '1d': startDate = subDays(new Date(), 1); break;
-            case '5d': startDate = subDays(new Date(), 5); break;
-            case '1m': startDate = subDays(new Date(), 30); break;
-            case '6m': startDate = subDays(new Date(), 180); break;
-            case '1y': startDate = subDays(new Date(), 365); break;
-            default: return true;
-        }
-        return historyDate >= startDate;
-    });
+    .map(h => ({ date: h.date, price: h.close?.toFixed(2) }))
+    .filter(h => h.date && h.price);
 
-  if (loading) {
+  if (loading && !data) { // Show full-page loader only on initial load
     return (
       <div className="flex h-[80vh] w-full items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -83,6 +70,18 @@ export default function SymbolDashboardPage() {
   const { quote, news, summary } = data;
   const priceUp = (quote.regularMarketChange ?? 0) >= 0;
   const priceColor = priceUp ? 'text-green-500' : 'text-red-500';
+
+  const getDateFormat = (period: Period) => {
+    switch (period) {
+      case '1d':
+        return 'HH:mm';
+      case '5d':
+      case '1m':
+        return 'MMM dd';
+      default:
+        return 'MMM yyyy';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -118,15 +117,20 @@ export default function SymbolDashboardPage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                     <CardTitle>Price Chart</CardTitle>
                     <div className="flex items-center gap-1 mt-2 sm:mt-0">
-                        {['1D', '5D', '1M', '6M', '1Y', 'All'].map(range => (
-                            <Button key={range} variant={timeRange.toUpperCase() === range ? "secondary" : "ghost"} size="sm" onClick={() => setTimeRange(range.toLowerCase())}>
-                                {range}
+                        {(['1d', '5d', '1m', '6m', '1y', 'all'] as Period[]).map(range => (
+                            <Button key={range} variant={timeRange === range ? "secondary" : "ghost"} size="sm" onClick={() => setTimeRange(range)} disabled={loading}>
+                                {range.toUpperCase()}
                             </Button>
                         ))}
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="h-[400px] w-full p-2">
+            <CardContent className="h-[400px] w-full p-2 relative">
+                {loading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-card/50 z-10">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                )}
               <ChartContainer config={chartConfig} className="h-full w-full">
                 {chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -140,12 +144,19 @@ export default function SymbolDashboardPage() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={(value) => format(new Date(value), 'MMM dd')}
+                        tickFormatter={(value) => format(new Date(value), getDateFormat(timeRange))}
                         tickLine={false}
                         axisLine={false}
                       />
                       <YAxis orientation="right" tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} />
-                      <Tooltip content={<ChartTooltipContent indicator="line" />} />
+                      <Tooltip 
+                        content={<ChartTooltipContent indicator="line" labelFormatter={(label, payload) => {
+                            if (payload?.[0]?.payload?.date) {
+                                return format(new Date(payload[0].payload.date), 'MMM dd, yyyy HH:mm');
+                            }
+                            return label;
+                        }} />} 
+                      />
                       <Area type="monotone" dataKey="price" stroke={priceUp ? "hsl(var(--primary))" : "hsl(var(--destructive))"} strokeWidth={2} fill="url(#chart-gradient)" />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -174,7 +185,7 @@ export default function SymbolDashboardPage() {
                             </Link>
                         ))
                     ) : (
-                        <p className="text-sm text-muted-foreground">No recent news available for this symbol.</p>
+                        <p className="text-sm text-muted-foreground p-3">No recent news available for this symbol.</p>
                     )}
                 </CardContent>
             </Card>

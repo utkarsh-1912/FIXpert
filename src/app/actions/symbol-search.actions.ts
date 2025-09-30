@@ -3,6 +3,7 @@
 
 import { cache } from 'react';
 import yahooFinance from 'yahoo-finance2';
+import { subDays, format } from 'date-fns';
 
 export const searchQuotes = cache(async (query: string) => {
     try {
@@ -17,8 +18,9 @@ export const searchQuotes = cache(async (query: string) => {
     }
 });
 
+type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 
-export const getQuote = cache(async (symbol: string) => {
+export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     let quote, news, history, summary;
 
     try {
@@ -47,9 +49,40 @@ export const getQuote = cache(async (symbol: string) => {
     }
 
     try {
+        let period1: string | Date = '1y'; // Default
+        let interval: string = '1d';
+
+        const now = new Date();
+        switch (period) {
+            case '1d':
+                period1 = subDays(now, 2); // A bit more than 1 day to ensure data
+                interval = '15m';
+                break;
+            case '5d':
+                period1 = subDays(now, 5);
+                interval = '1d';
+                break;
+            case '1m':
+                period1 = subDays(now, 30);
+                interval = '1d';
+                break;
+            case '6m':
+                period1 = subDays(now, 180);
+                interval = '1d';
+                break;
+            case '1y':
+                period1 = subDays(now, 365);
+                interval = '1d';
+                break;
+            case 'all':
+                period1 = 'max';
+                interval = '1mo';
+                break;
+        }
+
         const historyResult = await yahooFinance.chart(symbol, {
-            period1: '1y',
-            interval: '1d'
+            period1: period === 'all' ? 'max' : format(period1, 'yyyy-MM-dd'),
+            interval: interval
         });
         history = historyResult.quotes;
     } catch (error) {
@@ -83,7 +116,11 @@ export const getTrendingNews = cache(async () => {
             newsCount: 10,
             quotesCount: 0,
         });
-        return result.news;
+        return result.news.map(item => ({
+            ...item,
+            // Ensure timestamp is in milliseconds for date formatting
+            providerPublishTime: item.providerPublishTime * 1000,
+        }));
     } catch (error) {
         console.error('Yahoo Finance API getTrendingNews error:', error);
         return [];
