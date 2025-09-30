@@ -32,7 +32,8 @@ const DataPoint = ({ label, value }: { label: string; value: any; }) => (
 
 export default function SymbolDashboardPage() {
   const params = useParams();
-  const symbol = Array.isArray(params.symbol) ? params.symbol[0] : params.symbol;
+  const rawSymbol = Array.isArray(params.symbol) ? params.symbol[0] : params.symbol;
+  const symbol = rawSymbol ? decodeURIComponent(rawSymbol) : '';
   const [data, setData] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<Period>('1y');
@@ -42,7 +43,7 @@ export default function SymbolDashboardPage() {
     if (!symbol) return;
     const fetchData = async (period: Period) => {
       setLoading(true);
-      const result = await getQuote(symbol as string, period);
+      const result = await getQuote(symbol, period);
       setData(result);
       setLoading(false);
     };
@@ -74,7 +75,7 @@ export default function SymbolDashboardPage() {
   const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
   
   const priceColor = priceUp ? 'text-green-500' : priceNeutral ? 'text-primary' : 'text-red-500';
-  const chartColor = priceUp ? 'hsl(142.1 76.2% 36.3%)' : priceNeutral ? 'hsl(var(--primary))' : 'hsl(0 84.2% 60.2%)';
+  const chartColor = priceUp ? 'hsl(142.1 76.2% 36.3%)' : priceNeutral ? 'hsl(var(--muted))' : 'hsl(0 84.2% 60.2%)';
 
   const getDateFormat = (period: Period) => {
     switch (period) {
@@ -146,7 +147,7 @@ export default function SymbolDashboardPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
-                        <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                        <linearGradient id={`chart-gradient-${symbol}`} x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor={chartColor} stopOpacity={0.8}/>
                           <stop offset="95%" stopColor={chartColor} stopOpacity={0.1}/>
                         </linearGradient>
@@ -184,7 +185,7 @@ export default function SymbolDashboardPage() {
                             />
                         }
                       />
-                      <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={2} fill="url(#chart-gradient)" />
+                      <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={2} fill={`url(#chart-gradient-${symbol})`} />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
