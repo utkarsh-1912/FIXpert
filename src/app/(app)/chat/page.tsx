@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatWithFixExpert } from '@/ai/flows/chat-with-fix-expert';
 import type { ChatMessage } from '@/ai/flows/chat-types';
-import { Loader2, Send, BrainCircuit, User, Bot } from 'lucide-react';
+import { Loader2, Send, BrainCircuit, User, Bot, RefreshCw } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
@@ -22,20 +22,43 @@ const ModelInfo = ({ modelName, provider, details }: { modelName: string, provid
     </div>
 );
 
+const initialMessage: ChatMessage = { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." };
 
 export default function ChatPage() {
   const { user } = useAuth();
-  const [history, setHistory] = useState<ChatMessage[]>([
-    { role: 'model', content: "Hello! I'm FIXpert's AI assistant. Ask me anything about the FIX protocol." },
-  ]);
+  const [history, setHistory] = useState<ChatMessage[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Load chat history from localStorage on initial render
+  useEffect(() => {
+    try {
+      const savedHistory = localStorage.getItem('fixpert-chat-history');
+      if (savedHistory) {
+        const parsedHistory = JSON.parse(savedHistory);
+        if (Array.isArray(parsedHistory) && parsedHistory.length > 0) {
+            setHistory(parsedHistory);
+        }
+      }
+    } catch (error) {
+        console.error("Failed to load chat history from localStorage", error);
+    }
+  }, []);
+
+  // Save chat history to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('fixpert-chat-history', JSON.stringify(history));
+    } catch (error) {
+        console.error("Failed to save chat history to localStorage", error);
+    }
+  }, [history]);
+
+
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
-        // Using a selector to get the viewport element inside ScrollArea
         const viewport = scrollAreaRef.current.querySelector('div');
         if (viewport) {
             viewport.scrollTop = viewport.scrollHeight;
@@ -47,7 +70,6 @@ export default function ChatPage() {
     scrollToBottom();
   }, [history]);
   
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -84,13 +106,23 @@ export default function ChatPage() {
       handleChat();
     }
   };
+
+  const handleResetChat = () => {
+    setHistory([initialMessage]);
+  };
   
   return (
     <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 flex flex-col h-[85vh]">
-            <CardHeader>
-            <CardTitle>AI FIXpert Chat</CardTitle>
-            <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
+            <CardHeader className="flex flex-row justify-between items-start">
+              <div>
+                <CardTitle>AI FIXpert Chat</CardTitle>
+                <CardDescription>Your personal assistant for all things related to the FIX protocol.</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleResetChat}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  New Chat
+              </Button>
             </CardHeader>
             <CardContent className="flex-grow overflow-hidden">
                 <ScrollArea className="h-full" ref={scrollAreaRef}>

@@ -8,6 +8,7 @@ import {
   Search,
   FileCog,
   MessageCircle,
+  RefreshCw,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
