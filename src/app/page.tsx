@@ -54,10 +54,10 @@ export default function LandingPage() {
           <div className="mx-auto grid grid-cols-1 items-center gap-8 px-4 text-center md:grid-cols-2 sm:px-6 lg:px-8 md:text-left">
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl md:text-6xl">
-                Accelerate Your FIX Engine Development with an AI-Powered Toolkit
+                The Ultimate FIX Protocol Toolkit for Financial Engineers
               </h1>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Demystify complex message flows, optimize your trading infrastructure, and accelerate development cycles with our suite of institutional-grade tools.
+                From AI-powered interpretation to advanced log analysis, FIXpert provides the clarity and speed you need to master the world of financial data exchange.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
                 <Button size="lg" asChild>
@@ -85,8 +85,8 @@ export default function LandingPage() {
         <section id="features" className="w-full bg-muted/30 py-20 md:py-32">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">An Institutional-Grade Toolkit for FIX Professionals</h2>
-              <p className="mt-4 text-muted-foreground">FIXpert is designed to streamline the entire trade lifecycle management process, from development and testing to production support.</p>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">A Toolkit That Works as Hard as You Do</h2>
+              <p className="mt-4 text-muted-foreground">FIXpert is a comprehensive suite of tools designed to handle every aspect of the FIX protocol, from development and testing to analysis and support.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {menuItems.filter(item => item.href !== '/dashboard').slice(0, 6).map((tool) => (
@@ -129,10 +129,10 @@ export default function LandingPage() {
                 Market Insights
               </div>
               <h2 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl">
-                Gain a Critical Edge with Real-Time Market Intelligence
+                Stay Ahead of the Market
               </h2>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Seamlessly integrate real-time market data feeds into your workflow. Analyze pre-trade analytics, track instrument liquidity, and validate trade orders against live market conditions.
+                Integrate real-time market data directly into your workflow. Look up symbols, analyze trends, and get the financial insights you need without switching context.
               </p>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/symbol-search">
@@ -148,7 +148,7 @@ export default function LandingPage() {
         <section className="w-full bg-muted/30 py-20 md:py-32">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Trusted by Industry Professionals</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Engineers and Analysts</h2>
               <p className="mt-4 text-muted-foreground">See how financial engineers, QA testers, and support analysts are leveraging FIXpert to enhance their workflows.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -188,7 +188,7 @@ export default function LandingPage() {
             ></div>
           <div className="relative z-10 mx-auto px-4 text-center sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Transform Your FIX Workflow Today</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Unlock Your Full Potential</h2>
               <p className="mt-4 text-muted-foreground">Sign up for free and gain immediate access to a smarter way of working with the FIX protocol. No credit card required.</p>
               <div className="mt-8">
                 <Button size="lg" asChild>
