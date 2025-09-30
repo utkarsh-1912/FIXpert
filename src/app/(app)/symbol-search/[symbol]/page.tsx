@@ -158,7 +158,7 @@ export default function SymbolDashboardPage() {
                         tickLine={false}
                         axisLine={false}
                       />
-                      <YAxis orientation="right" tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} tickFormatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />
+                      <YAxis tickLine={false} axisLine={false} domain={['dataMin - 5', 'dataMax + 5']} tickFormatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} />
                       <Tooltip 
                         content={<ChartTooltipContent indicator="line" labelFormatter={(label, payload) => {
                             if (payload?.[0]?.payload?.date) {
@@ -243,5 +243,3 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
-
-    
