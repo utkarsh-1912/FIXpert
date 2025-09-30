@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatWithFixExpert } from '@/ai/flows/chat-with-fix-expert';
 import type { ChatMessage } from '@/ai/flows/chat-types';
@@ -21,6 +21,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -35,6 +36,15 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [history]);
+  
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const scrollHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = `${scrollHeight}px`;
+    }
+  }, [input]);
 
   const handleChat = async () => {
     if (!input.trim()) return;
@@ -58,8 +68,9 @@ export default function ChatPage() {
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       handleChat();
     }
   };
@@ -89,11 +100,12 @@ export default function ChatPage() {
                                 </Avatar>
                             )}
                             <div className={cn("max-w-[75%] rounded-xl px-4 py-3 text-sm", msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
-                                <p>{msg.content}</p>
+                                <p className="whitespace-pre-wrap">{msg.content}</p>
                             </div>
                              {msg.role === 'user' && user && (
                                 <Avatar className="h-8 w-8 border">
                                     <AvatarFallback>{user.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+
                                 </Avatar>
                             )}
                         </div>
@@ -112,15 +124,18 @@ export default function ChatPage() {
                 </ScrollArea>
             </CardContent>
             <CardFooter className="border-t pt-6">
-            <div className="flex w-full items-center space-x-2">
-                <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask about a FIX tag, a message type, or a scenario..."
-                disabled={isLoading}
+            <div className="flex w-full items-start space-x-2">
+                <Textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask about a FIX tag, a message type, or a scenario... (Shift + Enter for new line)"
+                  disabled={isLoading}
+                  rows={1}
+                  className="resize-none min-h-[40px] max-h-40 overflow-y-auto transition-height duration-200"
                 />
-                <Button onClick={handleChat} disabled={isLoading || !input.trim()}>
+                <Button onClick={handleChat} disabled={isLoading || !input.trim()} className="self-end">
                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     <span className="sr-only">Send</span>
                 </Button>
@@ -152,4 +167,5 @@ export default function ChatPage() {
         </div>
     </div>
   );
-}
+
+    
