@@ -69,19 +69,28 @@ const visualizeFixWorkflowPrompt = ai.definePrompt({
 
 const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> => {
     try {
-        // Encode the Mermaid code to Base64 to be used in the URL
-        const base64Mermaid = Buffer.from(mermaidCode, 'utf8').toString('base64');
+        const mermaidJson = JSON.stringify({
+            code: mermaidCode,
+            mermaid: {
+                theme: 'neutral'
+            }
+        });
+
+        const base64Mermaid = Buffer.from(mermaidJson, 'utf8').toString('base64');
         const url = `https://mermaid.ink/svg/${base64Mermaid}`;
         
         const response = await fetch(url);
         if (!response.ok) {
+            const errorBody = await response.text();
+            console.error(`Mermaid.ink API failed with status: ${response.status}`, errorBody);
             throw new Error(`Mermaid.ink API failed with status: ${response.status}`);
         }
         
         const svgContent = await response.text();
 
-        if (!svgContent) {
-            throw new Error("Mermaid.ink did not return valid SVG content.");
+        if (!svgContent || svgContent.includes('Syntax error in text')) {
+            console.error("Mermaid.ink returned an SVG with a syntax error.", mermaidCode);
+            throw new Error("Mermaid.ink did not return valid SVG content due to a syntax error in the provided code.");
         }
 
         const svgBase64 = Buffer.from(svgContent).toString('base64');
