@@ -282,7 +282,7 @@ export default function SymbolDashboardPage() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="h-[400px] w-full relative">
+            <CardContent className="w-full relative aspect-video">
                 {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-card/50 z-10">
                         <Loader2 className="h-8 w-8 animate-spin" />

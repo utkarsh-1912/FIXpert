@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -41,6 +40,8 @@ const chatWithFixExpertPrompt = ai.definePrompt({
 
   When responding, be concise and clear. Use examples when it helps with understanding. If a user provides a raw FIX message, break it down and explain it.
   Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
+  
+  IMPORTANT: If a user asks to explain a specific FIX tag number, you must ONLY provide the explanation for that exact tag. Do not provide information about a different tag. If you do not know the specific tag, say so.
 
   Here is the conversation history:
   {{#each this}}
