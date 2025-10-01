@@ -10,12 +10,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useNotificationStore } from '@/stores/notification-store';
 
 type LogLine = {
   timestamp: string;
   timestampObj: Date;
   content: string;
+};
+
+type ProcessedFile = {
+  name: string;
+  sortedContent: string;
 };
 
 const extractTimestamp = (line: string): [Date | null, string] => {
@@ -29,7 +35,6 @@ const extractTimestamp = (line: string): [Date | null, string] => {
     
     const [hours, minutes, seconds] = timePart.split(':').map(part => parseFloat(part));
 
-    // Handle milliseconds which might be undefined
     const ms = timePart.includes('.') ? parseInt(timePart.split('.')[1], 10) : 0;
     
     const date = new Date(year, month, day, hours, minutes, Math.floor(seconds));
@@ -39,14 +44,13 @@ const extractTimestamp = (line: string): [Date | null, string] => {
       return [date, line];
     }
   }
-  // Fallback if no timestamp found
-  return [new Date(0), line];
+  return [new Date(0), line]; // Fallback for sorting lines without timestamps
 };
 
 
 export default function LogProcessorPage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [processedLogs, setProcessedLogs] = useState<string>('');
+  const [processedFiles, setProcessedFiles] = useState<ProcessedFile[]>([]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [isProcessing, setIsProcessing] = useState(false);
   const { addNotification } = useNotificationStore();
@@ -54,7 +58,7 @@ export default function LogProcessorPage() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFiles(Array.from(event.target.files));
-      setProcessedLogs('');
+      setProcessedFiles([]);
     }
   };
 
@@ -62,26 +66,29 @@ export default function LogProcessorPage() {
     if (files.length === 0) return;
     setIsProcessing(true);
 
-    const allLines: LogLine[] = [];
+    const newProcessedFiles: ProcessedFile[] = [];
 
     for (const file of files) {
       const content = await file.text();
       const lines = content.split('\n').filter(Boolean);
-      for (const line of lines) {
+      const logLines: LogLine[] = lines.map(line => {
         const [timestampObj, content] = extractTimestamp(line);
-        if (timestampObj) {
-            allLines.push({ timestamp: timestampObj.toISOString(), timestampObj, content });
-        }
-      }
+        return { timestamp: timestampObj?.toISOString() ?? '', timestampObj: timestampObj ?? new Date(0), content };
+      });
+
+      logLines.sort((a, b) => {
+        const timeA = a.timestampObj.getTime();
+        const timeB = b.timestampObj.getTime();
+        return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+      });
+      
+      newProcessedFiles.push({
+        name: file.name,
+        sortedContent: logLines.map(line => line.content).join('\n'),
+      });
     }
 
-    allLines.sort((a, b) => {
-      const timeA = a.timestampObj.getTime();
-      const timeB = b.timestampObj.getTime();
-      return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
-    });
-
-    setProcessedLogs(allLines.map(line => line.content).join('\n'));
+    setProcessedFiles(newProcessedFiles);
     setIsProcessing(false);
     addNotification({
       icon: FileCog,
@@ -90,12 +97,12 @@ export default function LogProcessorPage() {
     });
   }, [files, sortOrder, addNotification]);
   
-  const downloadLogs = () => {
-    const blob = new Blob([processedLogs], { type: 'text/plain' });
+  const downloadFile = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'processed_logs.log';
+    a.download = `sorted-${filename}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -107,7 +114,7 @@ export default function LogProcessorPage() {
       <Card>
         <CardHeader>
           <CardTitle>Log Processor</CardTitle>
-          <CardDescription>Upload, sort, and download your FIX log files.</CardDescription>
+          <CardDescription>Upload, sort, and download your FIX log files individually.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -146,7 +153,7 @@ export default function LogProcessorPage() {
         <CardFooter>
           <Button onClick={processLogs} disabled={files.length === 0 || isProcessing}>
             <ArrowDownUp className="mr-2 h-4 w-4" />
-            {isProcessing ? 'Processing...' : 'Process Logs'}
+            {isProcessing ? 'Processing...' : `Process ${files.length} File(s)`}
           </Button>
         </CardFooter>
       </Card>
@@ -154,17 +161,37 @@ export default function LogProcessorPage() {
       <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Processed Output</CardTitle>
-          <CardDescription>The sorted log content will appear here. You can then download it.</CardDescription>
+          <CardDescription>The sorted log content for each file will appear here.</CardDescription>
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full max-h-[calc(80vh-160px)] w-full">
-            {processedLogs ? (
-               <Textarea
-                    value={processedLogs}
-                    readOnly
-                    rows={20}
-                    className="font-code text-xs bg-muted/50"
-                />
+            {processedFiles.length > 0 ? (
+                <Accordion type="multiple" className="w-full">
+                  {processedFiles.map((file, index) => (
+                    <AccordionItem value={`item-${index}`} key={index}>
+                        <AccordionTrigger>
+                            <div className="flex items-center gap-2">
+                                <FileCog className="h-4 w-4 text-primary" />
+                                <span className="font-medium">{file.name}</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                           <div className="space-y-4">
+                             <Textarea
+                                value={file.sortedContent}
+                                readOnly
+                                rows={10}
+                                className="font-code text-xs bg-muted/50 h-64"
+                              />
+                              <Button onClick={() => downloadFile(file.name, file.sortedContent)} size="sm">
+                                <Download className="mr-2 h-4 w-4" />
+                                Download {file.name}
+                              </Button>
+                           </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
             ) : (
               <div className="flex h-full items-center justify-center rounded-md border border-dashed p-8">
                 <div className="text-center text-muted-foreground">
@@ -175,12 +202,6 @@ export default function LogProcessorPage() {
             )}
           </ScrollArea>
         </CardContent>
-        <CardFooter>
-            <Button onClick={downloadLogs} disabled={!processedLogs}>
-              <Download className="mr-2 h-4 w-4" />
-              Download Processed File
-            </Button>
-        </CardFooter>
       </Card>
     </div>
   );
