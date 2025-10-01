@@ -241,30 +241,31 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div>
-                 <h1 className="text-3xl font-bold tracking-tight">
-                    {quote.longName || quote.shortName} ({quote.symbol})
-                </h1>
-                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-            </div>
-            <div className="flex items-end gap-4 flex-wrap">
-                <p className={`text-4xl font-bold ${priceColor}`}>
-                    {quote.regularMarketPrice?.toFixed(2)}
-                    {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
-                </p>
-                <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                    {priceUp ? <TrendingUp /> : <TrendingDown />}
-                    {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-                </p>
-            </div>
-             <Link href="/symbol-search" passHref>
-                <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Search
-                </Button>
-            </Link>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {quote.longName || quote.shortName} ({quote.symbol})
+          </h1>
+          <p className="text-muted-foreground">{quote.fullExchangeName}</p>
         </div>
+        <Link href="/symbol-search" passHref>
+          <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Search
+          </Button>
+        </Link>
+      </div>
+
+      <div className="flex items-end gap-4 flex-wrap">
+        <p className={`text-4xl font-bold ${priceColor}`}>
+          {quote.regularMarketPrice?.toFixed(2)}
+          {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+        </p>
+        <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+          {priceUp ? <TrendingUp /> : <TrendingDown />}
+          {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+        </p>
+      </div>
       
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column */}
