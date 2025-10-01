@@ -21,7 +21,7 @@ export const searchQuotes = cache(async (query: string) => {
 type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 
 export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
-    let quote, news, history, summary;
+    let quote, news, history, summary, recommendations;
     const encodedSymbol = encodeURIComponent(symbol);
 
     try {
@@ -93,19 +93,29 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     
     try {
         const summaryResult = await yahooFinance._quoteSummary(encodedSymbol, {
-           modules: ["assetProfile"]
+           modules: ["assetProfile", "summaryDetail"]
         });
-        summary = summaryResult.assetProfile;
+        summary = summaryResult;
     } catch (error) {
         console.error(`Yahoo Finance API _quoteSummary() error for ${symbol}:`, error);
         summary = null;
     }
+    
+    try {
+        const recommendationsResult = await yahooFinance.recommendationsBySymbol(encodedSymbol);
+        recommendations = recommendationsResult;
+    } catch (error) {
+        console.error(`Yahoo Finance API recommendationsBySymbol() error for ${symbol}:`, error);
+        recommendations = null;
+    }
+
 
     return {
         quote,
         news,
         history,
         summary,
+        recommendations,
     };
 });
 

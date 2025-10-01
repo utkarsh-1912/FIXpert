@@ -2,19 +2,22 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
+import { generateFinancialInsight } from '@/ai/flows/generate-financial-insight';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;
 type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
+type FinancialInsight = Awaited<ReturnType<typeof generateFinancialInsight>>;
 
 const chartConfig = {
   price: {
@@ -29,9 +32,60 @@ const DataPoint = ({ label, value }: { label: string; value: any; }) => (
     </div>
 );
 
+function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
+  const [insight, setInsight] = useState<FinancialInsight | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchInsight() {
+      if (!symbolData || !symbolData.quote || !symbolData.summary) return;
+      setLoading(true);
+      try {
+        const result = await generateFinancialInsight({
+          symbol: symbolData.quote.symbol,
+          companyName: symbolData.quote.longName || symbolData.quote.shortName || '',
+          country: symbolData.summary.assetProfile?.country,
+          sector: symbolData.summary.assetProfile?.sector,
+          summary: symbolData.summary.assetProfile?.longBusinessSummary,
+        });
+        setInsight(result);
+      } catch (error) {
+        console.error("Failed to generate financial insight:", error);
+        setInsight({ insight: "Could not generate AI insight at this time." });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchInsight();
+  }, [symbolData]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <Lightbulb className="h-6 w-6 text-primary" />
+          <CardTitle>AI Financial Insight</CardTitle>
+        </div>
+        <CardDescription>AI-generated analysis based on current market data.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <p>Generating analysis...</p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{insight?.insight}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function SymbolDashboardPage() {
   const params = useParams();
+  const router = useRouter();
   const rawSymbol = Array.isArray(params.symbol) ? params.symbol[0] : params.symbol;
   const symbol = rawSymbol ? decodeURIComponent(rawSymbol) : '';
   const [data, setData] = useState<QuoteData | null>(null);
@@ -64,13 +118,17 @@ export default function SymbolDashboardPage() {
 
   if (!data || !data.quote) {
     return (
-      <div className="text-center text-destructive">
-        Failed to load data for symbol {symbol}. Please try again.
+      <div className="text-center">
+        <p className="text-destructive mb-4">Failed to load data for symbol: {symbol}.</p>
+        <Button onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Go Back
+        </Button>
       </div>
     );
   }
 
-  const { quote, news, summary } = data;
+  const { quote, news, summary, recommendations } = data;
   const priceUp = (quote.regularMarketChange ?? 0) > 0;
   const priceNeutral = (quote.regularMarketChange ?? 0) === 0;
   
@@ -89,7 +147,7 @@ export default function SymbolDashboardPage() {
     }
   };
   
-  const isSummaryLong = summary?.longBusinessSummary && summary.longBusinessSummary.length > 300;
+  const isSummaryLong = summary?.assetProfile?.longBusinessSummary && summary.assetProfile.longBusinessSummary.length > 300;
 
 
   return (
@@ -104,8 +162,9 @@ export default function SymbolDashboardPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName} ({quote.symbol})</h1>
-            <div className="flex items-end gap-4">
+            <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName}</h1>
+            <p className="text-lg text-muted-foreground font-medium">Symbol: {quote.symbol}</p>
+            <div className="flex items-end gap-4 mt-2">
                 <p className={`text-4xl font-bold ${priceColor}`}>
                     {quote.regularMarketPrice?.toFixed(2)}
                     {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
@@ -197,7 +256,7 @@ export default function SymbolDashboardPage() {
               </div>
             </CardContent>
           </Card>
-
+            {data && <AIFinancialInsight symbolData={data} />}
            <Card>
                 <CardHeader>
                     <div className="flex items-center gap-3">
@@ -240,14 +299,35 @@ export default function SymbolDashboardPage() {
             </CardContent>
           </Card>
           
-           {summary?.longBusinessSummary && (
+           {recommendations && recommendations.length > 0 && (
+                <Card>
+                    <CardHeader>
+                         <div className="flex items-center gap-3">
+                            <Users className="h-6 w-6 text-primary" />
+                            <CardTitle>Related Symbols</CardTitle>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2">
+                        {recommendations.map(rec => (
+                           <Link key={rec.symbol} href={`/symbol-search/${encodeURIComponent(rec.symbol)}`} passHref>
+                                <Badge variant="secondary" className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors">
+                                    <LinkIcon className="h-3 w-3 mr-1.5" />
+                                    {rec.symbol}
+                                </Badge>
+                            </Link>
+                        ))}
+                    </CardContent>
+                </Card>
+            )}
+
+           {summary?.assetProfile?.longBusinessSummary && (
                 <Card>
                     <CardHeader>
                         <CardTitle>About {quote.shortName}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className={`text-sm text-muted-foreground ${isSummaryLong && !showFullSummary ? 'line-clamp-6' : ''}`}>
-                            {summary.longBusinessSummary}
+                            {summary.assetProfile.longBusinessSummary}
                         </p>
                         {isSummaryLong && (
                             <Button variant="link" className="p-0 h-auto mt-2" onClick={() => setShowFullSummary(!showFullSummary)}>
