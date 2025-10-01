@@ -56,7 +56,6 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
           companyName: symbolData.quote.longName || symbolData.quote.shortName || '',
           country: symbolData.summary.assetProfile?.country,
           sector: symbolData.summary.assetProfile?.sector,
-          summary: symbolData.summary.assetProfile?.longBusinessSummary,
         });
         setInsight(result);
       } catch (error) {
@@ -79,7 +78,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
           }
           return prevIndex + 1;
         });
-      }, 2500); // Change checkpoint every 2.5 seconds
+      }, 1000); // Change checkpoint every 1 second
       return () => clearTimeout(timer);
     }
   }, [loading, checkpointIndex]);
