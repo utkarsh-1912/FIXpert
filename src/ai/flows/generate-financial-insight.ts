@@ -26,7 +26,9 @@ const FinancialInsightInputSchema = z.object({
 export type FinancialInsightInput = z.infer<typeof FinancialInsightInputSchema>;
 
 const FinancialInsightOutputSchema = z.object({
-  insight: z.string().describe('A concise analysis of the company\'s financial health, market position, and potential trends. Should be 2-3 short paragraphs.'),
+  sentiment: z.enum(['Bullish', 'Bearish', 'Neutral']).describe('The overall market sentiment for the stock.'),
+  keyRisk: z.string().describe('A single, concise sentence identifying a key risk for the company.'),
+  keyOpportunity: z.string().describe('A single, concise sentence identifying a key opportunity for the company.'),
 });
 export type FinancialInsightOutput = z.infer<typeof FinancialInsightOutputSchema>;
 
@@ -41,16 +43,15 @@ const financialInsightPrompt = ai.definePrompt({
   name: 'financialInsightPrompt',
   input: { schema: FinancialInsightInputSchema },
   output: { schema: FinancialInsightOutputSchema },
-  prompt: `You are a savvy financial analyst. Based on the following information for the company "{{companyName}}" ({{symbol}}), provide a concise but insightful analysis (2-3 short paragraphs).
-
-  Focus on its market position, potential trends, and overall financial sentiment. If the country or sector is provided, incorporate that into your analysis of regional or industry-specific trends.
+  prompt: `You are a savvy financial analyst. Based on the following information for "{{companyName}}" ({{symbol}}), provide a structured financial analysis.
 
   Company Details:
   - Sector: {{{sector}}}
   - Country: {{{country}}}
   - Business Summary: {{{summary}}}
 
-  Generate the insight for the "insight" field.
+  Determine the overall sentiment (Bullish, Bearish, or Neutral).
+  Identify one key risk and one key opportunity, each as a single concise sentence.
   `,
 });
 

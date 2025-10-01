@@ -2,9 +2,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
-import { generateFinancialInsight } from '@/ai/flows/generate-financial-insight';
+import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -17,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 
 type QuoteData = Awaited<ReturnType<typeof getQuote>>;
 type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
-type FinancialInsight = Awaited<ReturnType<typeof generateFinancialInsight>>;
 
 const chartConfig = {
   price: {
@@ -25,15 +24,15 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const DataPoint = ({ label, value }: { label: string; value: any; }) => (
-    <div className="flex flex-col space-y-1">
+const DataPoint = ({ label, value, className }: { label: string; value: any; className?: string }) => (
+    <div className={cn("flex flex-col space-y-1", className)}>
         <span className="text-xs text-muted-foreground">{label}</span>
         <span className="font-medium text-foreground">{value}</span>
     </div>
 );
 
 function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
-  const [insight, setInsight] = useState<FinancialInsight | null>(null);
+  const [insight, setInsight] = useState<FinancialInsightOutput | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,13 +50,20 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
         setInsight(result);
       } catch (error) {
         console.error("Failed to generate financial insight:", error);
-        setInsight({ insight: "Could not generate AI insight at this time." });
+        // Provide a structured error object
+        setInsight({ sentiment: "Neutral", keyRisk: "AI analysis could not be performed.", keyOpportunity: "AI analysis could not be performed." });
       } finally {
         setLoading(false);
       }
     }
     fetchInsight();
   }, [symbolData]);
+  
+  const sentimentVariant = {
+      Bullish: 'default',
+      Bearish: 'destructive',
+      Neutral: 'secondary'
+  } as const;
 
   return (
     <Card>
@@ -74,8 +80,23 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
             <Loader2 className="h-5 w-5 animate-spin" />
             <p>Generating analysis...</p>
           </div>
+        ) : insight ? (
+           <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-foreground mb-2">Sentiment</p>
+              <Badge variant={sentimentVariant[insight.sentiment]}>{insight.sentiment}</Badge>
+            </div>
+             <div>
+              <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</p>
+              <p className="text-sm text-muted-foreground">{insight.keyRisk}</p>
+            </div>
+             <div>
+              <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</p>
+              <p className="text-sm text-muted-foreground">{insight.keyOpportunity}</p>
+            </div>
+          </div>
         ) : (
-          <p className="text-sm text-muted-foreground">{insight?.insight}</p>
+            <p className="text-sm text-muted-foreground">Could not load AI insight.</p>
         )}
       </CardContent>
     </Card>
@@ -152,30 +173,30 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-        <div className="flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+             <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    {quote.longName || quote.shortName} ({quote.symbol})
+                </h1>
+                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+            </div>
             <Link href="/symbol-search" passHref>
-            <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Search
-            </Button>
+                <Button variant="outline" className="w-full sm:w-auto">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Search
+                </Button>
             </Link>
         </div>
 
-        <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-bold tracking-tight">
-                {quote.longName || quote.shortName} ({quote.symbol})
-            </h1>
-            <div className="flex items-end gap-4 mt-2">
-                <p className={`text-4xl font-bold ${priceColor}`}>
-                    {quote.regularMarketPrice?.toFixed(2)}
-                    {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
-                </p>
-                <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                    {priceUp ? <TrendingUp /> : <TrendingDown />}
-                    {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-                </p>
-            </div>
-            <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+        <div className="flex items-end gap-4">
+            <p className={`text-4xl font-bold ${priceColor}`}>
+                {quote.regularMarketPrice?.toFixed(2)}
+                {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+            </p>
+            <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                {priceUp ? <TrendingUp /> : <TrendingDown />}
+                {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+            </p>
         </div>
 
       
@@ -201,7 +222,6 @@ export default function SymbolDashboardPage() {
                         <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
                 )}
-              <div className="h-full w-full">
               <ChartContainer config={chartConfig} className="h-full w-full">
                 {chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -225,6 +245,7 @@ export default function SymbolDashboardPage() {
                             <ChartTooltipContent 
                                 indicator="line"
                                 className="border-l-4"
+                                wrapperStyle={{ outline: 'none' }}
                                 style={{
                                     borderLeftColor: chartColor,
                                 }}
@@ -254,7 +275,6 @@ export default function SymbolDashboardPage() {
                   </div>
                 )}
               </ChartContainer>
-              </div>
             </CardContent>
           </Card>
             {data && <AIFinancialInsight symbolData={data} />}
@@ -286,7 +306,7 @@ export default function SymbolDashboardPage() {
             <CardHeader>
               <CardTitle>Key Data</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-2 gap-x-4 gap-y-6">
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
@@ -295,8 +315,8 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N\A'} />
                 <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N\A'} />
                 <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N\A'} />
-                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N\A'} />
-                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N\A'} />
+                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N\A'} className="col-span-2 sm:col-span-1"/>
+                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N\A'} className="col-span-2 sm:col-span-1"/>
             </CardContent>
           </Card>
           
