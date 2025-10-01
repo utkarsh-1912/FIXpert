@@ -73,7 +73,12 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => {
-        setCheckpointIndex(prevIndex => Math.min(prevIndex + 1, analysisCheckpoints.length));
+        setCheckpointIndex((prevIndex) => {
+          if (prevIndex >= analysisCheckpoints.length - 1) {
+            return prevIndex;
+          }
+          return prevIndex + 1;
+        });
       }, 2500); // Change checkpoint every 2.5 seconds
       return () => clearTimeout(timer);
     }
@@ -216,17 +221,17 @@ export default function SymbolDashboardPage() {
                 <h1 className="text-3xl font-bold tracking-tight">
                     {quote.longName || quote.shortName} ({quote.symbol})
                 </h1>
-                <div className="flex flex-col sm:flex-row sm:items-end gap-x-4 gap-y-1 mt-2">
+                <div className="flex items-end gap-4 mt-2">
                     <p className={`text-4xl font-bold ${priceColor}`}>
                         {quote.regularMarketPrice?.toFixed(2)}
                         {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
                     </p>
-                    <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} sm:mb-1`}>
+                    <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
                         {priceUp ? <TrendingUp /> : <TrendingDown />}
                         {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
                     </p>
                 </div>
-                <p className="text-muted-foreground mt-1">{quote.fullExchangeName}</p>
+                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
             </div>
 
             <Link href="/symbol-search" passHref>
