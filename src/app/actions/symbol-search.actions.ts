@@ -103,10 +103,11 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     
     try {
         const recommendationsResult = await yahooFinance.recommendationsBySymbol(encodedSymbol);
-        recommendations = recommendationsResult.quotes;
+        // Ensure recommendations is always an array
+        recommendations = recommendationsResult.quotes ?? [];
     } catch (error) {
         console.error(`Yahoo Finance API recommendationsBySymbol() error for ${symbol}:`, error);
-        recommendations = null;
+        recommendations = [];
     }
 
 
