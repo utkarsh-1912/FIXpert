@@ -99,20 +99,29 @@ export default function WorkflowVisualizerPage() {
   useEffect(() => {
     const nodeWidth = 150;
     const nodeHeight = 60;
-    const xSpacing = 200;
-    const ySpacing = 120;
+    const xSpacing = 250;
+    const ySpacing = 150;
 
-    const newFlowNodes = manualNodes.map((node, index) => ({
-      id: node.id,
-      data: { label: node.label },
-      position: layout === 'LR' 
+    const newFlowNodes = manualNodes.map((node, index) => {
+        const position = layout === 'LR'
         ? { x: index * xSpacing, y: Math.floor(index / 4) * ySpacing }
-        : { x: Math.floor(index / 4) * xSpacing, y: index * ySpacing },
-      style: {
-          width: nodeWidth,
-          textAlign: 'center',
-      }
-    }));
+        : { x: Math.floor(index / 3) * xSpacing, y: (index % 3) * ySpacing };
+
+        return {
+            id: node.id,
+            data: { label: node.label },
+            position,
+            style: {
+                width: nodeWidth,
+                height: nodeHeight,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                borderRadius: node.shape === 'circle' ? '9999px' : (node.shape === 'stadium' ? '9999px' : '0.25rem'),
+            }
+        };
+    });
 
     const newFlowEdges = manualConnections.map(conn => ({
       id: conn.id,
@@ -380,26 +389,24 @@ export default function WorkflowVisualizerPage() {
           <CardTitle>Workflow Visualization</CardTitle>
           <CardDescription>AI-generated flowchart or a live preview from the manual designer.</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow relative p-0">
-          {isLoading ? (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
+        <CardContent className="flex-grow relative p-0 min-h-[60vh]">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : null}
+          )}
             
           <div className="w-full h-full rounded-b-lg overflow-hidden">
             {visualization && !error ? (
                  <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4">
-                    {visualization.dataUri ? (
-                        <div className="rounded-lg border bg-card-foreground/5 p-4 flex justify-center flex-grow">
+                    <div className="rounded-lg border bg-background/50 p-4 flex justify-center flex-grow w-full">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={visualization.dataUri}
                             alt="FIX Workflow Visualization"
                             className="h-auto max-w-full"
                         />
-                        </div>
-                    ) : null}
+                    </div>
                     <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
                 </div>
             ) : (
@@ -420,5 +427,3 @@ export default function WorkflowVisualizerPage() {
     </div>
   );
 }
-
-    
