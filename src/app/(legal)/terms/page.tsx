@@ -19,7 +19,7 @@ export default function TermsPage() {
                 <p>When you create an account with us, you must provide us with information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our service.</p>
 
                 <h2 className="text-xl font-semibold text-foreground pt-4">4. Intellectual Property</h2>
-                <p>The service and its original content, features, and functionality are and will remain the exclusive property of Utai Inc. and its licensors. The service is protected by copyright, trademark, and other laws of both India and foreign countries.</p>
+                <p>The service and its original content, features, and functionality are and will remain the exclusive property of UTAI Inc. and its licensors. The service is protected by copyright, trademark, and other laws of both India and foreign countries.</p>
 
                 <h2 className="text-xl font-semibold text-foreground pt-4">5. Termination</h2>
                 <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
@@ -28,7 +28,7 @@ export default function TermsPage() {
                 <p>Our services are provided "AS IS." We do not warrant that the service will be uninterrupted, secure, or free from errors or omissions.</p>
 
                 <h2 className="text-xl font-semibold text-foreground pt-4">7. Governing Law</h2>
-                <p>These Terms shall be governed and construed in accordance with the laws of the State of Karnataka, India, without regard to its conflict of law provisions.</p>
+                <p>These Terms shall be governed and construed in accordance with the laws of the State of Texas, United States, and the State of Karnataka, India, without regard to their conflict of law provisions. Any legal suit, action, or proceeding arising out of or related to these Terms or the services shall be instituted exclusively in the federal or state courts located in Dallas, Texas, or Bengaluru, Karnataka.</p>
                 
                 <h2 className="text-xl font-semibold text-foreground pt-4">8. Changes to Terms</h2>
                 <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page.</p>

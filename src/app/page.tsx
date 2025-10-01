@@ -243,7 +243,7 @@ export default function LandingPage() {
         <div className="mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 text-center md:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             <FixpertIcon className="size-6 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Utai Inc. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} UTAI Inc. All rights reserved.</p>
           </div>
           <nav className="flex gap-4 text-sm text-muted-foreground">
             <Link href="/terms" className="hover:text-foreground">Terms</Link>
