@@ -178,6 +178,7 @@ export default function WorkflowVisualizerPage() {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Failed to generate visualization: ${errorMessage}`);
+      setVisualization(null); // Clear previous visualization on error
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +199,7 @@ export default function WorkflowVisualizerPage() {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Failed to generate visualization: ${errorMessage}`);
+      setVisualization(null); // Clear previous visualization on error
     } finally {
       setIsLoading(false);
     }
@@ -210,12 +212,12 @@ export default function WorkflowVisualizerPage() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={v => { setVisualization(null); setActiveTab(v); }} className="w-full">
             {/* Desktop Tabs */}
             <div className="hidden sm:block">
               <TabsList className="grid w-full grid-cols-3">
                 {TABS.map(tab => (
-                  <TabsTrigger key={tab.value} value={tab.value}>
+                  <TabsTrigger key={tab.value} value={tab.value} onClick={() => setVisualization(null)}>
                     <tab.icon className="mr-2 h-4 w-4" />
                     {tab.label}
                   </TabsTrigger>
@@ -235,7 +237,7 @@ export default function WorkflowVisualizerPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                   {TABS.map(tab => (
-                    <DropdownMenuItem key={tab.value} onSelect={() => setActiveTab(tab.value)}>
+                    <DropdownMenuItem key={tab.value} onSelect={() => { setVisualization(null); setActiveTab(tab.value); }}>
                       <tab.icon className="mr-2 h-4 w-4" />
                       {tab.label}
                     </DropdownMenuItem>
@@ -378,25 +380,29 @@ export default function WorkflowVisualizerPage() {
           <CardTitle>Workflow Visualization</CardTitle>
           <CardDescription>AI-generated flowchart or a live preview from the manual designer.</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow flex items-center justify-center relative">
+        <CardContent className="flex-grow relative p-0">
           {isLoading ? (
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          ) : visualization && !error ? (
-            <div className="space-y-4 w-full">
-              {visualization.dataUri ? (
-                <div className="rounded-lg border bg-card-foreground/5 p-4 flex justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={visualization.dataUri}
-                    alt="FIX Workflow Visualization"
-                    className="h-auto max-w-full"
-                  />
-                </div>
-              ) : null}
-              <p className="text-sm text-muted-foreground">{visualization.description}</p>
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : (
-             <div className="w-full h-full rounded-md border">
+          ) : null}
+            
+          <div className="w-full h-full rounded-b-lg overflow-hidden">
+            {visualization && !error ? (
+                 <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4">
+                    {visualization.dataUri ? (
+                        <div className="rounded-lg border bg-card-foreground/5 p-4 flex justify-center flex-grow">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={visualization.dataUri}
+                            alt="FIX Workflow Visualization"
+                            className="h-auto max-w-full"
+                        />
+                        </div>
+                    ) : null}
+                    <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
+                </div>
+            ) : (
                 <ReactFlow
                     nodes={flowNodes}
                     edges={flowEdges}
@@ -407,10 +413,12 @@ export default function WorkflowVisualizerPage() {
                     <Controls />
                     <Background />
                 </ReactFlow>
-             </div>
-          )}
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    
