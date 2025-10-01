@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { visualizeFixWorkflow } from '@/ai/flows/visualize-fix-workflow';
-import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml, ChevronsUpDown } from 'lucide-react';
+import { Loader2, Wand2, PencilRuler, BrainCircuit, Trash2, PlusCircle, CodeXml, ChevronsUpDown, ArrowRight, ArrowLeftRight, Minus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,12 +19,22 @@ type Node = {
   shape: 'rect' | 'round-edge' | 'stadium' | 'circle';
 };
 
+type ConnectionType = 'uni' | 'bi' | 'none';
+
 type Connection = {
   id: string;
   from: string;
   to: string;
   label: string;
+  type: ConnectionType;
 };
+
+const connectionTypeMap: Record<ConnectionType, { icon: React.ElementType, syntax: string }> = {
+    'uni': { icon: ArrowRight, syntax: '-->' },
+    'bi': { icon: ArrowLeftRight, syntax: '<-->' },
+    'none': { icon: Minus, syntax: '---' },
+};
+
 
 const shapeMap = {
   rect: (id: string, label: string) => `${id}["${label}"]`,
@@ -46,6 +56,7 @@ export default function WorkflowVisualizerPage() {
   const [visualization, setVisualization] = useState<{ dataUri: string; description: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [layout, setLayout] = useState<'LR' | 'TD'>('LR');
   
   // State for manual designer
   const [nodes, setNodes] = useState<Node[]>([
@@ -53,17 +64,18 @@ export default function WorkflowVisualizerPage() {
     { id: 'B', label: 'Broker', shape: 'round-edge' },
   ]);
   const [connections, setConnections] = useState<Connection[]>([
-      {id: 'c1', from: 'A', to: 'B', label: 'NewOrderSingle'},
+      {id: 'c1', from: 'A', to: 'B', label: 'NewOrderSingle', type: 'uni'},
   ]);
 
   const generateMermaidFromState = () => {
-    let code = 'flowchart LR\n';
+    let code = `flowchart ${layout}\n`;
     nodes.forEach(node => {
       code += `    ${shapeMap[node.shape](node.id, node.label)}\n`;
     });
     connections.forEach(conn => {
       if (conn.from && conn.to) {
-        code += `    ${conn.from} -->|${conn.label}| ${conn.to}\n`;
+        const arrow = connectionTypeMap[conn.type].syntax;
+        code += `    ${conn.from} ${arrow}|${conn.label}| ${conn.to}\n`;
       }
     });
     setMermaidCode(code);
@@ -72,7 +84,8 @@ export default function WorkflowVisualizerPage() {
   
   useEffect(() => {
     generateMermaidFromState();
-  }, [nodes, connections]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, connections, layout]);
 
   const addNode = () => {
     const newNodeId = String.fromCharCode(65 + nodes.length);
@@ -92,7 +105,7 @@ export default function WorkflowVisualizerPage() {
   };
 
   const addConnection = () => {
-    setConnections([...connections, {id: `c${Date.now()}`, from: '', to: '', label: ''}]);
+    setConnections([...connections, {id: `c${Date.now()}`, from: '', to: '', label: '', type: 'uni'}]);
   };
 
   const updateConnection = (index: number, field: keyof Connection, value: string) => {
@@ -110,7 +123,8 @@ export default function WorkflowVisualizerPage() {
     setVisualization(null);
     setError(null);
     try {
-      const result = await visualizeFixWorkflow({ scenarioDescription: scenario });
+      const scenarioWithLayout = `${scenario}\n\nRender the flowchart with a ${layout === 'LR' ? 'horizontal (Left to Right)' : 'vertical (Top to Bottom)'} layout.`;
+      const result = await visualizeFixWorkflow({ scenarioDescription: scenarioWithLayout });
       if (!result.flowchartDataUri.startsWith('data:image/svg+xml;base64,')) {
         throw new Error("Generated flowchart is not in the expected format.");
       }
@@ -129,11 +143,12 @@ export default function WorkflowVisualizerPage() {
     setVisualization(null);
     setError(null);
     try {
+      // The AI can derive the description from the code itself.
       const result = await visualizeFixWorkflow({ scenarioDescription: `Generate a flowchart from the following Mermaid syntax: \n\n${code}` });
       if (!result.flowchartDataUri.startsWith('data:image/svg+xml;base64,')) {
         throw new Error("Generated flowchart is not in the expected format.");
       }
-      setVisualization({ dataUri: result.flowchartDataUri, description: 'Flowchart generated from custom Mermaid code.' });
+      setVisualization({ dataUri: result.flowchartDataUri, description: result.description || 'Flowchart generated from custom Mermaid code.' });
     } catch (err) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -189,16 +204,26 @@ export default function WorkflowVisualizerPage() {
               <CardTitle>Workflow Scenario</CardTitle>
               <CardDescription>Describe a trading scenario, and let AI generate the message flow.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Textarea
                 value={scenario}
                 onChange={(e) => setScenario(e.target.value)}
                 rows={5}
                 placeholder="e.g., A client sends a new order, it gets partially filled, then the rest is cancelled."
               />
+               <div className="space-y-2">
+                    <Label htmlFor="layout-direction-scenario">Layout Direction</Label>
+                    <Select value={layout} onValueChange={(v: 'LR' | 'TD') => setLayout(v)}>
+                        <SelectTrigger id="layout-direction-scenario"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="LR">Horizontal</SelectItem>
+                            <SelectItem value="TD">Vertical</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleVisualize} disabled={isLoading}>
+              <Button onClick={handleVisualize} disabled={isLoading || !scenario}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                 Generate Visualization
               </Button>
@@ -211,6 +236,16 @@ export default function WorkflowVisualizerPage() {
                 <CardDescription>Build your workflow by adding nodes and connections.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="layout-direction-manual">Layout Direction</Label>
+                    <Select value={layout} onValueChange={(v: 'LR' | 'TD') => setLayout(v)}>
+                        <SelectTrigger id="layout-direction-manual"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="LR">Horizontal (Left to Right)</SelectItem>
+                            <SelectItem value="TD">Vertical (Top to Bottom)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
                 <div className="space-y-4">
                     <Label className="text-base font-medium">Nodes</Label>
                     {nodes.map((node, index) => (
@@ -218,9 +253,7 @@ export default function WorkflowVisualizerPage() {
                             <Input value={node.id} disabled className="col-span-2 font-code" />
                             <Input value={node.label} onChange={(e) => updateNode(index, 'label', e.target.value)} className="col-span-5" />
                             <Select value={node.shape} onValueChange={(v) => updateNode(index, 'shape', v)}>
-                                <SelectTrigger className="col-span-4">
-                                    <SelectValue placeholder="Shape" />
-                                </SelectTrigger>
+                                <SelectTrigger className="col-span-4"><SelectValue placeholder="Shape" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="rect">Rectangle</SelectItem>
                                     <SelectItem value="round-edge">Round-Edge</SelectItem>
@@ -236,26 +269,34 @@ export default function WorkflowVisualizerPage() {
                  <div className="space-y-4">
                     <Label className="text-base font-medium">Connections</Label>
                     {connections.map((conn, index) => (
-                        <div key={conn.id} className="grid grid-cols-12 gap-2 items-center">
+                        <div key={conn.id} className="grid grid-cols-[3fr_3fr_4fr_1fr_1fr] gap-2 items-center">
                             <Select value={conn.from} onValueChange={(v) => updateConnection(index, 'from', v)}>
-                                <SelectTrigger className="col-span-3"><SelectValue placeholder="From"/></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="From"/></SelectTrigger>
                                 <SelectContent>{nodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>)}</SelectContent>
                             </Select>
                              <Select value={conn.to} onValueChange={(v) => updateConnection(index, 'to', v)}>
-                                <SelectTrigger className="col-span-3"><SelectValue placeholder="To"/></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="To"/></SelectTrigger>
                                 <SelectContent>{nodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>)}</SelectContent>
                             </Select>
-                            <Input value={conn.label} onChange={(e) => updateConnection(index, 'label', e.target.value)} placeholder="Label" className="col-span-5"/>
-                            <Button variant="ghost" size="icon" onClick={() => removeConnection(index)} className="col-span-1"><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                            <Input value={conn.label} onChange={(e) => updateConnection(index, 'label', e.target.value)} placeholder="Label" />
+                            <Select value={conn.type} onValueChange={(v: ConnectionType) => updateConnection(index, 'type', v)}>
+                                <SelectTrigger className="p-2 justify-center"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(connectionTypeMap).map(([key, {icon: Icon, syntax}]) => (
+                                        <SelectItem key={key} value={key}><Icon className="h-4 w-4"/></SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="icon" onClick={() => removeConnection(index)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
                         </div>
                     ))}
                      <Button variant="outline" size="sm" onClick={addConnection}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
                 </div>
             </CardContent>
             <CardFooter>
-                 <Button onClick={() => handleCustomDesign(mermaidCode)} disabled={isLoading}>
+                 <Button onClick={() => handleCustomDesign(generateMermaidFromState())} disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
-                    Design Flow
+                    Generate from Designer
                 </Button>
             </CardFooter>
           </TabsContent>
@@ -279,9 +320,9 @@ export default function WorkflowVisualizerPage() {
               />
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleCustomDesign(mermaidCode)} disabled={isLoading}>
+              <Button onClick={() => handleCustomDesign(mermaidCode)} disabled={isLoading || !mermaidCode}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
-                Design Flow
+                Generate from Code
               </Button>
             </CardFooter>
           </TabsContent>
@@ -315,8 +356,11 @@ export default function WorkflowVisualizerPage() {
               <p className="text-sm text-muted-foreground">{visualization.description}</p>
             </div>
           ) : (
-            <div className="text-center text-muted-foreground">
-              <p>Generated visualization will appear here.</p>
+            <div className="flex items-center justify-center h-full rounded-md border border-dashed">
+                <div className="text-center text-muted-foreground">
+                    <BrainCircuit className="mx-auto h-12 w-12" />
+                    <p className="mt-4">Generated visualization will appear here.</p>
+                </div>
             </div>
           )}
         </CardContent>
