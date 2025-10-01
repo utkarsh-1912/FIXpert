@@ -13,7 +13,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { ChatMessageSchema } from './chat-types';
+import { ChatMessage, ChatMessageSchema } from './chat-types';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
@@ -21,7 +21,9 @@ const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
 // Define the schema for the flow's output, which is a single message from the model
 const ChatWithFixExpertOutputSchema = ChatMessageSchema;
 
-export async function chatWithFixExpert(history: z.infer<typeof ChatWithFixExpertInputSchema>): Promise<z.infer<typeof ChatWithFixExpertOutputSchema>> {
+export async function chatWithFixExpert(
+  history: z.infer<typeof ChatWithFixExpertInputSchema>
+): Promise<z.infer<typeof ChatWithFixExpertOutputSchema>> {
   return chatWithFixExpertFlow(history);
 }
 
@@ -39,6 +41,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   - Best practices for FIX implementation and testing.
 
   When responding, be concise and clear. Use examples when it helps with understanding. Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
+  If you do not know the answer to a question, say so. Do not invent information.
   
   Based on the conversation history, provide a helpful and accurate response to the user's latest query.
 
