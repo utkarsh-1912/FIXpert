@@ -1,20 +1,21 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, PlusCircle, ArrowRight, ArrowLeftRight, Minus, Sparkles, Loader2, Wand2, ArrowDown, MoveHorizontal } from 'lucide-react';
+import { Trash2, PlusCircle, ArrowRight, ArrowLeftRight, Minus, Sparkles, Loader2, Wand2, ArrowDown, MoveHorizontal, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position } from 'reactflow';
+import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cn } from '@/lib/utils';
 import { generateWorkflowDiagram } from '@/ai/flows/generate-workflow-diagram';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNotificationStore } from '@/stores/notification-store';
+import { toPng } from 'html-to-image';
 
 
 type Node = {
@@ -39,17 +40,17 @@ const connectionTypeMap: Record<ConnectionType, { icon: React.ElementType, synta
     'none': { icon: Minus, syntax: '---' },
 };
 
-const nodeBaseStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    padding: '10px 15px',
-    minWidth: 120,
-    minHeight: 60,
-};
 
 const NodeComponent = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => {
+    const nodeBaseStyle: React.CSSProperties = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        padding: '10px 15px',
+        minWidth: 120,
+        minHeight: 60,
+    };
     const shapeStyle: React.CSSProperties = {};
     if (data.shape === 'circle') {
         shapeStyle.borderRadius = '50%';
@@ -99,6 +100,7 @@ export default function WorkflowVisualizerPage() {
   // React Flow state
   const [flowNodes, setFlowNodes, onNodesChange] = useNodesState([]);
   const [flowEdges, setFlowEdges, onEdgesChange] = useEdgesState([]);
+  const reactFlowWrapper = useRef(null);
 
   // Update React Flow state when manual designer state changes
   useEffect(() => {
@@ -194,6 +196,41 @@ export default function WorkflowVisualizerPage() {
           setIsLoading(false);
       }
   };
+
+  const handleDownload = useCallback(() => {
+    const flowElement = document.querySelector('.react-flow__viewport');
+    if (!flowElement) {
+        addNotification({
+            icon: Download,
+            title: 'Download Failed',
+            description: 'Could not find the diagram to download.',
+            variant: 'destructive',
+        });
+        return;
+    }
+
+    toPng(flowElement as HTMLElement, { cacheBust: true })
+      .then((dataUrl) => {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'workflow-diagram.png';
+        a.click();
+         addNotification({
+            icon: Download,
+            title: 'Download Complete',
+            description: 'Your diagram has been downloaded as a PNG.',
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+         addNotification({
+            icon: Download,
+            title: 'Download Failed',
+            description: 'An error occurred while generating the image.',
+            variant: 'destructive',
+        });
+      });
+  }, []);
 
 
   return (
@@ -317,9 +354,15 @@ export default function WorkflowVisualizerPage() {
         </Tabs>
       </Card>
       <Card className="flex flex-col">
-        <CardHeader>
-          <CardTitle>Workflow Visualization</CardTitle>
-          <CardDescription>Live preview of your diagram.</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+                <CardTitle>Workflow Visualization</CardTitle>
+                <CardDescription>Live preview of your diagram.</CardDescription>
+            </div>
+            <Button variant="outline" size="icon" onClick={handleDownload}>
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Download as PNG</span>
+            </Button>
         </CardHeader>
         <CardContent className="relative flex-grow w-full h-full min-h-[60vh]">
             {isLoading && (
@@ -328,8 +371,8 @@ export default function WorkflowVisualizerPage() {
               </div>
             )}
             
-            {activeTab === 'designer' || (activeTab === 'scenario' && flowNodes.length > 0) ? (
-                <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
+            {(activeTab === 'designer' || (activeTab === 'scenario' && flowNodes.length > 0)) ? (
+                <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0" ref={reactFlowWrapper}>
                     <ReactFlow
                         nodes={flowNodes}
                         edges={flowEdges}
@@ -355,4 +398,3 @@ export default function WorkflowVisualizerPage() {
     </div>
   );
 }
-
