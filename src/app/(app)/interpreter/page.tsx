@@ -11,9 +11,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useNotificationStore } from '@/stores/notification-store';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function InterpreterPage() {
   const [rawMessages, setRawMessages] = useState('');
+  const [delimiter, setDelimiter] = useState('|');
   const [interpretations, setInterpretations] = useState<InterpretFixMessageOutput[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,10 +32,12 @@ export default function InterpreterPage() {
         setIsLoading(false);
         return;
     }
+    
+    const effectiveDelimiter = delimiter === '\\u0001' ? String.fromCharCode(1) : delimiter;
 
     try {
       const results = await Promise.all(
-        messages.map(rawFixMessage => interpretFixMessage({ rawFixMessage }))
+        messages.map(rawFixMessage => interpretFixMessage({ rawFixMessage: rawFixMessage.replace(new RegExp(effectiveDelimiter, 'g'), '|') }))
       );
       setInterpretations(results);
       addNotification({
@@ -65,11 +70,21 @@ export default function InterpreterPage() {
             className="font-code"
           />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-wrap gap-4">
           <Button onClick={handleInterpret} disabled={isLoading || !rawMessages}>
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
             Interpret Messages
           </Button>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="delimiter" className="shrink-0">Delimiter</Label>
+            <Input 
+                id="delimiter" 
+                value={delimiter}
+                onChange={(e) => setDelimiter(e.target.value)}
+                className="w-24 font-code"
+                placeholder="|"
+            />
+          </div>
         </CardFooter>
       </Card>
       <Card className="flex flex-col">

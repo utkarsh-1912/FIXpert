@@ -26,19 +26,21 @@ type ComparisonResult = {
   diffB: DiffPart[];
 };
 
-const parseFixToMap = (fix: string): Map<string, string> => {
-    return new Map(fix.split('|').map(f => {
+const parseFixToMap = (fix: string, delimiter: string): Map<string, string> => {
+    const effectiveDelimiter = delimiter === '\\u0001' ? String.fromCharCode(1) : delimiter;
+    return new Map(fix.split(effectiveDelimiter).map(f => {
         const parts = f.split('=');
         return [parts[0], parts.slice(1).join('=')];
     }).filter(p => p[0]));
 };
 
-const createLineDiff = (text1: string, text2: string, compareByTagOnly: boolean): [DiffPart[], DiffPart[]] => {
-  const map1 = parseFixToMap(text1);
-  const map2 = parseFixToMap(text2);
+const createLineDiff = (text1: string, text2: string, compareByTagOnly: boolean, delimiter: string): [DiffPart[], DiffPart[]] => {
+  const map1 = parseFixToMap(text1, delimiter);
+  const map2 = parseFixToMap(text2, delimiter);
   const diffA: DiffPart[] = [];
   const diffB: DiffPart[] = [];
   const allTags = new Set([...map1.keys(), ...map2.keys()]);
+  const effectiveDelimiter = delimiter === '\\u0001' ? String.fromCharCode(1) : delimiter;
 
   allTags.forEach(tag => {
     const val1 = map1.get(tag);
@@ -62,14 +64,14 @@ const createLineDiff = (text1: string, text2: string, compareByTagOnly: boolean)
   return [diffA, diffB];
 };
 
-const DiffLine = ({ parts }: { parts: DiffPart[] }) => (
+const DiffLine = ({ parts, delimiter }: { parts: DiffPart[], delimiter: string }) => (
   <div className="font-code text-xs">
     {parts.map((part, i) => {
       let className = "px-1 py-0.5 rounded";
       if (part.type === 'added') className += ' bg-accent/20 text-accent-foreground';
       if (part.type === 'removed') className += ' bg-destructive/20 text-destructive-foreground';
       return <span key={i} className={className}>{part.value}</span>;
-    }).reduce((prev, curr, i) => [prev, <span key={`sep-${i}`} className="text-muted-foreground"> | </span>, curr] as any)}
+    }).reduce((prev, curr, i) => [prev, <span key={`sep-${i}`} className="text-muted-foreground"> {delimiter} </span>, curr] as any)}
   </div>
 );
 
@@ -97,6 +99,7 @@ export default function ComparatorPage() {
   const [msg2, setMsg2] = useState('');
   const [compareByTagOnly, setCompareByTagOnly] = useState(false);
   const [comparison, setComparison] = useState<ComparisonResult[]>([]);
+  const [delimiter, setDelimiter] = useState('|');
   
   const handleCompare = useCallback(() => {
     const lines1 = msg1.split('\n').filter(Boolean);
@@ -107,11 +110,11 @@ export default function ComparatorPage() {
     for (let i = 0; i < maxLines; i++) {
       const lineA = lines1[i] || '';
       const lineB = lines2[i] || '';
-      const [diffA, diffB] = createLineDiff(lineA, lineB, compareByTagOnly);
+      const [diffA, diffB] = createLineDiff(lineA, lineB, compareByTagOnly, delimiter);
       newComparison.push({ line: i + 1, messageA: lineA, messageB: lineB, diffA, diffB });
     }
     setComparison(newComparison);
-  }, [msg1, msg2, compareByTagOnly]);
+  }, [msg1, msg2, compareByTagOnly, delimiter]);
 
   return (
     <div className="space-y-6">
@@ -156,10 +159,20 @@ export default function ComparatorPage() {
         </Card>
       </div>
        <Card>
-        <CardContent className="flex items-center justify-center space-x-4 p-4">
+        <CardContent className="flex items-center justify-center flex-wrap gap-4 p-4">
             <div className="flex items-center space-x-2">
                 <Switch id="compare-mode" checked={compareByTagOnly} onCheckedChange={setCompareByTagOnly} />
                 <Label htmlFor="compare-mode">Compare by Tags Only</Label>
+            </div>
+             <div className="flex items-center gap-2">
+                <Label htmlFor="delimiter" className="shrink-0">Delimiter</Label>
+                <Input 
+                    id="delimiter" 
+                    value={delimiter}
+                    onChange={(e) => setDelimiter(e.target.value)}
+                    className="w-24 font-code"
+                    placeholder="|"
+                />
             </div>
             <Button onClick={handleCompare}><GitCompareArrows className="mr-2 h-4 w-4" />Compare Messages</Button>
         </CardContent>
@@ -184,8 +197,8 @@ export default function ComparatorPage() {
                   {comparison.map(({ line, diffA, diffB }) => (
                     <TableRow key={line}>
                       <TableCell className="text-center font-sans text-muted-foreground">{line}</TableCell>
-                      <TableCell><DiffLine parts={diffA} /></TableCell>
-                      <TableCell><DiffLine parts={diffB} /></TableCell>
+                      <TableCell><DiffLine parts={diffA} delimiter={delimiter} /></TableCell>
+                      <TableCell><DiffLine parts={diffB} delimiter={delimiter} /></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

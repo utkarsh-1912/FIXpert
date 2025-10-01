@@ -8,10 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CodeXml, Braces } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-const formatFixToXml = (fix: string): string => {
+const formatFixToXml = (fix: string, delimiter: string): string => {
   if (!fix.trim()) return '';
-  const fields = fix.split('|');
+  const effectiveDelimiter = delimiter === '\\u0001' ? String.fromCharCode(1) : delimiter;
+  const fields = fix.split(effectiveDelimiter);
   const xmlFields = fields.map(field => {
     const [tag, ...valueParts] = field.split('=');
     const value = valueParts.join('=');
@@ -41,9 +44,10 @@ export default function FormatterPage() {
   const [xmlMessage, setXmlMessage] = useState('');
   const [rawXml, setRawXml] = useState('');
   const [formattedXml, setFormattedXml] = useState('');
+  const [delimiter, setDelimiter] = useState('|');
 
   const handleFormatFix = () => {
-    setXmlMessage(formatFixToXml(rawMessage));
+    setXmlMessage(formatFixToXml(rawMessage, delimiter));
   };
   
   const handleFormatXml = () => {
@@ -52,7 +56,7 @@ export default function FormatterPage() {
 
   useEffect(() => {
     handleFormatFix();
-  }, [rawMessage]);
+  }, [rawMessage, delimiter]);
 
   useEffect(() => {
     handleFormatXml();
@@ -80,8 +84,18 @@ export default function FormatterPage() {
                     placeholder="8=FIX.4.2|9=123|35=D|11=ORDER1|55=GOOG|38=100"
                 />
                 </CardContent>
-                <CardFooter>
-                <Button onClick={handleFormatFix}><CodeXml className="mr-2 h-4 w-4" />Format to XML</Button>
+                <CardFooter className="flex-wrap gap-4">
+                  <Button onClick={handleFormatFix}><CodeXml className="mr-2 h-4 w-4" />Format to XML</Button>
+                  <div className="flex items-center gap-2">
+                      <Label htmlFor="delimiter" className="shrink-0">Delimiter</Label>
+                      <Input 
+                          id="delimiter" 
+                          value={delimiter}
+                          onChange={(e) => setDelimiter(e.target.value)}
+                          className="w-24 font-code"
+                          placeholder="|"
+                      />
+                  </div>
                 </CardFooter>
             </Card>
             <Card className="flex flex-col">
