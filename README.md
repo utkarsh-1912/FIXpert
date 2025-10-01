@@ -8,12 +8,13 @@ FIXpert is a comprehensive, AI-powered Next.js application designed to be an ind
 FIXpert offers a suite of powerful, intuitive tools to handle all aspects of FIX message processing:
 
 -   **AI-Powered Interpreter**: Decode raw, pipe-separated FIX messages instantly. The AI provides a human-readable breakdown of each tag, including its name, value, and meaning, along with a summary of the message's purpose.
+-   **AI Chat**: Ask questions in plain English about any FIX tag, message type, or trading concept. Get expert-level answers from an AI assistant trained on the FIX protocol.
 -   **Log Analyzer**: Parse, filter, and analyze large FIX log files. Quickly identify message types, senders, and targets, and use the powerful filter to zero in on the exact messages you need.
 -   **Log Processor**: Merge and sort multiple log files chronologically. Upload several files, and the processor will intelligently combine them into a single, time-sorted log, ready for analysis or download.
 -   **Message Comparator**: Perform a side-by-side, field-level comparison of two FIX messages or entire message sets. Differences are highlighted, making it easy to spot discrepancies.
 -   **FIX-to-XML Formatter**: Convert raw, pipe-separated FIX messages into a clean, well-structured XML format, perfect for documentation, sharing, or further processing.
--   **AI-Powered Workflow Visualizer**: Generate clear, interactive flowcharts from plain English descriptions of trading scenarios. You can also build diagrams manually or by writing MermaidJS syntax.
--   **Symbol Search**: Look up real-time trading symbols from Yahoo Finance. Find stocks, currencies, and other assets by ticker or name.
+-   **AI-Powered Workflow Visualizer**: Generate clear, interactive flowcharts from plain English descriptions of trading scenarios. You can also build diagrams manually.
+-   **Symbol Search**: Look up real-time trading symbols from Yahoo Finance. Find stocks, currencies, and other assets by ticker or name and get AI-powered financial insights.
 
 ## Getting Started
 

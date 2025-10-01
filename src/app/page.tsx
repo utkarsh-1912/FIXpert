@@ -4,8 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FixpertIcon } from '@/components/icons';
 import { menuItems } from '@/config/nav';
-import { ArrowRight, Star, Sparkles, MoreHorizontal, TrendingUp } from 'lucide-react';
+import { ArrowRight, Star, Sparkles, MoreHorizontal, TrendingUp, Cpu, Bot, FileCheck2 } from 'lucide-react';
 import Image from 'next/image';
+
+const features = [
+  {
+    icon: Bot,
+    title: 'AI-Powered Analysis',
+    description: 'Leverage generative AI to interpret raw FIX messages, generate workflow diagrams from text, and get expert answers from an AI assistant trained on the FIX protocol.',
+  },
+  {
+    icon: FileCheck2,
+    title: 'Comprehensive Log Management',
+    description: 'Parse, filter, and analyze large log files instantly. Merge and chronologically sort multiple files to create a single, unified view of your message flow.',
+  },
+  {
+    icon: Cpu,
+    title: 'Real-Time Market Data',
+    description: 'Search for real-time trading symbols from Yahoo Finance. Get detailed quotes, historical price charts, and AI-generated financial insights for any stock.',
+  },
+];
 
 const testimonials = [
   {
@@ -70,7 +88,7 @@ export default function LandingPage() {
             </div>
             <div className="relative flex items-center justify-center">
                <Image 
-                src="https://picsum.photos/seed/computer-networks/600/400"
+                src="https://picsum.photos/seed/networks/600/400"
                 width={600}
                 height={400}
                 alt="FIX Protocol Visualization"
@@ -82,10 +100,31 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full bg-muted/30 py-20 md:py-32">
+        <section id="features" className="w-full py-20 md:py-32">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">A Toolkit That Works as Hard as You Do</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Why FIXpert?</h2>
+              <p className="mt-4 text-muted-foreground">FIXpert is more than just a set of tools; it's a productivity platform designed to streamline your entire FIX-based workflow.</p>
+            </div>
+            <div className="grid gap-8 md:grid-cols-3">
+              {features.map((feature) => (
+                <div key={feature.title} className="flex flex-col items-center text-center gap-4 p-4">
+                  <div className="rounded-full bg-primary/10 p-4 text-primary">
+                    <feature.icon className="h-8 w-8" />
+                  </div>
+                  <h3 className="text-xl font-semibold">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Toolkit Section */}
+        <section id="toolkit" className="w-full bg-muted/30 py-20 md:py-32">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Our Toolkit</h2>
               <p className="mt-4 text-muted-foreground">FIXpert is a comprehensive suite of tools designed to handle every aspect of the FIX protocol, from development and testing to analysis and support.</p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -116,7 +155,7 @@ export default function LandingPage() {
           <div className="mx-auto grid grid-cols-1 items-center gap-12 px-4 md:grid-cols-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-center">
               <Image
-                src="https://picsum.photos/seed/financial-economy/600/400"
+                src="https://picsum.photos/seed/economy/600/400"
                 width={600}
                 height={400}
                 alt="Market Data Analysis"
@@ -216,5 +255,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
