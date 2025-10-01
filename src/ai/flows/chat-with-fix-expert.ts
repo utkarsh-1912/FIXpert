@@ -4,8 +4,7 @@
  * @fileOverview This file defines a Genkit flow for an AI-powered FIX protocol chat assistant.
  *
  * It takes a history of chat messages and generates a response from the AI model,
- * which is configured to act as a FIX protocol expert. It uses a tool to look up
- * FIX tag information to ensure accuracy.
+ * which is configured to act as a FIX protocol expert.
  *
  * @exports {
  *   chatWithFixExpert: (history: ChatMessage[]) => Promise<ChatMessage>;
@@ -15,8 +14,6 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ChatMessageSchema } from './chat-types';
-import { getFixTagInfo } from '../tools/get-fix-tag-info';
-import { GetFixTagInfoSchema } from '../tools/get-fix-tag-info-types';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
@@ -32,7 +29,6 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   name: 'chatWithFixExpertPrompt',
   input: { schema: ChatWithFixExpertInputSchema },
   output: { schema: ChatWithFixExpertOutputSchema },
-  tools: [getFixTagInfo],
   prompt: `You are FIXpert, an expert AI assistant specializing in the Financial Information eXchange (FIX) protocol. Your role is to help users by answering their questions about FIX, explaining concepts, interpreting messages, and providing clear, accurate information.
 
   Your knowledge includes, but is not limited to:
@@ -44,7 +40,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
 
   When responding, be concise and clear. Use examples when it helps with understanding. Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
   
-  IMPORTANT: If a user asks to explain a specific FIX tag number, you MUST use the getFixTagInfo tool to get the correct name, description, and values for that exact tag. Do not invent information. If the tool fails or returns a "could not find" message, inform the user that you could not find information for that specific tag and ask them to verify the tag number.
+  Based on the conversation history, provide a helpful and accurate response to the user's latest query.
 
   Here is the conversation history:
   {{#each this}}
@@ -53,19 +49,6 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   `,
 });
 
-
-const fallbackPrompt = ai.definePrompt({
-  name: 'fallbackChatPrompt',
-  input: { schema: ChatWithFixExpertInputSchema },
-  output: { schema: ChatWithFixExpertOutputSchema },
-  prompt: `You are FIXpert, an expert AI assistant specializing in the Financial Information eXchange (FIX) protocol. Your role is to help users by answering their questions about FIX, explaining concepts, and providing clear, accurate information. Please answer the user's last question based on the conversation history.
-  
-  Here is the conversation history:
-  {{#each this}}
-  **{{role}}**: {{content}}
-  {{/each}}
-  `,
-});
 
 const chatWithFixExpertFlow = ai.defineFlow(
   {
@@ -79,21 +62,14 @@ const chatWithFixExpertFlow = ai.defineFlow(
       if (output) {
         return output;
       }
-      // If the tool-based prompt returns null, fall through to the general prompt.
-      throw new Error("Tool-based prompt failed to produce output.");
+      throw new Error("AI failed to produce a valid output.");
     } catch (error) {
-      console.warn("Tool-based chat prompt failed, using fallback. Error:", error);
-      // Fallback to a general prompt without tools if the first one fails.
-      const { output } = await fallbackPrompt(history);
-      if (output) {
-        return output;
-      }
+      console.error("Chat flow failed:", error);
+      // If all else fails, return a static error message.
+      return {
+          role: 'model',
+          content: 'I apologize, but I encountered an unexpected issue while processing your request. Could you please try rephrasing your question?',
+      };
     }
-    
-    // If all else fails, return a static error message.
-    return {
-        role: 'model',
-        content: 'I apologize, but I was unable to process that request. Could you please try rephrasing your question?',
-    };
   }
 );
