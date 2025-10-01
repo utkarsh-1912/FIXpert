@@ -12,8 +12,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType } from 'reactflow';
+import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { cn } from '@/lib/utils';
 
 type Node = {
   id: string;
@@ -50,6 +51,36 @@ const TABS = [
   { value: 'manual', label: 'Manual Designer', icon: PencilRuler },
   { value: 'mermaid', label: 'Mermaid Code', icon: CodeXml },
 ];
+
+const nodeStyles = {
+    width: 150,
+    height: 60,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+};
+
+const HorizontalNode = ({ data, selected }: { data: { label: string }, selected: boolean }) => (
+    <div className={cn("react-flow__node-default", selected && "selected")} style={{ ...nodeStyles, borderRadius: '0.25rem' }}>
+        {data.label}
+        <Handle type="source" position={Position.Right} id="right" />
+        <Handle type="target" position={Position.Left} id="left" />
+    </div>
+);
+
+const VerticalNode = ({ data, selected }: { data: { label: string }, selected: boolean }) => (
+    <div className={cn("react-flow__node-default", selected && "selected")} style={{ ...nodeStyles, borderRadius: '0.25rem' }}>
+        {data.label}
+        <Handle type="source" position={Position.Bottom} id="bottom" />
+        <Handle type="target" position={Position.Top} id="top" />
+    </div>
+);
+
+const nodeTypes = {
+    horizontal: HorizontalNode,
+    vertical: VerticalNode,
+};
 
 export default function WorkflowVisualizerPage() {
   const [activeTab, setActiveTab] = useState(TABS[0].value);
@@ -97,8 +128,6 @@ export default function WorkflowVisualizerPage() {
   
   // Update React Flow state when manual designer state changes
   useEffect(() => {
-    const nodeWidth = 150;
-    const nodeHeight = 60;
     const xSpacing = 250;
     const ySpacing = 150;
 
@@ -111,13 +140,8 @@ export default function WorkflowVisualizerPage() {
             id: node.id,
             data: { label: node.label },
             position,
+            type: layout === 'LR' ? 'horizontal' : 'vertical',
             style: {
-                width: nodeWidth,
-                height: nodeHeight,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
                 borderRadius: node.shape === 'circle' ? '9999px' : (node.shape === 'stadium' ? '9999px' : '0.25rem'),
             }
         };
@@ -128,11 +152,13 @@ export default function WorkflowVisualizerPage() {
       source: conn.from,
       target: conn.to,
       label: conn.label,
-      markerEnd: conn.type === 'uni' || conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
-      markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       type: 'straight',
+      markerEnd: conn.type === 'uni' || conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
+      markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed, color: '#ff0072' } : undefined,
       labelBgPadding: [8, 4] as [number, number],
       labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.9 },
+      sourceHandle: layout === 'LR' ? 'right' : 'bottom',
+      targetHandle: layout === 'LR' ? 'left' : 'top',
     }));
 
     setFlowNodes(newFlowNodes);
@@ -207,8 +233,8 @@ export default function WorkflowVisualizerPage() {
     } catch (err) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Failed to generate visualization: ${errorMessage}`);
-      setVisualization(null); // Clear previous visualization on error
+      setError(null); // Do not show error, just fall back to react-flow
+      setVisualization(null);
     } finally {
       setIsLoading(false);
     }
@@ -389,39 +415,40 @@ export default function WorkflowVisualizerPage() {
           <CardTitle>Workflow Visualization</CardTitle>
           <CardDescription>AI-generated flowchart or a live preview from the manual designer.</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow relative p-0 min-h-[60vh]">
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          )}
-            
-          <div className="w-full h-full rounded-b-lg overflow-hidden">
-            {visualization && !error ? (
-                 <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4">
-                    <div className="rounded-lg border bg-background/50 p-4 flex justify-center flex-grow w-full">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={visualization.dataUri}
-                            alt="FIX Workflow Visualization"
-                            className="h-auto max-w-full"
-                        />
-                    </div>
-                    <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
+        <CardContent className="flex-grow relative p-0 min-h-[60vh] w-full h-full">
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-            ) : (
+            )}
+            
+            <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
                 <ReactFlow
                     nodes={flowNodes}
                     edges={flowEdges}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
+                    nodeTypes={nodeTypes}
                     fitView
                 >
                     <Controls />
                     <Background />
                 </ReactFlow>
-            )}
-          </div>
+
+                {visualization && (
+                    <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4 z-10">
+                        <div className="rounded-lg border bg-background/50 p-4 flex justify-center flex-grow w-full">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={visualization.dataUri}
+                                alt="FIX Workflow Visualization"
+                                className="h-auto max-w-full"
+                            />
+                        </div>
+                        <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
+                    </div>
+                )}
+            </div>
         </CardContent>
       </Card>
     </div>
