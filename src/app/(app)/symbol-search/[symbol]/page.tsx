@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
 import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -310,13 +310,13 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
-                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'NA'} />
-                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N\A'} />
-                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N\A'} />
-                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N\A'} />
-                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N\A'} />
-                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N\A'} className="col-span-2 sm:col-span-1"/>
-                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N\A'} className="col-span-2 sm:col-span-1"/>
+                <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N/A'} />
+                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N/A'} />
+                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'} className="col-span-2 sm:col-span-1"/>
+                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'} className="col-span-2 sm:col-span-1"/>
             </CardContent>
           </Card>
           
@@ -363,3 +363,5 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
