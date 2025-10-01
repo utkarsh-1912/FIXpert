@@ -128,9 +128,9 @@ export default function WorkflowVisualizerPage() {
       source: conn.from,
       target: conn.to,
       label: conn.label,
-      markerEnd: conn.type === 'uni' ? { type: MarkerType.ArrowClosed } : undefined,
+      markerEnd: conn.type === 'uni' || conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
-      type: 'smoothstep',
+      type: 'straight',
       labelBgPadding: [8, 4] as [number, number],
       labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.9 },
     }));
