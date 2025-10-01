@@ -52,36 +52,49 @@ const TABS = [
   { value: 'mermaid', label: 'Mermaid Code', icon: CodeXml },
 ];
 
-const nodeStyles: React.CSSProperties = {
+const nodeBaseStyle: React.CSSProperties = {
     width: 150,
-    height: 60,
+    padding: '10px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
+    minHeight: 60,
 };
 
-const HorizontalNode = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => (
-    <div className={cn("react-flow__node-default", selected && "selected")} style={{ 
-        ...nodeStyles, 
-        borderRadius: data.shape === 'circle' || data.shape === 'stadium' ? '9999px' : data.shape === 'round-edge' ? '1rem' : '0.25rem' 
-    }}>
-        {data.label}
-        <Handle type="source" position={Position.Right} id="right" />
-        <Handle type="target" position={Position.Left} id="left" />
-    </div>
-);
+const HorizontalNode = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => {
+    const shapeStyle: React.CSSProperties = {
+        borderRadius: data.shape === 'circle' ? '50%' : 
+                      data.shape === 'stadium' ? '9999px' : 
+                      data.shape === 'round-edge' ? '1rem' : '0.25rem',
+        height: data.shape === 'circle' ? 100 : 60,
+    };
 
-const VerticalNode = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => (
-    <div className={cn("react-flow__node-default", selected && "selected")} style={{ 
-        ...nodeStyles, 
-        borderRadius: data.shape === 'circle' || data.shape === 'stadium' ? '9999px' : data.shape === 'round-edge' ? '1rem' : '0.25rem'
-    }}>
-        {data.label}
-        <Handle type="source" position={Position.Bottom} id="bottom" />
-        <Handle type="target" position={Position.Top} id="top" />
-    </div>
-);
+    return (
+        <div className={cn("react-flow__node-default", selected && "selected")} style={{ ...nodeBaseStyle, ...shapeStyle }}>
+            {data.label}
+            <Handle type="source" position={Position.Right} id="right" />
+            <Handle type="target" position={Position.Left} id="left" />
+        </div>
+    );
+};
+
+const VerticalNode = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => {
+    const shapeStyle: React.CSSProperties = {
+        borderRadius: data.shape === 'circle' ? '50%' : 
+                      data.shape === 'stadium' ? '9999px' : 
+                      data.shape === 'round-edge' ? '1rem' : '0.25rem',
+        height: data.shape === 'circle' ? 100 : 60,
+    };
+    
+    return (
+        <div className={cn("react-flow__node-default", selected && "selected")} style={{ ...nodeBaseStyle, ...shapeStyle }}>
+            {data.label}
+            <Handle type="source" position={Position.Bottom} id="bottom" />
+            <Handle type="target" position={Position.Top} id="top" />
+        </div>
+    );
+};
 
 const nodeTypes = {
     horizontal: HorizontalNode,
@@ -135,7 +148,7 @@ export default function WorkflowVisualizerPage() {
   // Update React Flow state when manual designer state changes
   useEffect(() => {
     const xSpacing = 250;
-    const ySpacing = 150;
+    const ySpacing = 180;
 
     const newFlowNodes = manualNodes.map((node, index) => {
         const position = layout === 'LR'
@@ -157,11 +170,11 @@ export default function WorkflowVisualizerPage() {
       label: conn.label,
       type: 'straight',
       markerEnd: conn.type === 'uni' || conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
-      markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed, color: 'hsl(var(--primary))' } : undefined,
+      markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       labelBgPadding: [8, 4] as [number, number],
       labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.9 },
-      sourceHandle: layout === 'LR' ? 'right' : 'bottom',
-      targetHandle: layout === 'LR' ? 'left' : 'top',
+      sourceHandle: layout === 'LR' ? 'right' : 'left',
+      targetHandle: layout === 'LR' ? 'left' : 'right',
     }));
 
     setFlowNodes(newFlowNodes);
@@ -214,8 +227,7 @@ export default function WorkflowVisualizerPage() {
       setVisualization({ dataUri: result.flowchartDataUri, description: result.description });
     } catch (err) {
       console.error(err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(null); // Do not show error, just fall back to react-flow
+      setError(null); 
       setVisualization(null);
     } finally {
       setIsLoading(false);
@@ -227,7 +239,6 @@ export default function WorkflowVisualizerPage() {
     setVisualization(null);
     setError(null);
     try {
-      // The AI can derive the description from the code itself.
       const result = await visualizeFixWorkflow({ scenarioDescription: `Generate a flowchart from the following Mermaid syntax: \n\n${code}` });
       if (!result.flowchartDataUri.startsWith('data:image/svg+xml;base64,')) {
         throw new Error("Generated flowchart is not in the expected format.");
@@ -235,8 +246,7 @@ export default function WorkflowVisualizerPage() {
       setVisualization({ dataUri: result.flowchartDataUri, description: result.description || 'Flowchart generated from custom Mermaid code.' });
     } catch (err) {
       console.error(err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(null); // Do not show error, just fall back to react-flow
+      setError(null);
       setVisualization(null);
     } finally {
       setIsLoading(false);
@@ -416,9 +426,14 @@ export default function WorkflowVisualizerPage() {
       <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Workflow Visualization</CardTitle>
-          <CardDescription>AI-generated flowchart or a live preview from the manual designer.</CardDescription>
+           <CardDescription>
+              {activeTab === 'scenario' && !visualization
+                  ? 'Generated visualization will appear here.'
+                  : 'Live preview from the designer.'
+              }
+          </CardDescription>
         </CardHeader>
-        <CardContent className="relative p-0 flex-grow w-full h-full min-h-[60vh]">
+        <CardContent className="relative flex-grow w-full h-full min-h-[60vh]">
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -426,20 +441,20 @@ export default function WorkflowVisualizerPage() {
             )}
             
             <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
-                <ReactFlow
-                    nodes={flowNodes}
-                    edges={flowEdges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    nodeTypes={nodeTypes}
-                    fitView
-                >
-                    <Controls />
-                    <Background />
-                </ReactFlow>
-
-                {visualization && (
-                    <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4 z-10 backdrop-blur-sm">
+                {activeTab !== 'scenario' || !visualization ? (
+                    <ReactFlow
+                        nodes={flowNodes}
+                        edges={flowEdges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        nodeTypes={nodeTypes}
+                        fitView
+                    >
+                        <Controls />
+                        <Background />
+                    </ReactFlow>
+                ) : visualization ? (
+                     <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4 z-10 backdrop-blur-sm">
                         <div className="rounded-lg border bg-background/50 p-4 flex justify-center flex-grow w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -450,10 +465,11 @@ export default function WorkflowVisualizerPage() {
                         </div>
                         <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
                     </div>
-                )}
+                ) : null }
             </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
