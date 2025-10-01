@@ -4,7 +4,8 @@
  * @fileOverview This file defines a Genkit flow for an AI-powered FIX protocol chat assistant.
  *
  * It takes a history of chat messages and generates a response from the AI model,
- * which is configured to act as a FIX protocol expert.
+ * which is configured to act as a FIX protocol expert. It uses a tool to look up
+ * FIX tag information to ensure accuracy.
  *
  * @exports {
  *   chatWithFixExpert: (history: ChatMessage[]) => Promise<ChatMessage>;
@@ -14,6 +15,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ChatMessageSchema } from './chat-types';
+import { getFixTagInfo } from '../tools/get-fix-tag-info';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
@@ -29,6 +31,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   name: 'chatWithFixExpertPrompt',
   input: { schema: ChatWithFixExpertInputSchema },
   output: { schema: ChatWithFixExpertOutputSchema },
+  tools: [getFixTagInfo],
   prompt: `You are FIXpert, an expert AI assistant specializing in the Financial Information eXchange (FIX) protocol. Your role is to help users by answering their questions about FIX, explaining concepts, interpreting messages, and providing clear, accurate information.
 
   Your knowledge includes, but is not limited to:
@@ -41,7 +44,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   When responding, be concise and clear. Use examples when it helps with understanding. If a user provides a raw FIX message, break it down and explain it.
   Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
   
-  IMPORTANT: If a user asks to explain a specific FIX tag number, you must ONLY provide the explanation for that exact tag. Do not provide information about a different tag. If you do not know the specific tag, say so.
+  IMPORTANT: If a user asks to explain a specific FIX tag number, you MUST use the getFixTagInfo tool to get the correct name and information for that exact tag. Do not provide information about a different tag. If the tool fails or you cannot find the tag, say that you could not find information for that specific tag.
 
   Here is the conversation history:
   {{#each this}}
