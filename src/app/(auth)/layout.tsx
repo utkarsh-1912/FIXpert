@@ -30,7 +30,7 @@ export default function AuthLayout({
             </p>
         </div>
          <div className="relative z-10 text-center text-sm opacity-60">
-            <p>&copy; {new Date().getFullYear()} UTAI Inc. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} FIXpert by UTAI Inc. All rights reserved.</p>
         </div>
       </div>
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4">

@@ -4,6 +4,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/components/theme-provider';
+import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 
 export const metadata: Metadata = {
   title: 'FIXpert | AI-Powered FIX Protocol Toolkit & Market Analysis',
@@ -43,6 +44,7 @@ export default function RootLayout({
             </SidebarProvider>
           </AuthProvider>
           <Toaster />
+          <CookieConsentBanner />
         </ThemeProvider>
       </body>
     </html>
