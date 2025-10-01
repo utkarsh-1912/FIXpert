@@ -58,11 +58,54 @@ const parseLogs = (logs: string): FixMessage[] => {
 };
 
 const msgTypeMap: { [key: string]: { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } } = {
-  'D': { label: 'New Order', variant: 'default' },
-  '8': { label: 'Execution Report', variant: 'secondary' },
-  '9': { label: 'Order Cancel Reject', variant: 'destructive' },
-  'F': { label: 'Cancel Request', variant: 'outline' },
-  'G': { label: 'Cancel/Replace Request', variant: 'outline'},
+    '0': { label: 'Heartbeat', variant: 'secondary' },
+    '1': { label: 'Test Request', variant: 'secondary' },
+    '2': { label: 'Resend Request', variant: 'outline' },
+    '3': { label: 'Reject', variant: 'destructive' },
+    '4': { label: 'Sequence Reset', variant: 'outline' },
+    '5': { label: 'Logout', variant: 'secondary' },
+    '6': { label: 'Indication of Interest', variant: 'default' },
+    '7': { label: 'Advertisement', variant: 'default' },
+    '8': { label: 'Execution Report', variant: 'secondary' },
+    '9': { label: 'Order Cancel Reject', variant: 'destructive' },
+    'A': { label: 'Logon', variant: 'secondary' },
+    'B': { label: 'News', variant: 'default' },
+    'C': { label: 'Email', variant: 'default' },
+    'D': { label: 'New Order - Single', variant: 'default' },
+    'E': { label: 'New Order - List', variant: 'default' },
+    'F': { label: 'Order Cancel Request', variant: 'outline' },
+    'G': { label: 'Order Cancel/Replace Request', variant: 'outline' },
+    'H': { label: 'Order Status Request', variant: 'outline' },
+    'J': { label: 'Allocation Instruction', variant: 'default' },
+    'K': { label: 'List Cancel Request', variant: 'outline' },
+    'L': { label: 'List Execute', variant: 'default' },
+    'M': { label: 'List Status Request', variant: 'outline' },
+    'N': { label: 'List Status', variant: 'secondary' },
+    'P': { label: 'Allocation Instruction Ack', variant: 'secondary' },
+    'Q': { label: 'Don\'t Know Trade (DK)', variant: 'destructive' },
+    'R': { label: 'Quote Request', variant: 'outline' },
+    'S': { label: 'Quote', variant: 'default' },
+    'T': { label: 'Settlement Instructions', variant: 'default' },
+    'V': { label: 'Market Data Request', variant: 'outline' },
+    'W': { label: 'Market Data - Snapshot/Full Refresh', variant: 'default' },
+    'X': { label: 'Market Data - Incremental Refresh', variant: 'default' },
+    'Y': { label: 'Market Data Request Reject', variant: 'destructive' },
+    'Z': { label: 'Quote Cancel', variant: 'outline' },
+    'a': { label: 'Quote Status Request', variant: 'outline' },
+    'b': { label: 'Mass Quote Acknowledgment', variant: 'secondary' },
+    'c': { label: 'Security Definition Request', variant: 'outline' },
+    'd': { label: 'Security Definition', variant: 'default' },
+    'e': { label: 'Security Status Request', variant: 'outline' },
+    'f': { label: 'Security Status', variant: 'secondary' },
+    'g': { label: 'Trading Session Status Request', variant: 'outline' },
+    'h': { label: 'Trading Session Status', variant: 'secondary' },
+    'i': { label: 'Mass Quote', variant: 'default' },
+    'j': { label: 'Business Message Reject', variant: 'destructive' },
+    'k': { label: 'Bid Request', variant: 'outline' },
+    'l': { label: 'Bid Response', variant: 'default' },
+    'm': { label: 'List Strike Price', variant: 'default' },
+    'AK': { label: 'Confirmation Ack', variant: 'secondary'},
+    'AU': { label: 'Trade Capture Report Request Ack', variant: 'secondary'},
 };
 
 export default function LogAnalyzerPage() {
@@ -320,3 +363,5 @@ export default function LogAnalyzerPage() {
     </div>
   );
 }
+
+    
