@@ -291,12 +291,12 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day Low" value={quote.regularMarketDayLow?.toFixed(2) ?? 'NA'} />
-                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N/A'} />
-                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N/A'} />
-                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N/A'} />
-                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N/A'} />
-                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'} />
-                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'} />
+                <DataPoint label="52-Wk High" value={quote.fiftyTwoWeekHigh?.toFixed(2) ?? 'N\A'} />
+                <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N\A'} />
+                <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N\A'} />
+                <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N\A'} />
+                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N\A'} />
+                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N\A'} />
             </CardContent>
           </Card>
           
