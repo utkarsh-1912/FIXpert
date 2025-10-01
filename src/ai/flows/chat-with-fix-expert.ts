@@ -42,8 +42,7 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   - Common trading scenarios and how they are represented in FIX.
   - Best practices for FIX implementation and testing.
 
-  When responding, be concise and clear. Use examples when it helps with understanding. If a user provides a raw FIX message, break it down and explain it.
-  Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
+  When responding, be concise and clear. Use examples when it helps with understanding. Use markdown for formatting, especially for tables to present structured data. For example, when a user asks to list common MsgType (35) values, present them in a table.
   
   IMPORTANT: If a user asks to explain a specific FIX tag number, you MUST use the getFixTagInfo tool to get the correct name, description, and values for that exact tag. Do not invent information. If the tool fails or returns a "could not find" message, inform the user that you could not find information for that specific tag and ask them to verify the tag number.
 
