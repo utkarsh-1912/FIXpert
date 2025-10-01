@@ -25,6 +25,7 @@ const FinancialInsightInputSchema = z.object({
 export type FinancialInsightInput = z.infer<typeof FinancialInsightInputSchema>;
 
 const FinancialInsightOutputSchema = z.object({
+  aiSummary: z.string().describe('A single, concise sentence summarizing the company and its main business.'),
   sentiment: z.enum(['Bullish', 'Bearish', 'Neutral']).describe('The overall market sentiment for the stock.'),
   keyRisk: z.string().describe('A single, concise sentence identifying a key risk for the company.'),
   keyOpportunity: z.string().describe('A single, concise sentence identifying a key opportunity for the company.'),
@@ -48,8 +49,10 @@ const financialInsightPrompt = ai.definePrompt({
   - Sector: {{{sector}}}
   - Country: {{{country}}}
 
-  Determine the overall sentiment (Bullish, Bearish, or Neutral).
-  Identify one key risk and one key opportunity, each as a single concise sentence.
+  Your response must include:
+  1.  A single, concise sentence summarizing the company and its main business.
+  2.  The overall market sentiment (Bullish, Bearish, or Neutral).
+  3.  One key risk and one key opportunity, each as a single concise sentence.
   `,
 });
 

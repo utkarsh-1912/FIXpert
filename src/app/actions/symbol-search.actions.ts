@@ -105,8 +105,16 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
         const recommendationsResult = await yahooFinance.recommendationsBySymbol(encodedSymbol);
         // Ensure recommendations is always an array
         recommendations = recommendationsResult.quotes ?? [];
+
+        // Fallback: If no recommendations, search by sector
+        if (recommendations.length === 0 && summary?.assetProfile?.sector) {
+            const sectorSearch = await yahooFinance.search(summary.assetProfile.sector, { quotesCount: 5 });
+            // Filter out the original symbol from sector results
+            recommendations = sectorSearch.quotes.filter(q => q.symbol !== symbol);
+        }
+
     } catch (error) {
-        console.error(`Yahoo Finance API recommendationsBySymbol() error for ${symbol}:`, error);
+        console.error(`Yahoo Finance API recommendationsBySymbol() or sector search error for ${symbol}:`, error);
         recommendations = [];
     }
 

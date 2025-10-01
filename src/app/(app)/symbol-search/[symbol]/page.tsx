@@ -1,10 +1,10 @@
 
 'use client';
 import { useEffect, useState } from 'react';
-import { getQuote } from '@/app/actions/symbol-search.actions';
+import { getQuote, searchQuotes } from '@/app/actions/symbol-search.actions';
 import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2, Building, Globe, BarChart } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -44,7 +44,6 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
   const [loading, setLoading] = useState(true);
   const [checkpointIndex, setCheckpointIndex] = useState(0);
 
-
   useEffect(() => {
     async function fetchInsight() {
       if (!symbolData || !symbolData.quote) return;
@@ -60,8 +59,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
         setInsight(result);
       } catch (error) {
         console.error("Failed to generate financial insight:", error);
-        // Provide a structured error object
-        setInsight({ sentiment: "Neutral", keyRisk: "AI analysis could not be performed.", keyOpportunity: "AI analysis could not be performed." });
+        setInsight(null);
       } finally {
         setLoading(false);
       }
@@ -78,7 +76,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
           }
           return prevIndex + 1;
         });
-      }, 1000); // Change checkpoint every 1 second
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [loading, checkpointIndex]);
@@ -123,20 +121,45 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
             ))}
           </div>
         ) : insight ? (
-           <div className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-foreground mb-2">Sentiment</p>
-              <Badge variant={sentimentVariant[insight.sentiment]}>{insight.sentiment}</Badge>
-            </div>
-             <div>
-              <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</p>
-              <p className="text-sm text-muted-foreground">{insight.keyRisk}</p>
-            </div>
-             <div>
-              <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</p>
-              <p className="text-sm text-muted-foreground">{insight.keyOpportunity}</p>
-            </div>
-          </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">{insight.aiSummary}</p>
+                    <div className="flex flex-wrap gap-4 text-xs">
+                        {symbolData.summary?.assetProfile?.sector && (
+                            <div className="flex items-center gap-2 text-muted-foreground"><Building className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.sector}</span></div>
+                        )}
+                        {symbolData.summary?.assetProfile?.country && (
+                           <div className="flex items-center gap-2 text-muted-foreground"><Globe className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.country}</span></div>
+                        )}
+                    </div>
+                </div>
+                <div className="space-y-4">
+                     <Card className="bg-muted/40">
+                        <CardHeader className="pb-2">
+                             <CardDescription className="flex items-center gap-2"><BarChart className="h-4 w-4"/>Sentiment</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <Badge variant={sentimentVariant[insight.sentiment]}>{insight.sentiment}</Badge>
+                        </CardContent>
+                     </Card>
+                     <Card className="bg-muted/40">
+                        <CardHeader className="pb-2">
+                             <CardDescription className="flex items-center gap-2"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm">{insight.keyRisk}</p>
+                        </CardContent>
+                     </Card>
+                     <Card className="bg-muted/40">
+                        <CardHeader className="pb-2">
+                             <CardDescription className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <p className="text-sm">{insight.keyOpportunity}</p>
+                        </CardContent>
+                     </Card>
+                </div>
+           </div>
         ) : (
             <p className="text-sm text-muted-foreground">Could not load AI insight.</p>
         )}
@@ -220,7 +243,8 @@ export default function SymbolDashboardPage() {
                 <h1 className="text-3xl font-bold tracking-tight">
                     {quote.longName || quote.shortName} ({quote.symbol})
                 </h1>
-                <div className="flex items-end gap-4 mt-2 flex-wrap">
+                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
+                 <div className="flex items-end gap-4 mt-2 flex-wrap">
                     <p className={`text-4xl font-bold ${priceColor}`}>
                         {quote.regularMarketPrice?.toFixed(2)}
                         {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
@@ -230,7 +254,6 @@ export default function SymbolDashboardPage() {
                         {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
                     </p>
                 </div>
-                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
             </div>
             <Link href="/symbol-search" passHref>
                 <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
