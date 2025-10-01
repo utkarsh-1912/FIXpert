@@ -90,7 +90,7 @@ export const getFixTagInfo = ai.defineTool(
   {
     name: 'getFixTagInfo',
     description: 'Get information about a specific FIX protocol tag, such as its name, description, and possible values. It first consults the OnixS online FIX dictionary, and if that fails, it performs a general web search.',
-    inputSchema: GetFixTagGistSchema,
+    inputSchema: GetFixTagInfoSchema,
     outputSchema: z.string(),
   },
   async ({ tag }) => {
@@ -128,6 +128,5 @@ export const getFixTagInfo = ai.defineTool(
   }
 );
 
-// Renaming for clarity and to match updated usage
-const GetFixTagGistSchema = GetFixTagInfoSchema;
-export { GetFixTagGistSchema };
+// Export the schema for use in other parts of the application
+export { GetFixTagInfoSchema };
