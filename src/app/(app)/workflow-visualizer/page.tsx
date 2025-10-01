@@ -210,7 +210,13 @@ export default function WorkflowVisualizerPage() {
         return;
     }
 
-    toPng(flowElement as HTMLElement, { cacheBust: true })
+    toPng(flowElement as HTMLElement, { 
+      cacheBust: true,
+      fetchRequestInit: {
+        mode: 'cors',
+        credentials: 'omit',
+      }
+    })
       .then((dataUrl) => {
         const a = document.createElement('a');
         a.href = dataUrl;
