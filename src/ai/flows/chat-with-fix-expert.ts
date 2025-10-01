@@ -14,6 +14,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ChatMessage, ChatMessageSchema } from './chat-types';
+import { generate } from 'genkit/generate';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
@@ -34,8 +35,8 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   prompt: `You are FIXpert, an expert AI assistant specializing in the Financial Information eXchange (FIX) protocol. Your role is to help users by answering their questions about FIX, explaining concepts, interpreting messages, and providing clear, accurate information.
 
   Your knowledge includes, but is not limited to:
-  - All versions of the FIX protocol.
-  - The purpose and meaning of every FIX tag.
+  - FIX protocol versions, especially 4.2 and 4.4.
+  - The purpose and meaning of every FIX tag. Be aware that some tags are deprecated or have different meanings in different versions. When relevant, mention the version. Default to FIX.4.4 unless specified otherwise.
   - The structure and workflow of all FIX message types (e.g., NewOrderSingle, ExecutionReport, Logon).
   - Common trading scenarios and how they are represented in FIX.
   - Best practices for FIX implementation and testing.
@@ -61,18 +62,47 @@ const chatWithFixExpertFlow = ai.defineFlow(
   },
   async (history) => {
     try {
+      // First attempt: try to generate a response using the main prompt.
       const { output } = await chatWithFixExpertPrompt(history);
       if (output) {
         return output;
       }
-      throw new Error("AI failed to produce a valid output.");
+      // This path is hit if the model returns a null/empty response.
+      throw new Error("AI failed to produce a valid output on the first attempt.");
     } catch (error) {
-      console.error("Chat flow failed:", error);
-      // If all else fails, return a static error message.
-      return {
-          role: 'model',
-          content: 'I apologize, but I encountered an unexpected issue while processing your request. Could you please try rephrasing your question?',
-      };
+      console.error("Chat flow failed on first attempt, trying again without tools:", error);
+
+      try {
+        // Second attempt: if the first one fails (e.g., due to a tool error),
+        // try generating a response again with a simpler, tool-less prompt.
+        const { output } = await generate({
+          model: 'googleai/gemini-2.5-flash',
+          prompt: `You are FIXpert, a helpful AI assistant specializing in the FIX protocol. Please provide a clear and helpful response to the last user message, based on the conversation history.
+
+            Here is the conversation history:
+            {{#each history}}
+            **{{role}}**: {{content}}
+            {{/each}}
+          `,
+          history,
+          output: {
+            schema: ChatWithFixExpertOutputSchema,
+          }
+        });
+        
+        if (output) {
+          return output;
+        }
+        throw new Error("AI failed to produce a valid output on the second attempt.");
+
+      } catch (finalError) {
+        console.error("Chat flow failed on second attempt:", finalError);
+        // If all else fails, return a static error message.
+        return {
+            role: 'model',
+            content: 'I apologize, but I encountered an unexpected issue while processing your request. Could you please try rephrasing your question?',
+        };
+      }
     }
   }
 );
