@@ -121,43 +121,31 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
             ))}
           </div>
         ) : insight ? (
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">{insight.aiSummary}</p>
-                    <div className="flex flex-wrap gap-4 text-xs">
-                        {symbolData.summary?.assetProfile?.sector && (
-                            <div className="flex items-center gap-2 text-muted-foreground"><Building className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.sector}</span></div>
+           <div className="space-y-6">
+                <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">{insight.aiSummary}</p>
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                         {symbolData.summary?.assetProfile?.sector && (
+                            <div className="flex items-center gap-2"><Building className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.sector}</span></div>
                         )}
                         {symbolData.summary?.assetProfile?.country && (
-                           <div className="flex items-center gap-2 text-muted-foreground"><Globe className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.country}</span></div>
+                           <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.country}</span></div>
                         )}
                     </div>
                 </div>
-                <div className="space-y-4">
-                     <Card className="bg-muted/40">
-                        <CardHeader className="pb-2">
-                             <CardDescription className="flex items-center gap-2"><BarChart className="h-4 w-4"/>Sentiment</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                           <Badge variant={sentimentVariant[insight.sentiment]}>{insight.sentiment}</Badge>
-                        </CardContent>
-                     </Card>
-                     <Card className="bg-muted/40">
-                        <CardHeader className="pb-2">
-                             <CardDescription className="flex items-center gap-2"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm">{insight.keyRisk}</p>
-                        </CardContent>
-                     </Card>
-                     <Card className="bg-muted/40">
-                        <CardHeader className="pb-2">
-                             <CardDescription className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                           <p className="text-sm">{insight.keyOpportunity}</p>
-                        </CardContent>
-                     </Card>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                     <div className="flex flex-col space-y-2">
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><BarChart className="h-4 w-4"/>Sentiment</div>
+                         <Badge variant={sentimentVariant[insight.sentiment]} className="self-start">{insight.sentiment}</Badge>
+                     </div>
+                      <div className="flex flex-col space-y-2 sm:col-span-2">
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</div>
+                         <p className="text-sm text-foreground">{insight.keyRisk}</p>
+                     </div>
+                      <div className="flex flex-col space-y-2 sm:col-span-2">
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</div>
+                         <p className="text-sm text-foreground">{insight.keyOpportunity}</p>
+                     </div>
                 </div>
            </div>
         ) : (
@@ -427,3 +415,5 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
