@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getQuote } from '@/app/actions/symbol-search.actions';
 import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -32,11 +32,11 @@ const DataPoint = ({ label, value, className }: { label: string; value: any; cla
 );
 
 const analysisCheckpoints = [
-    "Collecting market data...",
-    "Analyzing sector trends...",
-    "Fact-checking financial statements...",
-    "Generating key insights...",
-    "Finalizing analysis...",
+    "Collecting market data",
+    "Analyzing sector trends",
+    "Fact-checking financial statements",
+    "Generating key insights",
+    "Finalizing analysis",
 ];
 
 function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
@@ -73,7 +73,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => {
-        setCheckpointIndex(prevIndex => (prevIndex + 1) % analysisCheckpoints.length);
+        setCheckpointIndex(prevIndex => Math.min(prevIndex + 1, analysisCheckpoints.length));
       }, 2500); // Change checkpoint every 2.5 seconds
       return () => clearTimeout(timer);
     }
@@ -97,9 +97,26 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <p>{analysisCheckpoints[checkpointIndex]}</p>
+          <div className="space-y-3">
+            {analysisCheckpoints.map((checkpoint, index) => (
+                <div key={index} className="flex items-center gap-3 text-sm">
+                    {checkpointIndex > index ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : checkpointIndex === index ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    ) : (
+                        <div className="h-5 w-5 border-2 border-dashed rounded-full border-muted-foreground/50"></div>
+                    )}
+                    <span className={cn(
+                        "transition-colors",
+                        checkpointIndex > index ? "text-muted-foreground line-through" :
+                        checkpointIndex === index ? "text-foreground font-medium" :
+                        "text-muted-foreground/80"
+                    )}>
+                        {checkpoint}...
+                    </span>
+                </div>
+            ))}
           </div>
         ) : insight ? (
            <div className="space-y-4">
@@ -384,5 +401,7 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
 
     
