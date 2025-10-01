@@ -1,10 +1,9 @@
-
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote, searchQuotes } from '@/app/actions/symbol-search.actions';
 import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2, Building, Globe, BarChart } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2, Building, Globe, BarChart, CalendarIcon } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -24,10 +23,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const DataPoint = ({ label, value, className }: { label: string; value: any; className?: string }) => (
-    <div className={cn("flex flex-col space-y-1", className)}>
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="font-medium text-foreground">{value}</span>
+const DataPoint = ({ label, value, className, icon: Icon }: { label: string; value: any; className?: string, icon?: React.ElementType }) => (
+    <div className={cn("flex items-start gap-3", className)}>
+        {Icon && <Icon className="h-5 w-5 text-muted-foreground mt-0.5" />}
+        <div className="flex flex-col space-y-1">
+            <span className="text-xs text-muted-foreground">{label}</span>
+            <span className="font-medium text-foreground">{value}</span>
+        </div>
     </div>
 );
 
@@ -133,19 +135,28 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
                         )}
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                      <div className="flex flex-col space-y-2">
                          <div className="flex items-center gap-2 text-sm text-muted-foreground"><BarChart className="h-4 w-4"/>Sentiment</div>
                          <Badge variant={sentimentVariant[insight.sentiment]} className="self-start">{insight.sentiment}</Badge>
                      </div>
-                      <div className="flex flex-col space-y-2 sm:col-span-2">
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><AlertCircle className="h-4 w-4 text-destructive"/>Key Risk</div>
-                         <p className="text-sm text-foreground">{insight.keyRisk}</p>
-                     </div>
-                      <div className="flex flex-col space-y-2 sm:col-span-2">
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><Sparkles className="h-4 w-4 text-green-500"/>Key Opportunity</div>
-                         <p className="text-sm text-foreground">{insight.keyOpportunity}</p>
-                     </div>
+                      <div className="space-y-4 sm:col-span-2">
+                          <p className="text-sm font-semibold text-foreground">Risk & Opportunity Analysis</p>
+                          <div className="flex items-start gap-3">
+                              <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0"/>
+                              <div>
+                                  <p className="font-medium text-sm">Key Risk</p>
+                                  <p className="text-sm text-muted-foreground">{insight.keyRisk}</p>
+                              </div>
+                          </div>
+                           <div className="flex items-start gap-3">
+                              <Sparkles className="h-5 w-5 text-green-500 mt-0.5 shrink-0"/>
+                              <div>
+                                  <p className="font-medium text-sm">Key Opportunity</p>
+                                  <p className="text-sm text-muted-foreground">{insight.keyOpportunity}</p>
+                              </div>
+                          </div>
+                      </div>
                 </div>
            </div>
         ) : (
@@ -226,7 +237,7 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-        <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
             <div className="flex flex-col gap-1">
                 <h1 className="text-3xl font-bold tracking-tight">
                     {quote.longName || quote.shortName} ({quote.symbol})
@@ -358,7 +369,7 @@ export default function SymbolDashboardPage() {
             <CardHeader>
               <CardTitle>Key Data</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-x-4 gap-y-6">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
@@ -367,8 +378,16 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="52-Wk Low" value={quote.fiftyTwoWeekLow?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Volume" value={quote.regularMarketVolume?.toLocaleString() ?? 'N/A'} />
                 <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N/A'} />
-                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'} className="col-span-2 sm:col-span-1"/>
-                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'} className="col-span-2 sm:col-span-1"/>
+                <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'}/>
+                <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'}/>
+                {quote.firstTradeDateMilliseconds && (
+                    <DataPoint 
+                        label="IPO Date" 
+                        value={format(new Date(quote.firstTradeDateMilliseconds), 'MMM d, yyyy')}
+                        icon={CalendarIcon}
+                        className="col-span-2"
+                    />
+                )}
             </CardContent>
           </Card>
           
@@ -415,7 +434,3 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
-
-    
-
-    
