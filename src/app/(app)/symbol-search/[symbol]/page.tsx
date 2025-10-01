@@ -1,3 +1,4 @@
+
 'use client';
 import { useEffect, useState } from 'react';
 import { getQuote, searchQuotes } from '@/app/actions/symbol-search.actions';
@@ -132,6 +133,9 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
                         )}
                         {symbolData.summary?.assetProfile?.country && (
                            <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.country}</span></div>
+                        )}
+                        {symbolData.quote.firstTradeDateMilliseconds && (
+                             <div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary/70"/><span>IPO: {format(new Date(symbolData.quote.firstTradeDateMilliseconds), 'MMM d, yyyy')}</span></div>
                         )}
                     </div>
                 </div>
@@ -380,14 +384,6 @@ export default function SymbolDashboardPage() {
                 <DataPoint label="Market Cap" value={quote.marketCap?.toLocaleString() ?? 'N/A'} />
                 <DataPoint label="P/E Ratio" value={quote.trailingPE?.toFixed(2) ?? 'N/A'}/>
                 <DataPoint label="EPS" value={quote.epsTrailingTwelveMonths?.toFixed(2) ?? 'N/A'}/>
-                {quote.firstTradeDateMilliseconds && (
-                    <DataPoint 
-                        label="IPO Date" 
-                        value={format(new Date(quote.firstTradeDateMilliseconds), 'MMM d, yyyy')}
-                        icon={CalendarIcon}
-                        className="col-span-2"
-                    />
-                )}
             </CardContent>
           </Card>
           
@@ -434,3 +430,5 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
+
+    
