@@ -47,15 +47,15 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
 
   useEffect(() => {
     async function fetchInsight() {
-      if (!symbolData || !symbolData.quote || !symbolData.summary) return;
+      if (!symbolData || !symbolData.quote) return;
       setLoading(true);
       setCheckpointIndex(0);
       try {
         const result = await generateFinancialInsight({
           symbol: symbolData.quote.symbol,
           companyName: symbolData.quote.longName || symbolData.quote.shortName || '',
-          country: symbolData.summary.assetProfile?.country,
-          sector: symbolData.summary.assetProfile?.sector,
+          country: symbolData.summary?.assetProfile?.country,
+          sector: symbolData.summary?.assetProfile?.sector,
         });
         setInsight(result);
       } catch (error) {
@@ -215,30 +215,30 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold tracking-tight">
-                    {quote.longName || quote.shortName} ({quote.symbol})
-                </h1>
-                <div className="flex items-end gap-4 mt-2">
-                    <p className={`text-4xl font-bold ${priceColor}`}>
-                        {quote.regularMarketPrice?.toFixed(2)}
-                        {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
-                    </p>
-                    <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                        {priceUp ? <TrendingUp /> : <TrendingDown />}
-                        {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-                    </p>
-                </div>
-                <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-            </div>
-
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div></div>
             <Link href="/symbol-search" passHref>
                 <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Search
                 </Button>
             </Link>
+        </div>
+        <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold tracking-tight">
+                {quote.longName || quote.shortName} ({quote.symbol})
+            </h1>
+            <div className="flex items-end gap-4 mt-2 flex-wrap">
+                <p className={`text-4xl font-bold ${priceColor}`}>
+                    {quote.regularMarketPrice?.toFixed(2)}
+                    {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+                </p>
+                <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                    {priceUp ? <TrendingUp /> : <TrendingDown />}
+                    {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+                </p>
+            </div>
+            <p className="text-muted-foreground">{quote.fullExchangeName}</p>
         </div>
 
       
