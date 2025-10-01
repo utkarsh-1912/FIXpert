@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -12,9 +13,8 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z, generate } from 'genkit';
 import { ChatMessage, ChatMessageSchema } from './chat-types';
-import { generate } from 'genkit/generate';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
