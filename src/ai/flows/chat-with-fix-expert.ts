@@ -53,6 +53,20 @@ const chatWithFixExpertPrompt = ai.definePrompt({
   `,
 });
 
+
+const fallbackPrompt = ai.definePrompt({
+  name: 'fallbackChatPrompt',
+  input: { schema: ChatWithFixExpertInputSchema },
+  output: { schema: ChatWithFixExpertOutputSchema },
+  prompt: `You are FIXpert, an expert AI assistant specializing in the Financial Information eXchange (FIX) protocol. Your role is to help users by answering their questions about FIX, explaining concepts, and providing clear, accurate information. Please answer the user's last question based on the conversation history.
+  
+  Here is the conversation history:
+  {{#each this}}
+  **{{role}}**: {{content}}
+  {{/each}}
+  `,
+});
+
 const chatWithFixExpertFlow = ai.defineFlow(
   {
     name: 'chatWithFixExpertFlow',
@@ -60,15 +74,26 @@ const chatWithFixExpertFlow = ai.defineFlow(
     outputSchema: ChatWithFixExpertOutputSchema,
   },
   async (history) => {
-    const { output } = await chatWithFixExpertPrompt(history);
-
-    if (!output) {
-      return {
-        role: 'model',
-        content: 'I apologize, but I was unable to process that request. Could you please try rephrasing your question?',
-      };
+    try {
+      const { output } = await chatWithFixExpertPrompt(history);
+      if (output) {
+        return output;
+      }
+      // If the tool-based prompt returns null, fall through to the general prompt.
+      throw new Error("Tool-based prompt failed to produce output.");
+    } catch (error) {
+      console.warn("Tool-based chat prompt failed, using fallback. Error:", error);
+      // Fallback to a general prompt without tools if the first one fails.
+      const { output } = await fallbackPrompt(history);
+      if (output) {
+        return output;
+      }
     }
     
-    return output;
+    // If all else fails, return a static error message.
+    return {
+        role: 'model',
+        content: 'I apologize, but I was unable to process that request. Could you please try rephrasing your question?',
+    };
   }
 );
