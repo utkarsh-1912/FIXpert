@@ -125,42 +125,41 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
           </div>
         ) : insight ? (
            <div className="space-y-6">
-                <div className="space-y-2">
-                    <p className="text-sm font-medium text-foreground">{insight.aiSummary}</p>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                         {symbolData.summary?.assetProfile?.sector && (
-                            <div className="flex items-center gap-2"><Building className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.sector}</span></div>
-                        )}
-                        {symbolData.summary?.assetProfile?.country && (
-                           <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary/70"/><span>{symbolData.summary.assetProfile.country}</span></div>
-                        )}
-                        {symbolData.quote.firstTradeDateMilliseconds && (
-                             <div className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary/70"/><span>IPO: {format(new Date(symbolData.quote.firstTradeDateMilliseconds), 'MMM d, yyyy')}</span></div>
-                        )}
-                    </div>
-                </div>
+                <p className="text-sm font-medium text-foreground">{insight.aiSummary}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                     <div className="flex flex-col space-y-2">
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><BarChart className="h-4 w-4"/>Sentiment</div>
-                         <Badge variant={sentimentVariant[insight.sentiment]} className="self-start">{insight.sentiment}</Badge>
-                     </div>
-                      <div className="space-y-4 sm:col-span-2">
-                          <p className="text-sm font-semibold text-foreground">Risk & Opportunity Analysis</p>
-                          <div className="flex items-start gap-3">
-                              <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0"/>
-                              <div>
-                                  <p className="font-medium text-sm">Key Risk</p>
-                                  <p className="text-sm text-muted-foreground">{insight.keyRisk}</p>
-                              </div>
-                          </div>
-                           <div className="flex items-start gap-3">
-                              <Sparkles className="h-5 w-5 text-green-500 mt-0.5 shrink-0"/>
-                              <div>
-                                  <p className="font-medium text-sm">Key Opportunity</p>
-                                  <p className="text-sm text-muted-foreground">{insight.keyOpportunity}</p>
-                              </div>
-                          </div>
+                    <div className="flex flex-col space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground"><BarChart className="h-4 w-4"/>Sentiment</div>
+                        <Badge variant={sentimentVariant[insight.sentiment]} className="self-start">{insight.sentiment}</Badge>
+                    </div>
+                    {symbolData.quote.firstTradeDateMilliseconds && (
+                        <div className="flex flex-col space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground"><CalendarIcon className="h-4 w-4"/>IPO Date</div>
+                            <p className="font-medium text-sm">{format(new Date(symbolData.quote.firstTradeDateMilliseconds), 'MMM d, yyyy')}</p>
+                        </div>
+                    )}
+                    {symbolData.summary?.assetProfile?.country && (
+                        <div className="flex flex-col space-y-2">
+                           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Globe className="h-4 w-4"/>Country</div>
+                           <p className="font-medium text-sm">{symbolData.summary.assetProfile.country}</p>
+                        </div>
+                    )}
+                </div>
+                <div className="space-y-4">
+                  <p className="text-sm font-semibold text-foreground">Risk & Opportunity Analysis</p>
+                  <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0"/>
+                      <div>
+                          <p className="font-medium text-sm">Key Risk</p>
+                          <p className="text-sm text-muted-foreground">{insight.keyRisk}</p>
                       </div>
+                  </div>
+                   <div className="flex items-start gap-3">
+                      <Sparkles className="h-5 w-5 text-green-500 mt-0.5 shrink-0"/>
+                      <div>
+                          <p className="font-medium text-sm">Key Opportunity</p>
+                          <p className="text-sm text-muted-foreground">{insight.keyOpportunity}</p>
+                      </div>
+                  </div>
                 </div>
            </div>
         ) : (
@@ -241,22 +240,12 @@ export default function SymbolDashboardPage() {
 
   return (
     <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold tracking-tight">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div>
+                 <h1 className="text-3xl font-bold tracking-tight">
                     {quote.longName || quote.shortName} ({quote.symbol})
                 </h1>
                 <p className="text-muted-foreground">{quote.fullExchangeName}</p>
-                 <div className="flex items-end gap-4 mt-2 flex-wrap">
-                    <p className={`text-4xl font-bold ${priceColor}`}>
-                        {quote.regularMarketPrice?.toFixed(2)}
-                        {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
-                    </p>
-                    <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                        {priceUp ? <TrendingUp /> : <TrendingDown />}
-                        {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-                    </p>
-                </div>
             </div>
             <Link href="/symbol-search" passHref>
                 <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
@@ -265,7 +254,17 @@ export default function SymbolDashboardPage() {
                 </Button>
             </Link>
         </div>
-
+        
+        <div className="flex items-end gap-4 flex-wrap">
+            <p className={`text-4xl font-bold ${priceColor}`}>
+                {quote.regularMarketPrice?.toFixed(2)}
+                {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+            </p>
+            <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                {priceUp ? <TrendingUp /> : <TrendingDown />}
+                {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+            </p>
+        </div>
       
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column */}
@@ -430,5 +429,3 @@ export default function SymbolDashboardPage() {
     </div>
   );
 }
-
-    
