@@ -50,15 +50,17 @@ const nodeBaseStyle: React.CSSProperties = {
 };
 
 const NodeComponent = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => {
-    const shapeStyle: React.CSSProperties = {
-        borderRadius: data.shape === 'stadium' ? '9999px' : 
-                      data.shape === 'round-edge' ? '1rem' : 
-                      '0.25rem',
-        height: data.shape === 'circle' ? 100 : 'auto',
-        width: data.shape === 'circle' ? 100 : 'auto',
-    };
-     if (data.shape === 'circle') {
+    const shapeStyle: React.CSSProperties = {};
+    if (data.shape === 'circle') {
         shapeStyle.borderRadius = '50%';
+        shapeStyle.height = 100;
+        shapeStyle.width = 100;
+    } else if (data.shape === 'stadium') {
+        shapeStyle.borderRadius = '9999px';
+    } else if (data.shape === 'round-edge') {
+        shapeStyle.borderRadius = '1rem';
+    } else {
+        shapeStyle.borderRadius = '0.25rem';
     }
 
     return (
@@ -186,6 +188,7 @@ export default function WorkflowVisualizerPage() {
                 icon: Wand2,
                 title: 'Generation Failed',
                 description: 'Could not generate a diagram from the scenario.',
+                variant: 'destructive'
               });
       } finally {
           setIsLoading(false);
@@ -196,7 +199,7 @@ export default function WorkflowVisualizerPage() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
        <Card>
-         <Tabs value={activeTab} onValueChange={setActiveTab}>
+         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="designer">
             <CardHeader>
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="designer">
@@ -295,26 +298,38 @@ export default function WorkflowVisualizerPage() {
           <CardDescription>Live preview of your diagram.</CardDescription>
         </CardHeader>
         <CardContent className="relative flex-grow w-full h-full min-h-[60vh]">
-             {isLoading && (
+            {isLoading && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
             )}
-            <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
-                 <ReactFlow
-                    nodes={flowNodes}
-                    edges={flowEdges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    nodeTypes={nodeTypes}
-                    fitView
-                >
-                    <Controls />
-                    <Background />
-                </ReactFlow>
-            </div>
+            
+            {activeTab === 'designer' || (activeTab === 'scenario' && flowNodes.length > 0) ? (
+                <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
+                    <ReactFlow
+                        nodes={flowNodes}
+                        edges={flowEdges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        nodeTypes={nodeTypes}
+                        fitView
+                    >
+                        <Controls />
+                        <Background />
+                    </ReactFlow>
+                </div>
+            ) : (
+                <div className="flex h-full items-center justify-center rounded-md border border-dashed p-8">
+                    <div className="text-center text-muted-foreground">
+                        <Sparkles className="mx-auto h-12 w-12" />
+                        <p className="mt-4">Generated visualization will appear here.</p>
+                    </div>
+                </div>
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    
