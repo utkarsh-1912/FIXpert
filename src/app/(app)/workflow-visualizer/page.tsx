@@ -8,7 +8,7 @@ import { Trash2, PlusCircle, ArrowRight, ArrowLeftRight, Minus, Sparkles, Loader
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position, useReactFlow } from 'reactflow';
+import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cn } from '@/lib/utils';
 import { generateWorkflowDiagram } from '@/ai/flows/generate-workflow-diagram';
@@ -51,6 +51,7 @@ const NodeComponent = ({ data, selected }: { data: { label: string, shape: Node[
         minWidth: 120,
         minHeight: 60,
     };
+    
     const shapeStyle: React.CSSProperties = {};
     if (data.shape === 'circle') {
         shapeStyle.borderRadius = '50%';
@@ -100,7 +101,6 @@ export default function WorkflowVisualizerPage() {
   // React Flow state
   const [flowNodes, setFlowNodes, onNodesChange] = useNodesState([]);
   const [flowEdges, setFlowEdges, onEdgesChange] = useEdgesState([]);
-  const reactFlowWrapper = useRef(null);
 
   // Update React Flow state when manual designer state changes
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function WorkflowVisualizerPage() {
       markerEnd: conn.type === 'uni' || conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       labelBgPadding: [8, 4] as [number, number],
-      labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.9 },
+      labelBgStyle: { fill: 'hsl(var(--card))', fillOpacity: 0.9 },
       sourceHandle: layout === 'LR' ? 'right' : 'bottom',
       targetHandle: layout === 'LR' ? 'left' : 'top',
     }));
@@ -230,7 +230,7 @@ export default function WorkflowVisualizerPage() {
             variant: 'destructive',
         });
       });
-  }, []);
+  }, [addNotification]);
 
 
   return (
@@ -372,7 +372,7 @@ export default function WorkflowVisualizerPage() {
             )}
             
             {(activeTab === 'designer' || (activeTab === 'scenario' && flowNodes.length > 0)) ? (
-                <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0" ref={reactFlowWrapper}>
+                <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
                     <ReactFlow
                         nodes={flowNodes}
                         edges={flowEdges}
