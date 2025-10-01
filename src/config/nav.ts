@@ -27,6 +27,6 @@ export const menuItems: NavItem[] = [
   { href: '/log-processor', label: 'Log Processor', icon: FileCog, description: 'Merge and chronologically sort multiple log files.' },
   { href: '/comparator', label: 'Comparator', icon: GitCompareArrows, description: 'Perform a side-by-side comparison of two FIX messages.' },
   { href: '/formatter', label: 'Formatter', icon: CodeXml, description: 'Convert raw FIX messages into a structured XML format.' },
-  { href: '/workflow-visualizer', label: 'Visualizer', icon: Workflow, description: 'Manually design and visualize FIX message workflows.' },
+  { href: '/workflow-visualizer', label: 'Visualizer', icon: Workflow, description: 'Generate workflow diagrams from text or design them manually.', isAiPowered: true },
   { href: '/symbol-search', label: 'Symbol Search', icon: Search, description: 'Look up real-time trading symbols and market data.', isAiPowered: true },
 ];
