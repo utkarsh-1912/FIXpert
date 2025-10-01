@@ -162,8 +162,9 @@ export default function SymbolDashboardPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-bold tracking-tight">{quote.longName || quote.shortName}</h1>
-            <p className="text-lg text-muted-foreground font-medium">Symbol: {quote.symbol}</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+                {quote.longName || quote.shortName} ({quote.symbol})
+            </h1>
             <div className="flex items-end gap-4 mt-2">
                 <p className={`text-4xl font-bold ${priceColor}`}>
                     {quote.regularMarketPrice?.toFixed(2)}
