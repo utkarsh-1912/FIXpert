@@ -8,15 +8,15 @@
  *
  * @exports {
  *   generateFinancialInsight: (input: FinancialInsightInput) => Promise<FinancialInsightOutput>;
- *   FinancialInsightInput: z.infer<typeof FinancialInsightInputSchema>;
- *   FinancialInsightOutput: z.infer<typeof FinancialInsightOutputSchema>;
+ *   FinancialInsightInput: The input type for the generateFinancialInsight function.
+ *   FinancialInsightOutput: The return type for the generateFinancialInsight function.
  * }
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const FinancialInsightInputSchema = z.object({
+const FinancialInsightInputSchema = z.object({
   symbol: z.string().describe('The stock ticker symbol.'),
   companyName: z.string().describe('The name of the company.'),
   country: z.string().optional().describe('The country where the company is based.'),
@@ -25,7 +25,7 @@ export const FinancialInsightInputSchema = z.object({
 });
 export type FinancialInsightInput = z.infer<typeof FinancialInsightInputSchema>;
 
-export const FinancialInsightOutputSchema = z.object({
+const FinancialInsightOutputSchema = z.object({
   insight: z.string().describe('A concise analysis of the company\'s financial health, market position, and potential trends. Should be 2-3 short paragraphs.'),
 });
 export type FinancialInsightOutput = z.infer<typeof FinancialInsightOutputSchema>;
