@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, PlusCircle, ArrowRight, ArrowLeftRight, Minus, Sparkles, Loader2, Wand2 } from 'lucide-react';
+import { Trash2, PlusCircle, ArrowRight, ArrowLeftRight, Minus, Sparkles, Loader2, Wand2, ArrowDown, MoveHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -40,11 +40,11 @@ const connectionTypeMap: Record<ConnectionType, { icon: React.ElementType, synta
 };
 
 const nodeBaseStyle: React.CSSProperties = {
-    padding: '10px 15px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
+    padding: '10px 15px',
     minWidth: 120,
     minHeight: 60,
 };
@@ -53,8 +53,8 @@ const NodeComponent = ({ data, selected }: { data: { label: string, shape: Node[
     const shapeStyle: React.CSSProperties = {};
     if (data.shape === 'circle') {
         shapeStyle.borderRadius = '50%';
-        shapeStyle.height = 100;
         shapeStyle.width = 100;
+        shapeStyle.height = 100;
     } else if (data.shape === 'stadium') {
         shapeStyle.borderRadius = '9999px';
     } else if (data.shape === 'round-edge') {
@@ -107,8 +107,8 @@ export default function WorkflowVisualizerPage() {
 
     const newFlowNodes = manualNodes.map((node, index) => {
         const position = layout === 'LR'
-        ? { x: index * xSpacing, y: Math.floor(index / 4) * ySpacing }
-        : { x: Math.floor(index / 3) * xSpacing, y: (index % 3) * ySpacing };
+        ? { x: (index % 3) * xSpacing, y: Math.floor(index / 3) * ySpacing }
+        : { x: Math.floor(index / 2) * xSpacing, y: (index % 2) * ySpacing };
 
         return {
             id: node.id,
@@ -216,58 +216,82 @@ export default function WorkflowVisualizerPage() {
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="layout-direction-manual">Layout Direction</Label>
-                        <Select value={layout} onValueChange={(v: 'LR' | 'TD') => setLayout(v)}>
-                            <SelectTrigger id="layout-direction-manual"><SelectValue /></SelectTrigger>
+                         <Select value={layout} onValueChange={(v: 'LR' | 'TD') => setLayout(v)}>
+                            <SelectTrigger id="layout-direction-manual">
+                                <SelectValue placeholder="Select layout direction" />
+                            </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="LR">Horizontal (Left to Right)</SelectItem>
-                                <SelectItem value="TD">Vertical (Top to Bottom)</SelectItem>
+                                <SelectItem value="LR">
+                                    <div className="flex items-center gap-2">
+                                        <MoveHorizontal className="h-4 w-4" />
+                                        <span>Horizontal</span>
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="TD">
+                                     <div className="flex items-center gap-2">
+                                        <ArrowDown className="h-4 w-4" />
+                                        <span>Vertical</span>
+                                    </div>
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-4">
                         <Label className="text-base font-medium">Nodes</Label>
-                        {manualNodes.map((node, index) => (
-                            <div key={node.id} className="grid grid-cols-12 gap-2 items-center">
-                                <Input value={node.id} disabled className="col-span-2 font-code" />
-                                <Input value={node.label} onChange={(e) => updateNode(index, 'label', e.target.value)} className="col-span-5" />
-                                <Select value={node.shape} onValueChange={(v) => updateNode(index, 'shape', v)}>
-                                    <SelectTrigger className="col-span-4"><SelectValue placeholder="Shape" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="rect">Rectangle</SelectItem>
-                                        <SelectItem value="round-edge">Round-Edge</SelectItem>
-                                        <SelectItem value="stadium">Stadium</SelectItem>
-                                        <SelectItem value="circle">Circle</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button variant="ghost" size="icon" onClick={() => removeNode(index)} className="col-span-1"><Trash2 className="h-4 w-4 text-destructive"/></Button>
-                            </div>
-                        ))}
+                        <div className="space-y-2">
+                            {manualNodes.length > 0 ? manualNodes.map((node, index) => (
+                                <div key={node.id} className="grid grid-cols-12 gap-2 items-center">
+                                    <Input value={node.id} disabled className="col-span-2 font-code" />
+                                    <Input value={node.label} onChange={(e) => updateNode(index, 'label', e.target.value)} className="col-span-5" />
+                                    <Select value={node.shape} onValueChange={(v) => updateNode(index, 'shape', v)}>
+                                        <SelectTrigger className="col-span-4"><SelectValue placeholder="Shape" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="rect">Rectangle</SelectItem>
+                                            <SelectItem value="round-edge">Round-Edge</SelectItem>
+                                            <SelectItem value="stadium">Stadium</SelectItem>
+                                            <SelectItem value="circle">Circle</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button variant="ghost" size="icon" onClick={() => removeNode(index)} className="col-span-1"><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                </div>
+                            )) : (
+                                <div className="flex items-center justify-center rounded-md border-2 border-dashed p-6 text-sm text-muted-foreground">
+                                    No nodes defined. Click 'Add Node' to start.
+                                </div>
+                            )}
+                        </div>
                         <Button variant="outline" size="sm" onClick={addNode}><PlusCircle className="mr-2 h-4 w-4"/>Add Node</Button>
                     </div>
                     <div className="space-y-4">
                         <Label className="text-base font-medium">Connections</Label>
-                        {manualConnections.map((conn, index) => (
-                            <div key={conn.id} className="grid grid-cols-[3fr_3fr_4fr_1fr_1fr] gap-2 items-center">
-                                <Select value={conn.from} onValueChange={(v) => updateConnection(index, 'from', v)}>
-                                    <SelectTrigger><SelectValue placeholder="From"/></SelectTrigger>
-                                    <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
-                                </Select>
-                                <Select value={conn.to} onValueChange={(v) => updateConnection(index, 'to', v)}>
-                                    <SelectTrigger><SelectValue placeholder="To"/></SelectTrigger>
-                                    <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
-                                </Select>
-                                <Input value={conn.label} onChange={(e) => updateConnection(index, 'label', e.target.value)} placeholder="Label" />
-                                <Select value={conn.type} onValueChange={(v: ConnectionType) => updateConnection(index, 'type', v)}>
-                                    <SelectTrigger className="p-2 justify-center"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        {Object.entries(connectionTypeMap).map(([key, {icon: Icon, syntax}]) => (
-                                            <SelectItem key={key} value={key}><Icon className="h-4 w-4"/></SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button variant="ghost" size="icon" onClick={() => removeConnection(index)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
-                            </div>
-                        ))}
+                         <div className="space-y-2">
+                            {manualConnections.length > 0 ? manualConnections.map((conn, index) => (
+                                <div key={conn.id} className="grid grid-cols-[3fr_3fr_4fr_1fr_1fr] gap-2 items-center">
+                                    <Select value={conn.from} onValueChange={(v) => updateConnection(index, 'from', v)}>
+                                        <SelectTrigger><SelectValue placeholder="From"/></SelectTrigger>
+                                        <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
+                                    </Select>
+                                    <Select value={conn.to} onValueChange={(v) => updateConnection(index, 'to', v)}>
+                                        <SelectTrigger><SelectValue placeholder="To"/></SelectTrigger>
+                                        <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
+                                    </Select>
+                                    <Input value={conn.label} onChange={(e) => updateConnection(index, 'label', e.target.value)} placeholder="Label" />
+                                    <Select value={conn.type} onValueChange={(v: ConnectionType) => updateConnection(index, 'type', v)}>
+                                        <SelectTrigger className="p-2 justify-center"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            {Object.entries(connectionTypeMap).map(([key, {icon: Icon}]) => (
+                                                <SelectItem key={key} value={key}><Icon className="h-4 w-4"/></SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Button variant="ghost" size="icon" onClick={() => removeConnection(index)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                </div>
+                            )) : (
+                                <div className="flex items-center justify-center rounded-md border-2 border-dashed p-6 text-sm text-muted-foreground">
+                                    No connections defined. Add nodes to create connections.
+                                </div>
+                            )}
+                        </div>
                         <Button variant="outline" size="sm" onClick={addConnection}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
                     </div>
                 </CardContent>
@@ -332,4 +356,3 @@ export default function WorkflowVisualizerPage() {
   );
 }
 
-    
