@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useId, useEffect, useCallback } from 'react';
+import { useState, useId, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -59,14 +59,16 @@ export default function WorkflowVisualizerPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [layout, setLayout] = useState<'LR' | 'TD'>('LR');
+  const nodeIdCounter = useRef(2);
+
   
   // State for manual designer
   const [manualNodes, setManualNodes] = useState<Node[]>([
-    { id: 'A', label: 'Client', shape: 'rect' },
-    { id: 'B', label: 'Broker', shape: 'round-edge' },
+    { id: 'N1', label: 'Client', shape: 'rect' },
+    { id: 'N2', label: 'Broker', shape: 'round-edge' },
   ]);
   const [manualConnections, setManualConnections] = useState<Connection[]>([
-      {id: 'c1', from: 'A', to: 'B', label: 'NewOrderSingle', type: 'uni'},
+      {id: 'c1', from: 'N1', to: 'N2', label: 'NewOrderSingle', type: 'uni'},
   ]);
 
   // React Flow state
@@ -74,7 +76,7 @@ export default function WorkflowVisualizerPage() {
   const [flowEdges, setFlowEdges, onEdgesChange] = useEdgesState([]);
 
 
-  const generateMermaidFromState = () => {
+  const generateMermaidFromState = useCallback(() => {
     let code = `flowchart ${layout}\n`;
     manualNodes.forEach(node => {
       code += `    ${shapeMap[node.shape](node.id, node.label)}\n`;
@@ -87,12 +89,11 @@ export default function WorkflowVisualizerPage() {
     });
     setMermaidCode(code);
     return code;
-  };
+  }, [manualNodes, manualConnections, layout]);
   
   useEffect(() => {
     generateMermaidFromState();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manualNodes, manualConnections, layout]);
+  }, [manualNodes, manualConnections, layout, generateMermaidFromState]);
   
   // Update React Flow state when manual designer state changes
   useEffect(() => {
@@ -131,8 +132,9 @@ export default function WorkflowVisualizerPage() {
   }, [manualNodes, manualConnections, layout, setFlowNodes, setFlowEdges]);
 
   const addNode = () => {
-    const newNodeId = String.fromCharCode(65 + manualNodes.length);
-    setManualNodes([...manualNodes, { id: newNodeId, label: `Node ${newNodeId}`, shape: 'rect' }]);
+    nodeIdCounter.current += 1;
+    const newNodeId = `N${nodeIdCounter.current}`;
+    setManualNodes([...manualNodes, { id: newNodeId, label: `Node ${nodeIdCounter.current}`, shape: 'rect' }]);
   };
   
   const updateNode = (index: number, field: keyof Node, value: string) => {
@@ -315,11 +317,11 @@ export default function WorkflowVisualizerPage() {
                         <div key={conn.id} className="grid grid-cols-[3fr_3fr_4fr_1fr_1fr] gap-2 items-center">
                             <Select value={conn.from} onValueChange={(v) => updateConnection(index, 'from', v)}>
                                 <SelectTrigger><SelectValue placeholder="From"/></SelectTrigger>
-                                <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>)}</SelectContent>
+                                <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
                             </Select>
                              <Select value={conn.to} onValueChange={(v) => updateConnection(index, 'to', v)}>
                                 <SelectTrigger><SelectValue placeholder="To"/></SelectTrigger>
-                                <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>)}</SelectContent>
+                                <SelectContent>{manualNodes.map(n => <SelectItem key={n.id} value={n.id}>{n.label} ({n.id})</SelectItem>)}</SelectContent>
                             </Select>
                             <Input value={conn.label} onChange={(e) => updateConnection(index, 'label', e.target.value)} placeholder="Label" />
                             <Select value={conn.type} onValueChange={(v: ConnectionType) => updateConnection(index, 'type', v)}>
@@ -379,24 +381,7 @@ export default function WorkflowVisualizerPage() {
         <CardContent className="flex-grow flex items-center justify-center relative">
           {isLoading ? (
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          ) : error ? (
-             <div className="text-center text-destructive">
-                <p>Error generating visualization.</p>
-                <p className="text-sm">{error}</p>
-                <div className="w-full h-full aspect-video mt-4 border rounded-lg bg-muted/30">
-                    <ReactFlow
-                        nodes={flowNodes}
-                        edges={flowEdges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        fitView
-                    >
-                        <Controls />
-                        <Background />
-                    </ReactFlow>
-                </div>
-            </div>
-          ) : visualization ? (
+          ) : visualization && !error ? (
             <div className="space-y-4 w-full">
               {visualization.dataUri ? (
                 <div className="rounded-lg border bg-card-foreground/5 p-4 flex justify-center">
