@@ -6,10 +6,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import puppeteer from 'puppeteer';
-
-const GetFixTagInfoSchema = z.object({
-    tag: z.string().describe('The FIX tag number to look up.'),
-});
+import { GetFixTagInfoSchema } from './get-fix-tag-info-types';
 
 type FixTagInfo = {
     name: string;
@@ -127,6 +124,3 @@ export const getFixTagInfo = ai.defineTool(
     }
   }
 );
-
-// Export the schema for use in other parts of the application
-export { GetFixTagInfoSchema };

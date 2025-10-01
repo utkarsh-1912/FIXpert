@@ -57,7 +57,7 @@ const chatWithFixExpertFlow = ai.defineFlow(
   {
     name: 'chatWithFixExpertFlow',
     inputSchema: ChatWithFixExpertInputSchema,
-    outputSchema: ChatWithFixExpertOutputSchema,
+    outputSchema: ChatWithFix-ExpertOutputSchema,
   },
   async (history) => {
     const { output } = await chatWithFixExpertPrompt(history);
