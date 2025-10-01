@@ -16,6 +16,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ChatMessageSchema } from './chat-types';
 import { getFixTagInfo } from '../tools/get-fix-tag-info';
+import { GetFixTagInfoSchema } from '../tools/get-fix-tag-info-types';
 
 // Define the schema for the flow's input, which is an array of messages
 const ChatWithFixExpertInputSchema = z.array(ChatMessageSchema);
@@ -57,7 +58,7 @@ const chatWithFixExpertFlow = ai.defineFlow(
   {
     name: 'chatWithFixExpertFlow',
     inputSchema: ChatWithFixExpertInputSchema,
-    outputSchema: ChatWithFix-ExpertOutputSchema,
+    outputSchema: ChatWithFixExpertOutputSchema,
   },
   async (history) => {
     const { output } = await chatWithFixExpertPrompt(history);
