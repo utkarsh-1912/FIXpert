@@ -130,6 +130,7 @@ export default function WorkflowVisualizerPage() {
       markerStart: conn.type === 'bi' ? { type: MarkerType.ArrowClosed } : undefined,
       labelBgPadding: [8, 4] as [number, number],
       labelBgStyle: { fill: 'hsl(var(--card))', fillOpacity: 0.9 },
+      labelStyle: { fill: 'hsl(var(--foreground))' },
       sourceHandle: layout === 'LR' ? 'right' : 'bottom',
       targetHandle: layout === 'LR' ? 'left' : 'top',
     }));
