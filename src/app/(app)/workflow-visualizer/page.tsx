@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ReactFlow, { Background, Controls, useNodesState, useEdgesState, MarkerType, Handle, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cn } from '@/lib/utils';
+import { useNotificationStore } from '@/stores/notification-store';
 
 type Node = {
   id: string;
@@ -59,7 +60,6 @@ const nodeBaseStyle: React.CSSProperties = {
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
-    minHeight: 60,
 };
 
 const HorizontalNode = ({ data, selected }: { data: { label: string, shape: Node['shape'] }, selected: boolean }) => {
@@ -68,6 +68,7 @@ const HorizontalNode = ({ data, selected }: { data: { label: string, shape: Node
                       data.shape === 'stadium' ? '9999px' : 
                       data.shape === 'round-edge' ? '1rem' : '0.25rem',
         height: data.shape === 'circle' ? 100 : 60,
+        width: data.shape === 'circle' ? 100 : 150,
     };
 
     return (
@@ -85,6 +86,7 @@ const VerticalNode = ({ data, selected }: { data: { label: string, shape: Node['
                       data.shape === 'stadium' ? '9999px' : 
                       data.shape === 'round-edge' ? '1rem' : '0.25rem',
         height: data.shape === 'circle' ? 100 : 60,
+        width: data.shape === 'circle' ? 100 : 150,
     };
     
     return (
@@ -107,9 +109,9 @@ export default function WorkflowVisualizerPage() {
   const [mermaidCode, setMermaidCode] = useState('');
   const [visualization, setVisualization] = useState<{ dataUri: string; description: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [layout, setLayout] = useState<'LR' | 'TD'>('LR');
   const nodeIdCounter = useRef(2);
+  const { addNotification } = useNotificationStore();
 
   
   // State for manual designer
@@ -217,7 +219,6 @@ export default function WorkflowVisualizerPage() {
   const handleVisualize = async () => {
     setIsLoading(true);
     setVisualization(null);
-    setError(null);
     try {
       const scenarioWithLayout = `${scenario}\n\nRender the flowchart with a ${layout === 'LR' ? 'horizontal (Left to Right)' : 'vertical (Top to Bottom)'} layout.`;
       const result = await visualizeFixWorkflow({ scenarioDescription: scenarioWithLayout });
@@ -225,9 +226,13 @@ export default function WorkflowVisualizerPage() {
         throw new Error("Generated flowchart is not in the expected format.");
       }
       setVisualization({ dataUri: result.flowchartDataUri, description: result.description });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError(null); 
+      addNotification({
+          icon: Wand2,
+          title: 'Visualization Failed',
+          description: err.message || 'Could not generate visualization from scenario.',
+      });
       setVisualization(null);
     } finally {
       setIsLoading(false);
@@ -237,16 +242,20 @@ export default function WorkflowVisualizerPage() {
   const handleCustomDesign = async (code: string) => {
     setIsLoading(true);
     setVisualization(null);
-    setError(null);
+    setActiveTab('scenario'); // Switch to scenario tab to show output
     try {
       const result = await visualizeFixWorkflow({ scenarioDescription: `Generate a flowchart from the following Mermaid syntax: \n\n${code}` });
       if (!result.flowchartDataUri.startsWith('data:image/svg+xml;base64,')) {
         throw new Error("Generated flowchart is not in the expected format.");
       }
-      setVisualization({ dataUri: result.flowchartDataUri, description: result.description || 'Flowchart generated from custom Mermaid code.' });
-    } catch (err) {
+      setVisualization({ dataUri: result.flowchartDataUri, description: result.description || 'Flowchart generated from custom code.' });
+    } catch (err: any) {
       console.error(err);
-      setError(null);
+      addNotification({
+          icon: PencilRuler,
+          title: 'Visualization Failed',
+          description: err.message || 'Could not generate visualization from custom code.',
+      });
       setVisualization(null);
     } finally {
       setIsLoading(false);
@@ -427,9 +436,9 @@ export default function WorkflowVisualizerPage() {
         <CardHeader>
           <CardTitle>Workflow Visualization</CardTitle>
            <CardDescription>
-              {activeTab === 'scenario' && !visualization
-                  ? 'Generated visualization will appear here.'
-                  : 'Live preview from the designer.'
+              {activeTab === 'scenario' 
+                ? 'Generated visualization will appear here.'
+                : 'Live preview from the designer.'
               }
           </CardDescription>
         </CardHeader>
@@ -441,7 +450,7 @@ export default function WorkflowVisualizerPage() {
             )}
             
             <div className="w-full h-full rounded-b-lg overflow-hidden absolute inset-0">
-                {activeTab !== 'scenario' || !visualization ? (
+                {activeTab !== 'scenario' ? (
                     <ReactFlow
                         nodes={flowNodes}
                         edges={flowEdges}
@@ -454,7 +463,7 @@ export default function WorkflowVisualizerPage() {
                         <Background />
                     </ReactFlow>
                 ) : visualization ? (
-                     <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4 z-10 backdrop-blur-sm">
+                     <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-muted/20 p-4 space-y-4">
                         <div className="rounded-lg border bg-background/50 p-4 flex justify-center flex-grow w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -465,7 +474,14 @@ export default function WorkflowVisualizerPage() {
                         </div>
                         <p className="text-sm text-muted-foreground w-full">{visualization.description}</p>
                     </div>
-                ) : null }
+                ) : (
+                    <div className="flex h-full items-center justify-center rounded-md border border-dashed">
+                        <div className="text-center text-muted-foreground">
+                            <BrainCircuit className="mx-auto h-12 w-12" />
+                            <p className="mt-4">Generated visualization will appear here.</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </CardContent>
       </Card>
@@ -473,3 +489,4 @@ export default function WorkflowVisualizerPage() {
   );
 }
 
+    

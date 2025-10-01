@@ -83,14 +83,14 @@ const convertMermaidToSvgDataUri = async (mermaidCode: string): Promise<string> 
         if (!response.ok) {
             const errorBody = await response.text();
             console.error(`Mermaid.ink API failed with status: ${response.status}`, errorBody);
-            throw new Error(`Mermaid.ink API failed with status: ${response.status}`);
+            throw new Error(`Mermaid.ink API failed: ${errorBody}`);
         }
         
         const svgContent = await response.text();
 
         if (!svgContent || svgContent.includes('Syntax error in text')) {
             console.error("Mermaid.ink returned an SVG with a syntax error.", mermaidCode);
-            throw new Error("Mermaid.ink did not return valid SVG content due to a syntax error in the provided code.");
+            throw new Error("Mermaid syntax error. Please check the generated code.");
         }
 
         const svgBase64 = Buffer.from(svgContent).toString('base64');
@@ -128,3 +128,5 @@ const visualizeFixWorkflowFlow = ai.defineFlow(
     };
   }
 );
+
+      
