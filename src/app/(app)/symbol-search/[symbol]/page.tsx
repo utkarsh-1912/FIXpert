@@ -31,14 +31,25 @@ const DataPoint = ({ label, value, className }: { label: string; value: any; cla
     </div>
 );
 
+const analysisCheckpoints = [
+    "Collecting market data...",
+    "Analyzing sector trends...",
+    "Fact-checking financial statements...",
+    "Generating key insights...",
+    "Finalizing analysis...",
+];
+
 function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
   const [insight, setInsight] = useState<FinancialInsightOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkpointIndex, setCheckpointIndex] = useState(0);
+
 
   useEffect(() => {
     async function fetchInsight() {
       if (!symbolData || !symbolData.quote || !symbolData.summary) return;
       setLoading(true);
+      setCheckpointIndex(0);
       try {
         const result = await generateFinancialInsight({
           symbol: symbolData.quote.symbol,
@@ -59,6 +70,16 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
     fetchInsight();
   }, [symbolData]);
   
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setCheckpointIndex(prevIndex => (prevIndex + 1) % analysisCheckpoints.length);
+      }, 2500); // Change checkpoint every 2.5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [loading, checkpointIndex]);
+
+  
   const sentimentVariant = {
       Bullish: 'default',
       Bearish: 'destructive',
@@ -78,7 +99,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
         {loading ? (
           <div className="flex items-center gap-3 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
-            <p>Generating analysis...</p>
+            <p>{analysisCheckpoints[checkpointIndex]}</p>
           </div>
         ) : insight ? (
            <div className="space-y-4">
