@@ -10,7 +10,7 @@ export default function PrivacyPage() {
         <p>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
         <h2 className="text-xl font-semibold text-foreground pt-4">1. Information We Collect</h2>
-        <p>We collect information you provide directly to us, such as when you create an account, and information we get from your use of our services, like your IP address and usage data. This includes:</p>
+        <p>We, Utai Inc., collect information you provide directly to us, such as when you create an account, and information we get from your use of our services, like your IP address and usage data. This includes:</p>
         <ul className="list-disc list-inside pl-4">
           <li>Account Information: Your name, email address, password, and other registration information.</li>
           <li>Usage Information: We collect information about your activity on our services.</li>
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         </ul>
 
         <h2 className="text-xl font-semibold text-foreground pt-4">3. Information Sharing</h2>
-        <p>We do not share your personal information with companies, organizations, or individuals outside of FIXpert except in the following cases:</p>
+        <p>We do not share your personal information with companies, organizations, or individuals outside of Utai Inc. except in the following cases:</p>
         <ul className="list-disc list-inside pl-4">
           <li>With your consent.</li>
           <li>For legal reasons, such as to meet any applicable law, regulation, legal process, or enforceable governmental request.</li>
