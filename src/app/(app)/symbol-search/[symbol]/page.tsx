@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getQuote, searchQuotes } from '@/app/actions/symbol-search.actions';
 import { generateFinancialInsight, FinancialInsightOutput } from '@/ai/flows/generate-financial-insight';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Link as LinkIcon, Users, Sparkles, AlertCircle, CheckCircle2, Building, Globe, BarChart, CalendarIcon } from 'lucide-react';
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown, Newspaper, Lightbulb, Users, Sparkles, AlertCircle, Building, Globe, BarChart, CalendarIcon, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { format } from 'date-fns';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 
@@ -56,8 +57,8 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
         const result = await generateFinancialInsight({
           symbol: symbolData.quote.symbol,
           companyName: symbolData.quote.longName || symbolData.quote.shortName || '',
-          country: symbolData.summary?.assetProfile?.country,
           sector: symbolData.summary?.assetProfile?.sector,
+          country: symbolData.summary?.assetProfile?.country,
         });
         setInsight(result);
       } catch (error) {
@@ -126,7 +127,7 @@ function AIFinancialInsight({ symbolData }: { symbolData: QuoteData }) {
         ) : insight ? (
            <div className="space-y-6">
                 <p className="text-sm font-medium text-foreground">{insight.aiSummary}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <div className="flex flex-col space-y-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground"><BarChart className="h-4 w-4"/>Sentiment</div>
                         <Badge variant={sentimentVariant[insight.sentiment]} className="self-start">{insight.sentiment}</Badge>
@@ -247,23 +248,22 @@ export default function SymbolDashboardPage() {
                 </h1>
                 <p className="text-muted-foreground">{quote.fullExchangeName}</p>
             </div>
-            <Link href="/symbol-search" passHref>
+            <div className="flex items-end gap-4 flex-wrap">
+                <p className={`text-4xl font-bold ${priceColor}`}>
+                    {quote.regularMarketPrice?.toFixed(2)}
+                    {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
+                </p>
+                <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
+                    {priceUp ? <TrendingUp /> : <TrendingDown />}
+                    {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
+                </p>
+            </div>
+             <Link href="/symbol-search" passHref>
                 <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Search
                 </Button>
             </Link>
-        </div>
-        
-        <div className="flex items-end gap-4 flex-wrap">
-            <p className={`text-4xl font-bold ${priceColor}`}>
-                {quote.regularMarketPrice?.toFixed(2)}
-                {quote.currency && <span className="ml-2 text-2xl text-muted-foreground">{quote.currency}</span>}
-            </p>
-            <p className={`flex items-center gap-2 text-lg font-medium ${priceColor} mb-1`}>
-                {priceUp ? <TrendingUp /> : <TrendingDown />}
-                {quote.regularMarketChange?.toFixed(2)} ({quote.regularMarketChangePercent?.toFixed(2)}%)
-            </p>
         </div>
       
       <div className="grid gap-6 lg:grid-cols-3">
@@ -389,20 +389,33 @@ export default function SymbolDashboardPage() {
            {recommendations && recommendations.length > 0 && (
                 <Card>
                     <CardHeader>
-                         <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3">
                             <Users className="h-6 w-6 text-primary" />
                             <CardTitle>Related Symbols</CardTitle>
                         </div>
                     </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
-                        {recommendations.map(rec => (
-                           <Link key={rec.symbol} href={`/symbol-search/${encodeURIComponent(rec.symbol)}`} passHref>
-                                <Badge variant="secondary" className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors">
-                                    <LinkIcon className="h-3 w-3 mr-1.5" />
-                                    {rec.symbol}
-                                </Badge>
-                            </Link>
-                        ))}
+                    <CardContent className="divide-y">
+                        {recommendations.map(rec => {
+                            const recPriceUp = (rec.regularMarketChange ?? 0) > 0;
+                            const recPriceColor = recPriceUp ? 'text-green-500' : 'text-red-500';
+                            return (
+                                <Link key={rec.symbol} href={`/symbol-search/${encodeURIComponent(rec.symbol)}`} passHref>
+                                    <div className="flex items-center justify-between p-3 -mx-3 hover:bg-muted/50 rounded-lg cursor-pointer">
+                                        <div>
+                                            <p className="font-bold">{rec.symbol}</p>
+                                            <p className="text-xs text-muted-foreground truncate max-w-40">{rec.longName || rec.shortName}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="font-medium">{rec.regularMarketPrice?.toFixed(2)}</p>
+                                            <p className={cn("text-sm flex items-center justify-end gap-1", recPriceColor)}>
+                                                {recPriceUp ? <ArrowUpRight className="h-4 w-4"/> : <ArrowDownRight className="h-4 w-4"/>}
+                                                {rec.regularMarketChange?.toFixed(2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Link>
+                            )
+                        })}
                     </CardContent>
                 </Card>
             )}
@@ -410,7 +423,10 @@ export default function SymbolDashboardPage() {
            {summary?.assetProfile?.longBusinessSummary && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>About {quote.shortName}</CardTitle>
+                        <div className="flex items-center gap-3">
+                            <Building className="h-6 w-6 text-primary" />
+                            <CardTitle>About {quote.shortName}</CardTitle>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <p className={`text-sm text-muted-foreground ${isSummaryLong && !showFullSummary ? 'line-clamp-6' : ''}`}>

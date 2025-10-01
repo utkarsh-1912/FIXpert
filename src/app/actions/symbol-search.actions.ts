@@ -4,6 +4,7 @@
 import { cache } from 'react';
 import yahooFinance from 'yahoo-finance2';
 import { subDays, format } from 'date-fns';
+import type { Quote } from 'yahoo-finance2/dist/esm/src/modules/quote';
 
 export const searchQuotes = cache(async (query: string) => {
     try {
@@ -21,7 +22,8 @@ export const searchQuotes = cache(async (query: string) => {
 type Period = '1d' | '5d' | '1m' | '6m' | '1y' | 'all';
 
 export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
-    let quote, news, history, summary, recommendations;
+    let quote, news, history, summary;
+    let recommendations: Quote[] = [];
     const encodedSymbol = encodeURIComponent(symbol);
 
     try {
@@ -103,18 +105,20 @@ export const getQuote = cache(async (symbol: string, period: Period = '1y') => {
     
     try {
         const recommendationsResult = await yahooFinance.recommendationsBySymbol(encodedSymbol);
-        // Ensure recommendations is always an array
-        recommendations = recommendationsResult.quotes ?? [];
+        const recommendedSymbols = recommendationsResult.quotes?.map(q => q.symbol) ?? [];
 
-        // Fallback: If no recommendations, search by sector
-        if (recommendations.length === 0 && summary?.assetProfile?.sector) {
+        if (recommendedSymbols.length > 0) {
+            recommendations = await yahooFinance.quote(recommendedSymbols);
+        } else if (summary?.assetProfile?.sector) {
+            // Fallback to sector search
             const sectorSearch = await yahooFinance.search(summary.assetProfile.sector, { quotesCount: 5 });
-            // Filter out the original symbol from sector results
-            recommendations = sectorSearch.quotes.filter(q => q.symbol !== symbol);
+            const sectorSymbols = sectorSearch.quotes?.filter(q => q.symbol !== symbol).map(q => q.symbol) ?? [];
+            if (sectorSymbols.length > 0) {
+                recommendations = await yahooFinance.quote(sectorSymbols);
+            }
         }
-
     } catch (error) {
-        console.error(`Yahoo Finance API recommendationsBySymbol() or sector search error for ${symbol}:`, error);
+        console.error(`Yahoo Finance API recommendations or quote fetch error for ${symbol}:`, error);
         recommendations = [];
     }
 
