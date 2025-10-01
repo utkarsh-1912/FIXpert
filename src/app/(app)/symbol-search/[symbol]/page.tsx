@@ -372,7 +372,7 @@ export default function SymbolDashboardPage() {
             <CardHeader>
               <CardTitle>Key Data</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
+            <CardContent className="grid grid-cols-2 gap-x-4 gap-y-6">
                 <DataPoint label="Open" value={quote.regularMarketOpen?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Previous Close" value={quote.regularMarketPreviousClose?.toFixed(2) ?? 'N/A'} />
                 <DataPoint label="Day High" value={quote.regularMarketDayHigh?.toFixed(2) ?? 'N/A'} />
